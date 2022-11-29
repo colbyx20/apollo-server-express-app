@@ -13,7 +13,9 @@ scalar DateTime
         password: String,
         group: String
     }
+
     type Professors{
+        id:ID,
         firstname: String,
         lastname: String,
         email: String,
@@ -34,6 +36,7 @@ scalar DateTime
         group: String
     
     }
+
     input ProfessorInput{
         firstname: String,
         lastname: String,
@@ -58,6 +61,10 @@ scalar DateTime
         createUser(userInput:UserInput):Users!
         createProfessor(professorInput:ProfessorInput):Professors!
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
+        deleteUser(ID:ID!):Users!
+        deleteProfessor(ID:ID!):Professors!
+        editUser(ID:ID!, userInput:UserInput):Users! 
+        editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
     }
 `
 

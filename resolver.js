@@ -55,6 +55,32 @@ const resolvers = {
             const isoDate = new Date(date);
             const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
             return createdDate;
+        },
+        deleteUser: async(_,{ID}) => {
+            const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
+            return wasDeletedUser;
+        },
+        deleteProfessor: async(_,{ID}) =>{
+            const wasDeletedProfessor = (await Professors.deleteOne({_id:ID})).deletedCount;
+            return wasDeletedProfessor;
+        },
+        editUser: async(_,{ID,userInput:{firstname,lastname,email,login}})=>{
+            const  userEdited = (await Users.updateOne({_id:ID},{
+                firstname:firstname,
+                lastname:lastname,
+                email:email,
+                login:login
+            })).modifiedCount;
+            return userEdited;
+        },
+        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email,login}})=>{
+            const professorEdit = (await Professors.updateOne({_id:ID},{
+                firstname:firstname,
+                lastname:lastname,
+                email:email,
+                login:login
+            })).modifiedCount;
+            return professorEdit;
         }
 
     }
