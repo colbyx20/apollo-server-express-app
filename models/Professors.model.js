@@ -8,6 +8,7 @@ const professorSchema = new Schema({
     password: {type:String, require:true},
     privilege: {type:String, require:true},
     fieldOfInterest: {type:String, require:true},
+    token: {type : String},
     schedule: {type: Array, require:false},
     appointments: {type:Array, require:false},
 });

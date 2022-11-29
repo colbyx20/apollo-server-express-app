@@ -3,16 +3,15 @@ const mongoose = require('mongoose');
 const UsersSchema = new mongoose.Schema({
 
     firstname:{
-        type: String,
-        required: true
+        type: String
     },
     lastname:{
-        type: String,
-        required: true
+        type: String
     },
     email:{
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     login:{
         type: String,
@@ -25,6 +24,9 @@ const UsersSchema = new mongoose.Schema({
     group: {
         type: String,
         require: false
+    },
+    token:{
+        type: String
     }
 
 })

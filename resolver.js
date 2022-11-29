@@ -1,5 +1,8 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
+const {ApolloError} = require('apollo-server-errors');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const resolvers = {
     Query:{
@@ -14,9 +17,49 @@ const resolvers = {
         },
         getAllProfessors: async () =>{
             return await Professors.find();
-        }
+        },
     },
     Mutation:{
+        registerUser: async(_,{registerInput: {firstname,lastname,login, email, password}}) =>{
+            // See if an old user exists with Email attempting to Register
+            const oldUser = await Users.findOne({email});
+    
+            if(oldUser){
+                // throw an error 
+                throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
+            }
+    
+            // Encrypt password using bcryptjs
+            var encryptedPassword = await bcrypt.hash(password,10);
+    
+            // Build out mongoose model 
+            const newUser = new Users({
+                firstname:firstname,
+                lastname:lastname,
+                login:login,
+                email: email.toLowerCase(),
+                password: encryptedPassword
+            });
+    
+            // create JWT (attach to user model)
+            const token = jwt.sign(
+                {id : newUser._id, email}, 
+                "UNSAFE_STRING", // stored in a secret file 
+                {
+                    expiresIn: "2h"
+                }
+            );
+    
+            newUser.token = token;
+            
+            // Save user in MongoDB
+            const res = await newUser.save();
+    
+            return{
+                id:res.id,
+                ...res._doc
+            }
+        },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
             const createdUser = new Users({
                 firstname:firstname,

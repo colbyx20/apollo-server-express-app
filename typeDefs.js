@@ -11,7 +11,8 @@ scalar DateTime
         email: String,
         login: String,
         password: String,
-        group: String
+        group: String,
+        token: String
     }
 
     type Professors{
@@ -23,6 +24,7 @@ scalar DateTime
         password: String,
         privilege: Int,
         fieldOfInterest:String,
+        token: String,
         schedule: [DateTime],
         appointments: [String]
     }
@@ -50,6 +52,14 @@ scalar DateTime
         time: DateTime
     }
 
+    input RegisterInput{
+        firstname: String,
+        lastname: String,
+        login: String,
+        email: String,
+        password: String
+    }
+
     type Query{
         getUser(ID:ID!):Users!
         getProfessor(ID:ID!):Professors!
@@ -65,6 +75,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors!
         editUser(ID:ID!, userInput:UserInput):Users! 
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
+        registerUser(registerInput: RegisterInput) : Users!
     }
 `
 
