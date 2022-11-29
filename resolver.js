@@ -16,6 +16,48 @@ const resolvers = {
             return await Professors.find();
         }
     },
+    Mutation:{
+        createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
+            const createdUser = new Users({
+                firstname:firstname,
+                lastname:lastname,
+                email:email,
+                login:login,
+                password:password,
+                group:group
+            });
+
+            const res = await createdUser.save();
+
+            return {
+                id:res.id,
+                ...res._doc // take all properties from result
+            }
+        },
+        createProfessor: async(_,{professorInput:{firstname,lastname,email,login,password,fieldOfInterest}}) =>{
+            const createdProfessor = new Professors({
+                firstname:firstname,
+                lastname:lastname,
+                email:email,
+                login:login,
+                password:password,
+                fieldOfInterest:fieldOfInterest
+            });
+            const professor = await createdProfessor.save();
+
+            return {
+                id:professor.id,
+                ...professor._doc
+            }
+        },
+        createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
+            const date = new Date(time).toISOString();
+            const isoDate = new Date(date);
+            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
+            return createdDate;
+        }
+
+    }
 }
 
 module.exports = resolvers;

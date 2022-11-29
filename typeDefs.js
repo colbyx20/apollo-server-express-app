@@ -43,11 +43,21 @@ scalar DateTime
         fieldOfInterest:String
     }
 
+    input ProfessorScheduleInput{
+        time: DateTime
+    }
+
     type Query{
         getUser(ID:ID!):Users!
         getProfessor(ID:ID!):Professors!
         getAllProfessors: [Professors!]
         getAllUsers:[Users!]
+    }
+
+    type Mutation{
+        createUser(userInput:UserInput):Users!
+        createProfessor(professorInput:ProfessorInput):Professors!
+        createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
     }
 `
 
