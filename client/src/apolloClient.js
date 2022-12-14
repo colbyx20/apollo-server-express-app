@@ -6,7 +6,7 @@ const httpLink = createHttpLink({
 });
 
 // auth link 
-const authLink = setContext((_,{header}) => {
+const authLink = setContext((_,{headers}) => {
     return{
         headers:{
             ...headers,
