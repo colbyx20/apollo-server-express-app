@@ -16,9 +16,9 @@ async function startServer(){
     // localhost:4000/graphql is our path
     apolloServer.applyMiddleware({app:app});
 
-    app.use((req,res) => {
-        res.send("Hello from express apollo server");
-    });
+    // app.use((req,res) => {
+    //     res.send("Hello from express apollo server");
+    // });
 
     await mongoose.connect("mongodb+srv://m001-student:pass123@sandbox.xkmg7i0.mongodb.net/colbydb?retryWrites=true&w=majority")
     console.log("Mongoose Connected...");

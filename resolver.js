@@ -49,7 +49,9 @@ const resolvers = {
                     expiresIn: "2h"
                 }
             );
-    
+            
+            // front end wants to see this token
+            // They will attach this token to the user when logging in.
             newUser.token = token;
             
             // Save user in MongoDB
@@ -59,6 +61,37 @@ const resolvers = {
                 id:res.id,
                 ...res._doc
             }
+        },
+        loginUser: async (_,{loginInput: {email, password}}) => {
+
+            // see if user exists with the email
+            const user = await Users.findOne({email});
+
+            // check if the entered password = encrypted password - use bcrypt
+            if(user && (await bcrypt.compare(password, user.password))){
+                // create a new token ( when you login you give user a new token )
+                const token = jwt.sign(
+                    {id : user._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+
+                // attach token to user model that we found if user exists 
+                user.token = token;
+
+                return {
+                    id: user.id,
+                    ...user._doc
+                }
+
+
+            }else{
+                // if user doesn't exists, return error
+                throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+            }
+
         },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
             const createdUser = new Users({
