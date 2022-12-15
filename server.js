@@ -16,6 +16,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
+require('dotenv').config();
 
 async function startServer(){
     const app = express();
@@ -38,7 +39,7 @@ async function startServer(){
     );
     
 
-    await mongoose.connect("mongodb+srv://m001-student:pass123@sandbox.xkmg7i0.mongodb.net/colbydb?retryWrites=true&w=majority")
+    await mongoose.connect(process.env.MONGODB_URI)
      console.log("Mongoose Connected...");
     //  app.listen(4000,() => console.log("Server is running on port 4000"));
     await new Promise((resolve) => httpServer.listen({port:4000}, resolve));
