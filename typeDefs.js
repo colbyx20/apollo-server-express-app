@@ -11,6 +11,7 @@ scalar DateTime
         email: String,
         login: String,
         password: String,
+        confirmpassword: String,
         group: String,
         privilege: Int,
         confirm: Int,
@@ -60,7 +61,8 @@ scalar DateTime
         lastname: String,
         login: String,
         email: String,
-        password: String
+        password: String,
+        confirmpassword: String
     }
 
     input loginInput{
@@ -83,7 +85,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors!
         editUser(ID:ID!, userInput:UserInput):Users! 
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
-        registerUser(registerInput: RegisterInput) : Users!
+        registerUser(registerInput: RegisterInput) : Users
         loginUser(loginInput: loginInput): Users!
     }
 `

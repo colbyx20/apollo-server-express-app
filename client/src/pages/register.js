@@ -17,6 +17,7 @@ const REGISTER_USER = gql`
             email
             login
             password
+            confirmpassword
   }
 }
 
@@ -38,7 +39,8 @@ function Register(props){
         lastname:"",
         login: "",
         email: "",
-        password: ""
+        password: "",
+        confirmpassword: "",
     })
 
 
@@ -85,11 +87,11 @@ function Register(props){
                     name="password"
                     onChange={onChange}
                 />
-                {/* <TextField
+                <TextField
                     label="Confirm Password"
                     name="confirmpassword"
                     onChange={onChange}
-                /> */}
+                />
             </Stack>
             {errors.map(function(error){
                 return(

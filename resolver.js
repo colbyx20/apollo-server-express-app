@@ -21,7 +21,11 @@ const resolvers = {
         },
     },
     Mutation:{
-        registerUser: async(_,{registerInput: {firstname,lastname,login, email, password}}) =>{
+        registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
+
+            if (password !== confirmpassword){
+                throw new ApolloError("Passwords Do Not Match");
+            }
             // See if an old user or Professor exists with Email attempting to Register
             const oldUser = await Users.findOne({email});
             const oldProfessor = await Professors.findOne({email});
