@@ -71,6 +71,19 @@ const resolvers = {
                 
                 // Save user in MongoDB
                 const res = await newUser.save();
+
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Please Confirm Your Account",
+                    html: `<h1>Email Confirmation</h1>
+                    <h2>Hello ${firstname}</h2>
+                    <p>Thank you for Registering!</p>
+                    <p>To activate your account please click on the link below.</p>
+                    
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
         
                 return{
                     id:res.id,
@@ -109,6 +122,19 @@ const resolvers = {
                 
                 // Save user in MongoDB
                 const res = await newProfessor.save();
+
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Please Confirm Your Account",
+                    html: `<h1>Email Confirmation</h1>
+                    <h2>Hello ${firstname}</h2>
+                    <p>Thank you for Registering!</p>
+                    <p>To activate your account please click on the link below.</p>
+                    
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
         
                 return{
                     id:res.id,
@@ -149,7 +175,6 @@ const resolvers = {
                 // if user doesn't exists, return error
                 throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
             }
-
         },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
             const createdUser = new Users({
