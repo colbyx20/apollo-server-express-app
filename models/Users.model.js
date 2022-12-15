@@ -25,6 +25,10 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         require: false
     },
+    privilege:{
+        type: Number,
+        require: true
+    },
     token:{
         type: String
     }

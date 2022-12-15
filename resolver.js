@@ -22,49 +22,103 @@ const resolvers = {
     },
     Mutation:{
         registerUser: async(_,{registerInput: {firstname,lastname,login, email, password}}) =>{
-            // See if an old user exists with Email attempting to Register
+            // See if an old user or Professor exists with Email attempting to Register
             const oldUser = await Users.findOne({email});
+            const oldProfessor = await Professors.findOne({email});
     
-            if(oldUser){
+            if(oldUser || oldProfessor){
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
             }
 
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
-    
-            // Encrypt password using bcryptjs
-            var encryptedPassword = await bcrypt.hash(password,10);
-    
-            // Build out mongoose model 
-            const newUser = new Users({
-                firstname:firstname,
-                lastname:lastname,
-                login:login,
-                email: email.toLowerCase(),
-                password: encryptedPassword
-            });
-    
-            // create JWT (attach to user model)
-            const token = jwt.sign(
-                {id : newUser._id, email}, 
-                "UNSAFE_STRING", // stored in a secret file 
-                {
-                    expiresIn: "2h"
+            // Differ between Professor and Student
+            let studentemail = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
+            let professoremail = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
+
+            let privilege = 0;
+
+            if(studentemail.test(email)){
+                // student account creation
+                privilege = 1;
+
+                // Encrypt password using bcryptjs
+                var encryptedPassword = await bcrypt.hash(password,10);
+        
+                // Build out mongoose model 
+                const newUser = new Users({
+                    firstname:firstname,
+                    lastname:lastname,
+                    login:login,
+                    email: email.toLowerCase(),
+                    password: encryptedPassword,
+                    privilege: privilege,
+                });
+        
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    {id : newUser._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+                
+                // front end wants to see this token
+                // They will attach this token to the user when logging in.
+                newUser.token = token;
+                
+                // Save user in MongoDB
+                const res = await newUser.save();
+        
+                return{
+                    id:res.id,
+                    ...res._doc
                 }
-            );
-            
-            // front end wants to see this token
-            // They will attach this token to the user when logging in.
-            newUser.token = token;
-            
-            // Save user in MongoDB
-            const res = await newUser.save();
-    
-            return{
-                id:res.id,
-                ...res._doc
+
+            }else if(professoremail.test(email)){
+                // professor account creation
+                privilege = 2;
+                
+                // Encrypt password using bcryptjs
+                var encryptedPassword = await bcrypt.hash(password,10);
+        
+                // Build out mongoose model 
+                const newProfessor = new Professors({
+                    firstname:firstname,
+                    lastname:lastname,
+                    login:login,
+                    email: email.toLowerCase(),
+                    password: encryptedPassword,
+                    privilege: privilege,
+                });
+        
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    {id : newProfessor._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+                
+                // front end wants to see this token
+                // They will attach this token to the user when logging in.
+                newProfessor.token = token;
+                
+                // Save user in MongoDB
+                const res = await newProfessor.save();
+        
+                return{
+                    id:res.id,
+                    ...res._doc
+                }
+
+            }else{
+                throw new ApolloError("Invalid Email " + email, " EMAIL IS NOT VALID");
             }
+    
         },
         loginUser: async (_,{loginInput: {email, password}}) => {
 

@@ -6,7 +6,7 @@ const professorSchema = new Schema({
     email:{type:String, require:true},
     login: {type:String, require:true},
     password: {type:String, require:true},
-    privilege: {type:String, require:true},
+    privilege: {type:Number, require:true},
     fieldOfInterest: {type:String, require:true},
     token: {type : String},
     schedule: {type: Array, require:false},

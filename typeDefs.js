@@ -12,6 +12,7 @@ scalar DateTime
         login: String,
         password: String,
         group: String,
+        privilege: Int,
         token: String
     }
 
