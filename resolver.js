@@ -3,6 +3,7 @@ const Professors = require('./models/Professors.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const resolvers = {
     Query:{
@@ -28,6 +29,9 @@ const resolvers = {
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
             }
+
+            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+
     
             // Encrypt password using bcryptjs
             var encryptedPassword = await bcrypt.hash(password,10);
