@@ -11,6 +11,7 @@ const professorSchema = new Schema({
     token: {type : String},
     schedule: {type: Array, require:false},
     appointments: {type:Array, require:false},
+    confirm:{type: Number},
 });
 
 module.exports = model('Professor',professorSchema);

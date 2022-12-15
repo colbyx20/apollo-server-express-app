@@ -13,6 +13,7 @@ scalar DateTime
         password: String,
         group: String,
         privilege: Int,
+        confirm: Int,
         token: String
     }
 
@@ -25,6 +26,7 @@ scalar DateTime
         password: String,
         privilege: Int,
         fieldOfInterest:String,
+        confirm: Int,
         token: String,
         schedule: [DateTime],
         appointments: [String]

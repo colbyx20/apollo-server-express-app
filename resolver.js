@@ -54,6 +54,7 @@ const resolvers = {
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
+                    confirm: 0,
                 });
         
                 // create JWT (attach to user model)
@@ -82,6 +83,7 @@ const resolvers = {
                     <p>To activate your account please click on the link below.</p>
                     
                     </div>`,
+                    // code up a confirmation
                     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                 })
         
@@ -105,6 +107,7 @@ const resolvers = {
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
+                    confirm: 0,
                 });
         
                 // create JWT (attach to user model)
@@ -149,31 +152,38 @@ const resolvers = {
         loginUser: async (_,{loginInput: {email, password}}) => {
 
             // see if user exists with the email
+            // Find away to make this 1 QUERY
             const user = await Users.findOne({email});
-
-            // check if the entered password = encrypted password - use bcrypt
-            if(user && (await bcrypt.compare(password, user.password))){
-                // create a new token ( when you login you give user a new token )
-                const token = jwt.sign(
-                    {id : user._id, email}, 
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-
-                // attach token to user model that we found if user exists 
-                user.token = token;
-
-                return {
-                    id: user.id,
-                    ...user._doc
-                }
+            const checkConfirm = await Users.findOne({email}, {email: 1, confirm:1});
 
 
+            if(checkConfirm.confirm === 0){
+                throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
             }else{
-                // if user doesn't exists, return error
-                throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+                // check if the entered password = encrypted password - use bcrypt
+                if(user && (await bcrypt.compare(password, user.password))){
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {id : user._id, email}, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {
+                            expiresIn: "2h"
+                        }
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    user.token = token;
+    
+                    return {
+                        id: user.id,
+                        ...user._doc
+                    }
+    
+    
+                }else{
+                    // if user doesn't exists, return error
+                    throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+                }
             }
         },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
@@ -212,7 +222,7 @@ const resolvers = {
         createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
             const date = new Date(time).toISOString();
             const isoDate = new Date(date);
-            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
+            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:IsoDate}})).modifiedCount;
             return createdDate;
         },
         deleteUser: async(_,{ID}) => {

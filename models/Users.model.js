@@ -31,6 +31,9 @@ const UsersSchema = new mongoose.Schema({
     },
     token:{
         type: String
+    },
+    confirm:{
+        type: Number
     }
 
 })
