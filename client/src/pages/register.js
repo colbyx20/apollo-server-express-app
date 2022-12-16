@@ -6,7 +6,7 @@ import {useForm} from "../utility/hooks";
 import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
-import {TextField, Button, Container, Stack, Alert} from "@mui/material";
+import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
 
 
 const REGISTER_USER = gql`
@@ -47,7 +47,7 @@ function Register(props){
     const [registerUser, {loading}] = useMutation(REGISTER_USER, {
         update(proxy,{data:{registerUser: userData}}){
             context.login(userData);
-            navigate('/');
+            // navigate('/');
         },
         onError({graphQLErrors}){
             setErrors(graphQLErrors);
@@ -83,23 +83,56 @@ function Register(props){
                     onChange={onChange}
                 />
                 <TextField
+                    type="password"
                     label="Password"
                     name="password"
                     onChange={onChange}
                 />
                 <TextField
+                    type="password"
                     label="Confirm Password"
                     name="confirmpassword"
                     onChange={onChange}
                 />
             </Stack>
-            {errors.map(function(error){
+            {errors ?
+                <>
+                    {errors.map(function(error){
+                        return(
+                            <Alert severity="error">
+                                {error.message}
+                            </Alert>
+                        )
+                    })}
+                </>
+                : 
+                <>
+                    
+                    <Alert severity="success">
+                        You have Successfully Registered
+                    </Alert>  
+                    
+                </>
+
+
+            }
+                
+            { 
+
+                <Alert severity="success">
+                    You have Successfully Registered
+                </Alert>
+                    
+            }
+
+
+            {/* {errors.map(function(error){
                 return(
                     <Alert severity="error">
                         {error.message}
                     </Alert>
                 )
-            })}
+            })} */}
             <Button variant="contained" onClick={onSubmit}>Register</Button>
         </Container>
 

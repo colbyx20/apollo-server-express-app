@@ -14,7 +14,7 @@ function Navbar(){
         navigate('/');
     }
 
-    console.log(user);
+    // console.log(user);
 
     
     return(
@@ -22,7 +22,7 @@ function Navbar(){
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>ReactLogin</Link>
+                        <Link to="/" style={{textDecoration:"none",color:"white"}}>React Login</Link>
                     </Typography>
                     <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
                         {user?
