@@ -86,7 +86,7 @@ scalar DateTime
         editUser(ID:ID!, userInput:UserInput):Users! 
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
         registerUser(registerInput: RegisterInput) : Users
-        loginUser(loginInput: loginInput): Users!
+        loginUser(loginInput: loginInput): Users
     }
 `
 

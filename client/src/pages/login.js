@@ -49,7 +49,6 @@ function Login(props){
         // coding front end part 
         <Container spacing={2} maxWidth="sm">
             <h3>Login</h3>
-            <p>This is the Login page, Login below</p>
             <Stack spacing={2} paddingBottom={2}>
                 <TextField
                     label="Email"
@@ -57,6 +56,7 @@ function Login(props){
                     onChange={onChange}
                 />
                 <TextField
+                    type="password"
                     label="Password"
                     name="password"
                     onChange={onChange}
@@ -66,6 +66,7 @@ function Login(props){
                 return(
                     <Alert severity="error">
                         {error.message}
+                        {<h1>YOU SUCK</h1>}
                     </Alert>
                 )
             })}
