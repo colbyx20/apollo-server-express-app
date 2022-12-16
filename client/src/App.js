@@ -5,6 +5,7 @@ import Homepage from './pages/homepage';
 import Navbar from './components/navbar';
 import Register from './pages/register';
 import Login from './pages/login';
+import Student from './pages/student';
 
 
 
@@ -16,6 +17,8 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/student" element={<Student />} />
+
 
 
       </Routes>

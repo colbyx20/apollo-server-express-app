@@ -6,6 +6,7 @@ import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert} from "@mui/material";
+import {ProSidebarProvider} from 'react-pro-sidebar';
 
 
 const LOGIN_USER = gql`
@@ -14,6 +15,8 @@ const LOGIN_USER = gql`
         loginUser(loginInput: $loginInput) {
             email 
             login
+            firstname
+            lastname
             token
         }
     }
@@ -24,6 +27,10 @@ function Login(props){
     let navigate = useNavigate();
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
+
+    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
+    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
 
     function loginUserCallback(){
         loginUser();
@@ -37,7 +44,14 @@ function Login(props){
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
             context.login(userData);
-            navigate('/');
+
+            if(STUDENT_EMAIL.test(userData.email)){
+                // go to student page 
+                navigate('/student');
+            }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
+                // go to professor page 
+                navigate('/');
+            }
         },
         onError({graphQLErrors}){
             setErrors(graphQLErrors);
@@ -66,7 +80,6 @@ function Login(props){
                 return(
                     <Alert severity="error">
                         {error.message}
-                        {<h1>YOU SUCK</h1>}
                     </Alert>
                 )
             })}

@@ -34,8 +34,8 @@ const resolvers = {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
             // See if an old user or Professor exists with Email attempting to Register
-            const oldUser = await Users.findOne({email});
-            const oldProfessor = await Professors.findOne({email});
+            const oldUser = await Users.findOne({email},{email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
+            const oldProfessor = await Professors.findOne({email},{email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
     
             if(oldUser || oldProfessor){
                 // throw an error 
@@ -158,14 +158,12 @@ const resolvers = {
         },
         loginUser: async (_,{loginInput: {email, password}}) => {
 
-            // see if user exists with the email
-            // Find away to make this 1 QUERY
-            const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1});
-            const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1});
+            const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
+            const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
             console.log("new");
             if(STUDENT_EMAIL.test(email) && user != null){
-                console.log(user);
+                 console.log(user);
                 if(user.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -195,7 +193,7 @@ const resolvers = {
                     }
                 }
             }else if(PROFESSOR_EMAIL_TEST.test(email) && professors != null){
-                console.log(professors);
+                // console.log(professors);
                 if(professors.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
