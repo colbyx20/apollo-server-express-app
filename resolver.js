@@ -5,6 +5,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
+const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
+const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
+const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.edu$');
+
 const resolvers = {
     Query:{
         getUser: async(_,{ID}) =>{
@@ -26,6 +30,9 @@ const resolvers = {
             if (password !== confirmpassword){
                 throw new ApolloError("Passwords Do Not Match");
             }
+            if(password === "" || firstname === "" || lastname === "" || login === "" || email === ""){
+                throw new ApolloError("Please fill in all of the Boxes!");
+            }
             // See if an old user or Professor exists with Email attempting to Register
             const oldUser = await Users.findOne({email});
             const oldProfessor = await Professors.findOne({email});
@@ -37,13 +44,9 @@ const resolvers = {
 
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
-            // Differ between Professor and Student
-            let studentemail = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-            let professoremail = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
-
             let privilege = 0;
 
-            if(studentemail.test(email)){
+            if(STUDENT_EMAIL.test(email)){
                 // student account creation
                 privilege = 1;
 
@@ -96,7 +99,7 @@ const resolvers = {
                     ...res._doc
                 }
 
-            }else if(professoremail.test(email)){
+            }else if(!STUDENT_EMAIL.test(email)){
                 // professor account creation
                 privilege = 2;
                 
@@ -157,37 +160,72 @@ const resolvers = {
 
             // see if user exists with the email
             // Find away to make this 1 QUERY
-            const user = await Users.findOne({email});
-            const checkConfirm = await Users.findOne({email}, {email: 1, confirm:1});
+            const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1});
+            const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1});
 
-
-            if(checkConfirm.confirm === 0){
-                throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-            }else{
-                // check if the entered password = encrypted password - use bcrypt
-                if(user && (await bcrypt.compare(password, user.password))){
-                    // create a new token ( when you login you give user a new token )
-                    const token = jwt.sign(
-                        {id : user._id, email}, 
-                        "UNSAFE_STRING", // stored in a secret file 
-                        {
-                            expiresIn: "2h"
-                        }
-                    );
-    
-                    // attach token to user model that we found if user exists 
-                    user.token = token;
-    
-                    return {
-                        id: user.id,
-                        ...user._doc
-                    }
-    
-    
+            console.log("new");
+            if(STUDENT_EMAIL.test(email) && user != null){
+                console.log(user);
+                if(user.confirm === 0){
+                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
-                    // if user doesn't exists, return error
-                    throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+                    // check if the entered password = encrypted password - use bcrypt
+                    if(user && (await bcrypt.compare(password, user.password))){
+                        // create a new token ( when you login you give user a new token )
+                        const token = jwt.sign(
+                            {id : user._id, email}, 
+                            "UNSAFE_STRING", // stored in a secret file 
+                            {
+                                expiresIn: "2h"
+                            }
+                        );
+        
+                        // attach token to user model that we found if user exists 
+                        user.token = token;
+        
+                        return {
+                            id: user.id,
+                            ...user._doc
+                        }
+        
+        
+                    }else{
+                        // if user doesn't exists, return error
+                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+                    }
                 }
+            }else if(professors != null){
+                console.log(professors);
+                if(professors.confirm === 0){
+                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
+                }else{
+                    // check if the entered password = encrypted password - use bcrypt
+                    if(professors && (await bcrypt.compare(password, professors.password))){
+                        // create a new token ( when you login you give user a new token )
+                        const token = jwt.sign(
+                            {id : professors._id, email}, 
+                            "UNSAFE_STRING", // stored in a secret file 
+                            {
+                                expiresIn: "2h"
+                            }
+                        );
+        
+                        // attach token to user model that we found if user exists 
+                        professors.token = token;
+        
+                        return {
+                            id: professors.id,
+                            ...professors._doc
+                        }
+        
+        
+                    }else{
+                        // if user doesn't exists, return error
+                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+                    }
+                }
+            }else{
+                throw new ApolloError("LEARN HOW TO CODE NERD");
             }
         },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
