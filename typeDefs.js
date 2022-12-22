@@ -70,6 +70,16 @@ scalar DateTime
         password: String
     }
 
+    input confirmEmail{
+        email: String,
+    }
+
+    input resetPassword{
+        email:String
+        password:String
+        confirmPassword: String
+    }
+
     type Query{
         getUser(ID:ID!):Users!
         getProfessor(ID:ID!):Professors!
@@ -87,6 +97,8 @@ scalar DateTime
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
         registerUser(registerInput: RegisterInput) : Users
         loginUser(loginInput: loginInput): Users
+        confirmEmail(confirmEmail: confirmEmail):Boolean
+        resetPassword(resetPassword: resetPassword):Boolean
     }
 `
 

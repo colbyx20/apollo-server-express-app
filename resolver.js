@@ -5,9 +5,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
-const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
+// const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
+// const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
+// const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
 
 const resolvers = {
     Query:{
@@ -226,6 +226,62 @@ const resolvers = {
                 throw new ApolloError("LEARN HOW TO CODE NERD");
             }
         },
+
+        // confirm email if valid, then provide another api to actually set the api.
+        confirmEmail: async(_,{confirmEmail:{email}}) => {
+
+            // check if email is valid 
+            if(process.env.STUDENT_EMAIL.test(email)){
+                try{
+                    // check if email is valid 
+                    const isValidEmail = await Users.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
+                    
+                    // set up email 
+                    let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+
+                    // send email to user. 
+                    transport.sendMail({
+                        from: "group13confirmation@gmail.com",
+                        to: email,
+                        subject: "mySDSchedule - Please Confirm Your Account",
+                        html: `<h1>Email Confirmation</h1>
+                        <h2>Hello ${isValidEmail.firstname} ${isValidEmail.lastname}</h2>
+                        <p>Click Link to reset your password!</p>
+                        <p>If you did not select to reset your password please ignore this email</p>
+                        </div>`,
+                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                    })
+                }catch(e){
+                    // email is not valid 
+                    throw new ApolloError("Email IS Not Valid");
+                }
+
+            }else if(process.env.PROFESSOR_EMAIL_TEST.test(email)){
+                try{
+                    // check if email is valid 
+                    const isValidEmail = await Professors.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
+                    
+                    // set up email 
+                    let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+
+                    // send email to user. 
+                    transport.sendMail({
+                        from: "group13confirmation@gmail.com",
+                        to: email,
+                        subject: "mySDSchedule - Please Confirm Your Account",
+                        html: `<h1>Email Confirmation</h1>
+                        <h2>Hello ${isValidEmail.firstname} ${isValidEmail.lastname}</h2>
+                        <p>Click Link to reset your password!</p>
+                        <p>If you did not select to reset your password please ignore this email</p>
+                        </div>`,
+                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                    })
+                }catch(e){
+                    // email is not valid 
+                    throw new ApolloError("Email IS Not Valid");
+                }
+            }
+        },
         createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
             const createdUser = new Users({
                 firstname:firstname,
@@ -242,6 +298,40 @@ const resolvers = {
                 id:res.id,
                 ...res._doc // take all properties from result
             }
+        },
+        resetPassword: async(_,{resetPassword:{email,password,confirmPassword}}) =>{
+
+            // encrypt new password and set to user.
+            if(password !== confirmPassword){
+                throw new ApolloError("Emails Do Not Match!");
+            }
+            if(process.env.STUDENT_EMAIL.test(email)){
+                try{
+                    // encrypt password
+                    const encryptedPassword = await bcrypt.hash(password,10);
+                    
+                    // // set password from user 
+                    const setNewPassword = await Users.findOne({email:email}, {$set:{"password": encryptedPassword, "confirmpassword": encryptedPassword }});
+
+                    setNewPassword.save();
+            
+                }catch(e){
+                    throw new ApolloError("ERROR!!!");
+                }
+            }else if (process.env.PROFESSOR_EMAIL_TEST.test(email)){
+                try{
+                    // encrypt password
+                    const encryptedPassword = await bcrypt.hash(password,10);
+                    
+                    // // set password from user 
+                    const setNewPassword = await Professors.findOne({email:email}, {$set:{"password": encryptedPassword, "confirmpassword": encryptedPassword }});
+                    setNewPassword.save();
+            
+                }catch(e){
+                    throw new ApolloError("ERROR!!!");
+                }
+            }
+
         },
         createProfessor: async(_,{professorInput:{firstname,lastname,email,login,password,fieldOfInterest}}) =>{
             const createdProfessor = new Professors({
