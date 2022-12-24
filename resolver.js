@@ -6,8 +6,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
  const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
- const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL);
- const PROFESSOR_EMAIL_TEST = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
+ const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
 
 const resolvers = {
     Query:{
@@ -16,7 +15,7 @@ const resolvers = {
         },
         getAllUsers: async () =>{
             return await Users.find();
-        },
+        },   
         getProfessor: async(_,{ID}) => {
             return await Professors.findById(ID);
         },
@@ -161,9 +160,7 @@ const resolvers = {
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
-            console.log("new");
             if(STUDENT_EMAIL.test(email) && user != null){
-                 console.log(user);
                 if(user.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -192,8 +189,7 @@ const resolvers = {
                         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
                     }
                 }
-            }else if(PROFESSOR_EMAIL_TEST.test(email) && professors != null){
-                // console.log(professors);
+            }else if(PROFESSOR_EMAIL.test(email) && professors != null){
                 if(professors.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -231,7 +227,7 @@ const resolvers = {
         confirmEmail: async(_,{confirmEmail:{email}}) => {
 
             // check if email is valid 
-            if(process.env.STUDENT_EMAIL.test(email)){
+            if(STUDENT_EMAIL.test(email)){
                 try{
                     // check if email is valid 
                     const isValidEmail = await Users.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
@@ -256,7 +252,7 @@ const resolvers = {
                     throw new ApolloError("Email IS Not Valid");
                 }
 
-            }else if(process.env.PROFESSOR_EMAIL_TEST.test(email)){
+            }else if(PROFESSOR_EMAIL.test(email)){
                 try{
                     // check if email is valid 
                     const isValidEmail = await Professors.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
@@ -319,7 +315,7 @@ const resolvers = {
                 }catch(e){
                      throw new ApolloError("Email is Invalid");
                  }
-            }else if (PROFESSOR_EMAIL_TEST.test(email)){
+            }else if (PROFESSOR_EMAIL.test(email)){
                 try{
                     // encrypt password
                     const encryptedPassword = await bcrypt.hash(password,10);
