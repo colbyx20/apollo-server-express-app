@@ -5,9 +5,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-// const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-// const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
-// const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
+ const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
+ const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL);
+ const PROFESSOR_EMAIL_TEST = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
 
 const resolvers = {
     Query:{
@@ -303,32 +303,34 @@ const resolvers = {
 
             // encrypt new password and set to user.
             if(password !== confirmPassword){
-                throw new ApolloError("Emails Do Not Match!");
+                throw new ApolloError("Passwords Do Not Match!");
             }
-            if(process.env.STUDENT_EMAIL.test(email)){
-                try{
+            
+            if(STUDENT_EMAIL.test(email)){
+                 try{
                     // encrypt password
                     const encryptedPassword = await bcrypt.hash(password,10);
                     
-                    // // set password from user 
-                    const setNewPassword = await Users.findOne({email:email}, {$set:{"password": encryptedPassword, "confirmpassword": encryptedPassword }});
+                    // set password from user 
+                    const setNewPassword = await Users.findOneAndUpdate({email:email}, {password: encryptedPassword, confirmpassword: encryptedPassword });
 
                     setNewPassword.save();
             
                 }catch(e){
-                    throw new ApolloError("ERROR!!!");
-                }
-            }else if (process.env.PROFESSOR_EMAIL_TEST.test(email)){
+                     throw new ApolloError("Email is Invalid");
+                 }
+            }else if (PROFESSOR_EMAIL_TEST.test(email)){
                 try{
                     // encrypt password
                     const encryptedPassword = await bcrypt.hash(password,10);
                     
-                    // // set password from user 
-                    const setNewPassword = await Professors.findOne({email:email}, {$set:{"password": encryptedPassword, "confirmpassword": encryptedPassword }});
+                    // set password from user 
+                    const setNewPassword = await Professors.findOneAndUpdate({email:email}, {password: encryptedPassword, confirmpassword: encryptedPassword });
+                    
                     setNewPassword.save();
             
                 }catch(e){
-                    throw new ApolloError("ERROR!!!");
+                    throw new ApolloError("Email is Invalid");
                 }
             }
 
