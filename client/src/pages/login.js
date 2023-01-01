@@ -5,8 +5,8 @@ import {useForm} from "../utility/hooks";
 import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
-import {TextField, Button, Container, Stack, Alert} from "@mui/material";
-import {ProSidebarProvider} from 'react-pro-sidebar';
+import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
+import { StyleSheet, Text, View } from 'react-native';
 
 
 const LOGIN_USER = gql`
@@ -28,9 +28,9 @@ function Login(props){
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
+    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@ucf\.edu$');
+    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@gmail\.com$');
 
     function loginUserCallback(){
         loginUser();
@@ -43,11 +43,10 @@ function Login(props){
 
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
-            context.login(userData);
-
+            
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
-                navigate('/student');
+                window.location.href = '/student';
             }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
                 // go to professor page 
                 navigate('/');
@@ -59,32 +58,45 @@ function Login(props){
         variables:{loginInput:values}
     });
 
+    document.body.style = 'background: #231F20;';
+
+    const styles = StyleSheet.create({
+        h3: {
+          color: 'white',
+        },
+        
+    });
+    
     return(
+        
         // coding front end part 
-        <Container spacing={2} maxWidth="sm">
-            <h3>Login</h3>
-            <Stack spacing={2} paddingBottom={2}>
-                <TextField
-                    label="Email"
-                    name="email"
-                    onChange={onChange}
-                />
-                <TextField
-                    type="password"
-                    label="Password"
-                    name="password"
-                    onChange={onChange}
-                />
-            </Stack>
-            {errors.map(function(error){
-                return(
-                    <Alert severity="error">
-                        {error.message}
-                    </Alert>
-                )
-            })}
-            <Button variant="contained" onClick={onSubmit}>Login</Button>
+        <Container className='login-Container'>
+            <Container spacing={2} maxWidth="sm">
+                <h3 style={styles.h3}>Login</h3>
+                <Stack spacing={2} paddingBottom={2}>
+                    <TextField
+                        label="Email"
+                        name="email"
+                        onChange={onChange}
+                    />
+                    <TextField
+                        type="password"
+                        label="Password"
+                        name="password"
+                        onChange={onChange}
+                    />
+                </Stack>
+                {errors.map(function(error){
+                    return(
+                        <Alert severity="error">
+                            {error.message}
+                        </Alert>
+                    )
+                })}
+                <Button variant="contained" onClick={onSubmit}>Login</Button>
+            </Container>
         </Container>
+        
 
 
     )

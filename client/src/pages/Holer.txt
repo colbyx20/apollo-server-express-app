@@ -1,0 +1,24 @@
+        <Container spacing={2} maxWidth="sm">
+            <h3>Login</h3>
+            <Stack spacing={2} paddingBottom={2}>
+                <TextField
+                    label="Email"
+                    name="email"
+                    onChange={onChange}
+                />
+                <TextField
+                    type="password"
+                    label="Password"
+                    name="password"
+                    onChange={onChange}
+                />
+            </Stack>
+            {errors.map(function(error){
+                return(
+                    <Alert severity="error">
+                        {error.message}
+                    </Alert>
+                )
+            })}
+            <Button variant="contained" onClick={onSubmit}>Login</Button>
+        </Container>

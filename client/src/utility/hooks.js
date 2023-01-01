@@ -15,7 +15,7 @@ export const useForm = (callback, initialState={}) => {
     const onChange = (event) => {
         // takes values inputed and assign to password and email
         setValues({...values, [event.target.name]: event.target.value}); 
-        console.log(values);
+        // console.log(values);
     };
 
     const onSubmit = (event) => {
