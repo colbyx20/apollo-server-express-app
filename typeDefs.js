@@ -40,7 +40,6 @@ scalar DateTime
         login: String,
         password: String,
         group: String
-    
     }
 
     input ProfessorInput{
@@ -88,8 +87,6 @@ scalar DateTime
     }
 
     type Mutation{
-        createUser(userInput:UserInput):Users!
-        createProfessor(professorInput:ProfessorInput):Professors!
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         deleteUser(ID:ID!):Users!
         deleteProfessor(ID:ID!):Professors!
