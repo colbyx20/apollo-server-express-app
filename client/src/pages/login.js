@@ -6,7 +6,8 @@ import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
-import { StyleSheet, Text, View } from 'react-native';
+import StyleSheet from 'react-native';
+
 
 
 const LOGIN_USER = gql`
