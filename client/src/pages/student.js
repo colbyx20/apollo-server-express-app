@@ -14,20 +14,18 @@ function Student(props){
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
 
-    console.log("user data");
+    console.log("user data:: ----------------");
     console.log(user);
-
-
 
     return (
         <>
             <Sidebar>
                 <Menu>
                     <SubMenu label="About">
-                    <MenuItem> Account Information </MenuItem>
-                    <MenuItem> Group </MenuItem>
+                        <MenuItem> Account Information </MenuItem>
+                        <MenuItem> Group </MenuItem>
                     </SubMenu>
-                    <MenuItem> Schedule </MenuItem>
+                        <MenuItem> Schedule </MenuItem>
                 </Menu>
             </Sidebar>;
 

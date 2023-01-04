@@ -32,6 +32,15 @@ scalar DateTime
         schedule: [DateTime],
         appointments: [String]
     }
+
+    type Group{
+        id:ID,
+        groupName: String,
+        groupProject: String,
+        projectField: String,
+        memberCount: Int,
+        members: [ID]
+    }
     
     input UserInput{
         firstname: String,
@@ -79,11 +88,22 @@ scalar DateTime
         confirmPassword: String
     }
 
+    input groupName{
+        name:String
+    }
+
+    input groupInfo{
+        groupName: String
+        groupProject: String 
+        projectField: String 
+    }
+
     type Query{
         getUser(ID:ID!):Users!
         getProfessor(ID:ID!):Professors!
         getAllProfessors: [Professors!]
         getAllUsers:[Users!]
+        getAllGroups:[Group!]
     }
 
     type Mutation{
@@ -96,6 +116,9 @@ scalar DateTime
         loginUser(loginInput: loginInput): Users
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
+        addGroupMember(ID:ID!, groupName: groupName): Boolean
+        createGroup(groupInfo: groupInfo): Group
+        
     }
 `
 

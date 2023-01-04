@@ -1,27 +1,31 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
+const Group = require('./models/Group.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
- const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
- const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
+const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
+const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
 
 const resolvers = {
     Query:{
-        getUser: async(_,{ID}) =>{
+        getUser: async(_,{ID}) => {
             return await Users.findById(ID);
         },
-        getAllUsers: async () =>{
+        getAllUsers: async () => {
             return await Users.find();
         },   
         getProfessor: async(_,{ID}) => {
             return await Professors.findById(ID);
         },
-        getAllProfessors: async () =>{
+        getAllProfessors: async () => {
             return await Professors.find();
         },
+        getAllGroups: async() => {
+            return await Group.find();
+        }
     },
     Mutation:{
         registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
@@ -317,8 +321,45 @@ const resolvers = {
         createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
             const date = new Date(time).toISOString();
             const isoDate = new Date(date);
-            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:IsoDate}})).modifiedCount;
+            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
             return createdDate;
+        },
+        createGroup: async (_,{groupInfo:{groupName,groupProject,projectField}}) =>{
+
+            // create a new group Document
+            const newGroup = new Group({
+                groupName: groupName,
+                groupProject: groupProject,
+                projectField: projectField,
+                memberCount: 0
+            });
+            
+
+            // Save user in MongoDB
+            const res = await newGroup.save();
+
+            // return object created 
+            return{
+                id:res.id,
+                ...res._doc
+            }
+        },
+        addGroupMember: async(_, {ID, groupName:{name}}) =>{
+            
+            const groupExist = (await Group.find(({groupName:name})));
+            if(groupExist){
+
+                const query = {groupName:name};
+                const update = {$push:{members:ID}, $inc:{memberCount: 1}};
+                const options = {upsert:false};
+
+                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                return addGroupMember;
+            }else{
+                throw ApolloError("Group Does Not Exist!");
+            }
+
+
         },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
@@ -346,7 +387,6 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         }
-
     }
 }
 
