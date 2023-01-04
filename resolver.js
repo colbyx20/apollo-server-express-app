@@ -25,6 +25,9 @@ const resolvers = {
         },
         getAllGroups: async() => {
             return await Group.find();
+        },
+        getAllGroupsAndMembers: async () => {
+            return await Group.aggregate([{$lookup:{from:"users", localField:"members",foreignField:"_id", as:"members"}}]);
         }
     },
     Mutation:{
