@@ -112,7 +112,6 @@ scalar DateTime
         getAllProfessors: [Professors!]
         getAllUsers:[Users!]
         getAllGroups:[Group!]
-        getAllGroupsAndMembers:[Group!]
     }
 
     type UserInfo{

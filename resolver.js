@@ -23,25 +23,9 @@ const resolvers = {
         getAllProfessors: async () => {
             return await Professors.find();
         },
-        getAllGroups: async() => {
+        getAllGroups: async(parent) => {
             return await Group.find();
         },
-        getAllGroupsAndMembers: async () => {
-            return await Group.aggregate([
-                {$lookup:
-                    {   from:"users", 
-                        localField: "members",
-                        foreignField:"special", 
-                        as:"members"
-                    }
-                }]);
-        }
-    },
-    UserInfo:{
-        user: async({id}) => {
-            return await Users.findById({id:id});
-        }
-
     },
     Mutation:{
         registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
