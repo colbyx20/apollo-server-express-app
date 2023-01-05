@@ -15,6 +15,7 @@ scalar DateTime
         group: String,
         privilege: Int,
         confirm: Int,
+        role: String
         token: String
     }
 
@@ -39,7 +40,7 @@ scalar DateTime
         groupProject: String,
         projectField: String,
         memberCount: Int,
-        members: [ID]
+        members: [Users!]!
     }
     
     input UserInput{
@@ -62,6 +63,13 @@ scalar DateTime
 
     input ProfessorScheduleInput{
         time: DateTime
+    }
+
+    input addToGroup{
+        id: ID!
+        firstname: String 
+        lastname: String
+        role: String
     }
 
     input RegisterInput{
@@ -107,6 +115,10 @@ scalar DateTime
         getAllGroupsAndMembers:[Group!]
     }
 
+    type UserInfo{
+        user: Users!
+    }
+
     type Mutation{
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         deleteUser(ID:ID!):Users!
@@ -117,7 +129,7 @@ scalar DateTime
         loginUser(loginInput: loginInput): Users
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        addGroupMember(ID:ID!, groupName: groupName): Boolean
+        addGroupMember(addToGroup:addToGroup, groupName: groupName): Boolean
         createGroup(groupInfo: groupInfo): Group
         
     }
