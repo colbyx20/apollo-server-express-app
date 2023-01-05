@@ -6,7 +6,8 @@ import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
-import { StyleSheet, Text, View } from 'react-native';
+import "../components/css/login.css";
+import logo from '../components/images/sdsLogo.png';
 
 
 const LOGIN_USER = gql`
@@ -57,26 +58,29 @@ function Login(props){
         },
         variables:{loginInput:values}
     });
-
-    document.body.style = 'background: #231F20;';
-
-    const styles = StyleSheet.create({
-        h3: {
-          color: 'white',
-        },
-        
-    });
     
     return(
         
         // coding front end part 
-        <Container className='login-Container'>
-            <Container spacing={2} maxWidth="sm">
-                <h3 style={styles.h3}>Login</h3>
+        <div className='loginContainer'>
+            <Container>
+                <img src={logo} alt="Senior Design Schedular Logo"></img>
+                <h3>Login</h3>
+
+                <Button sx={
+                    {backgroundColor: 'red',
+                    marginBottom: '5%',
+                    marginRight: 'auto',
+                    marginLeft: 'auto',
+                    display: 'block',
+                    
+                    }} 
+                variant="contained">Under Construction myUCF</Button>
+
                 <Stack spacing={2} paddingBottom={2}>
                     <TextField
-                        label="Email"
-                        name="email"
+                        label = "Email" 
+                        name = "email"
                         onChange={onChange}
                     />
                     <TextField
@@ -95,7 +99,7 @@ function Login(props){
                 })}
                 <Button variant="contained" onClick={onSubmit}>Login</Button>
             </Container>
-        </Container>
+        </div>
         
 
 

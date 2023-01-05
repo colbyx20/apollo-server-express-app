@@ -1,10 +1,8 @@
 import {Routes, Route} from "react-router-dom";
 import Homepage from './pages/homepage';
-import Navbar from './components/navbar';
 import Register from './pages/register';
 import Login from './pages/login';
 import Student from './pages/student';
-
 
 
 function App() {
