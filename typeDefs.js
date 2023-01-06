@@ -4,6 +4,20 @@ const typeDefs = gql`
 
 scalar DateTime
 
+    type Admin{
+        id:ID!
+        firstname: String 
+        lastname: String 
+        email: String 
+        login: String 
+        password: String 
+        confirmpassword: String 
+        privilege: String 
+        confirm: Int 
+        token: String 
+        image: String
+    }
+
     type Users{
         id:ID,
         firstname: String,
@@ -73,7 +87,6 @@ scalar DateTime
     }
 
     input addToGroup{
-        id: ID!
         firstname: String 
         lastname: String
         role: String
@@ -119,6 +132,7 @@ scalar DateTime
         getAllProfessors: [Professors!]
         getAllUsers:[Users!]
         getAllGroups:[Group!]
+        getAdmins: Admin!
     }
 
     type Mutation{

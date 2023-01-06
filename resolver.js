@@ -1,6 +1,7 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
+const Admin = require('./models/Admin.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -26,6 +27,9 @@ const resolvers = {
         getAllGroups: async() => {
             return await Group.find();
         },
+        getAdmins: async() =>{
+            return await Admin.find();
+        }
     },
     Mutation:{
         registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
@@ -344,13 +348,13 @@ const resolvers = {
                 ...res._doc
             }
         },
-        addGroupMember: async(_, {addToGroup:{id, firstname,lastname, role}, groupName:{name}}) =>{
+        addGroupMember: async(_, {addToGroup:{firstname,lastname, role}, groupName:{name}}) =>{
             
             const groupExist = (await Group.find(({groupName:name})));
             if(groupExist){
 
                 const query = {groupName:name};
-                const update = {$push:{members:{id:id, firstname:firstname, lastname:lastname, role:role}}, $inc:{memberCount: 1}};
+                const update = {$push:{members:{firstname:firstname, lastname:lastname, role:role}}, $inc:{memberCount: 1}};
                 const options = {upsert:false};
 
                 const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
