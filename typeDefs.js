@@ -17,6 +17,7 @@ scalar DateTime
         confirm: Int,
         role: String
         token: String
+        image: String
     }
 
     type Professors{
@@ -32,15 +33,16 @@ scalar DateTime
         token: String,
         schedule: [DateTime]
         appointments: [String]
+        image:String
     }
 
     type Schedule{
         time: [DateTime],
-        group
+        groupname: String
     }
 
     type Group{
-        id:ID,
+        id:ID
         groupName: String
         groupProject: String
         projectField: String
@@ -78,11 +80,11 @@ scalar DateTime
     }
 
     input RegisterInput{
-        firstname: String,
-        lastname: String,
-        login: String,
-        email: String,
-        password: String,
+        firstname: String
+        lastname: String
+        login: String
+        email: String
+        password: String
         confirmpassword: String
     }
 
@@ -117,10 +119,6 @@ scalar DateTime
         getAllProfessors: [Professors!]
         getAllUsers:[Users!]
         getAllGroups:[Group!]
-    }
-
-    type UserInfo{
-        user: Users!
     }
 
     type Mutation{

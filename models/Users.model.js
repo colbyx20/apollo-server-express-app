@@ -35,7 +35,9 @@ const UsersSchema = new mongoose.Schema({
     confirm:{
         type: Number
     },
-    image:{type:String}
+    image:{
+        type: String
+    }
 
 })
 
