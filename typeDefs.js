@@ -34,6 +34,11 @@ scalar DateTime
         appointments: [String]
     }
 
+    type Schedule{
+        time: [DateTime],
+        group
+    }
+
     type Group{
         id:ID,
         groupName: String,
