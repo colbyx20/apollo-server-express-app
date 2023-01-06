@@ -30,7 +30,7 @@ scalar DateTime
         fieldOfInterest:String,
         confirm: Int,
         token: String,
-        schedule: [DateTime],
+        schedule: [DateTime]
         appointments: [String]
     }
 
@@ -41,10 +41,10 @@ scalar DateTime
 
     type Group{
         id:ID,
-        groupName: String,
-        groupProject: String,
-        projectField: String,
-        memberCount: Int,
+        groupName: String
+        groupProject: String
+        projectField: String
+        memberCount: Int
         members: [Users!]!
     }
     
@@ -87,12 +87,12 @@ scalar DateTime
     }
 
     input loginInput{
-        email: String,
+        email: String
         password: String
     }
 
     input confirmEmail{
-        email: String,
+        email: String
     }
 
     input resetPassword{

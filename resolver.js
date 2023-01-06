@@ -23,7 +23,7 @@ const resolvers = {
         getAllProfessors: async () => {
             return await Professors.find();
         },
-        getAllGroups: async(parent) => {
+        getAllGroups: async() => {
             return await Group.find();
         },
     },

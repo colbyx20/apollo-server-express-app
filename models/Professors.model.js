@@ -12,6 +12,7 @@ const professorSchema = new Schema({
     schedule: {type: Array, require:false},
     appointments: {type:Array, require:false},
     confirm:{type: Number},
+    image:{type:String}
 });
 
 module.exports = model('Professor',professorSchema);
