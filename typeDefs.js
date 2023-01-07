@@ -4,8 +4,8 @@ const typeDefs = gql`
 
 scalar DateTime
 
-    type Admin{
-        id:ID!
+    type Admin {
+        _id:ID!
         firstname: String 
         lastname: String 
         email: String 
@@ -16,10 +16,11 @@ scalar DateTime
         confirm: Int 
         token: String 
         image: String
+        role: String
     }
 
-    type Users{
-        id:ID,
+    type Users {
+        _id:ID,
         firstname: String,
         lastname: String,
         email: String,
@@ -34,8 +35,8 @@ scalar DateTime
         image: String
     }
 
-    type Professors{
-        id:ID,
+    type Professors {
+        _id:ID,
         firstname: String,
         lastname: String,
         email: String,
@@ -50,21 +51,21 @@ scalar DateTime
         image:String
     }
 
-    type Schedule{
+    type Schedule {
         time: [DateTime],
         groupname: String
     }
 
-    type Group{
-        id:ID
+    type Group {
+        _id:ID
         groupName: String
         groupProject: String
         projectField: String
         memberCount: Int
         members: [Users!]!
-    }
+    } 
     
-    input UserInput{
+    input UserInput {
         firstname: String,
         lastname: String,
         email: String,
@@ -73,7 +74,7 @@ scalar DateTime
         group: String
     }
 
-    input ProfessorInput{
+    input ProfessorInput {
         firstname: String,
         lastname: String,
         email: String,
@@ -82,17 +83,16 @@ scalar DateTime
         fieldOfInterest:String
     }
 
-    input ProfessorScheduleInput{
+    input ProfessorScheduleInput {
         time: DateTime
     }
 
-    input addToGroup{
-        firstname: String 
-        lastname: String
-        role: String
+    input addToGroup {
+        id:ID
+        groupname: String
     }
 
-    input RegisterInput{
+    input RegisterInput {
         firstname: String
         lastname: String
         login: String
@@ -101,41 +101,37 @@ scalar DateTime
         confirmpassword: String
     }
 
-    input loginInput{
+    input loginInput {
         email: String
         password: String
     }
 
-    input confirmEmail{
+    input confirmEmail {
         email: String
     }
 
-    input resetPassword{
+    input resetPassword {
         email:String
         password:String
         confirmPassword: String
     }
 
-    input groupName{
-        name:String
-    }
-
-    input groupInfo{
+    input groupInfo {
         groupName: String
         groupProject: String 
         projectField: String 
     }
 
-    type Query{
-        getUser(ID:ID!):Users!
-        getProfessor(ID:ID!):Professors!
-        getAllProfessors: [Professors!]
-        getAllUsers:[Users!]
-        getAllGroups:[Group!]
-        getAdmins: Admin!
+    type Query {
+        getUser(ID:ID!) : Users!
+        getProfessor(ID:ID!) : Professors!
+        getAllProfessors : [Professors!]
+        getAllUsers :[Users!]
+        getAllGroups :[Group!]
+        getAdmins : Admin!
     }
 
-    type Mutation{
+    type Mutation {
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         deleteUser(ID:ID!):Users!
         deleteProfessor(ID:ID!):Professors!
@@ -145,7 +141,7 @@ scalar DateTime
         loginUser(loginInput: loginInput): Users
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        addGroupMember(addToGroup:addToGroup, groupName: groupName): Boolean
+        addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
         
     }
