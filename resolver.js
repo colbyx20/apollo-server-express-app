@@ -176,7 +176,7 @@ const resolvers = {
     
         },
         loginUser: async (_,{loginInput: {email, password}}, context) => {
-            console.log(context);
+            // console.log(context);
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
@@ -361,31 +361,22 @@ const resolvers = {
             }
         },
         addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
-
-            console.log(`name: ${groupname}, ID: ${id}`);
-            const newID = Mongoose.Types.ObjectId(id);
+            const ID = Mongoose.Types.ObjectId(id);
             
-            try{
+            const groupExist = (await Group.findOne({groupName:groupname}));
+            if(groupExist){
 
-                const groupExist = (await Group.findOne({groupName:groupname}));
+                const query = {groupName:groupname};
+                const update = {$push:{members: ID}, $inc:{memberCount: 1}};
+                const options = {upsert:false};
 
-                console.log(groupExist);
-                if(groupExist){
-
-                    const query = {groupName:groupname};
-                    const update = {$push:{members: newID}, $inc:{memberCount: 1}};
-                    const options = {upsert:false};
-
-                    const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                    return addGroupMember;
-                }else{
-                    throw ApolloError("Group Does Not Exist!");
-                }
+                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                return addGroupMember;
+            }else{
+                throw ApolloError("Group Does Not Exist!");
+            }
             
         
-        }catch(e){
-                throw new ApolloError("LUL");
-            }
 
 
         },

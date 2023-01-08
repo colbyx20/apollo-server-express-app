@@ -20,39 +20,45 @@ scalar DateTime
     }
 
     type Users {
-        _id:ID,
-        firstname: String,
-        lastname: String,
-        email: String,
-        login: String,
-        password: String,
-        confirmpassword: String,
-        group: String,
-        privilege: Int,
-        confirm: Int,
+        _id:ID
+        firstname: String
+        lastname: String
+        email: String
+        login: String
+        password: String
+        confirmpassword: String
+        group: String
+        privilege: Int
+        confirm: Int
         role: String
         token: String
         image: String
     }
 
     type Professors {
-        _id:ID,
-        firstname: String,
-        lastname: String,
-        email: String,
-        login: String,
-        password: String,
-        privilege: Int,
-        fieldOfInterest:String,
-        confirm: Int,
-        token: String,
+        _id:ID
+        firstname: String
+        lastname: String
+        email: String
+        login: String
+        password: String
+        privilege: Int
+        fieldOfInterest:String
+        confirm: Int
+        token: String
         schedule: [DateTime]
-        appointments: [String]
+        appointments: [Appointments]
         image:String
     }
 
+    type Appointments {
+        date: DateTime 
+        groupID: ID 
+
+    }
+
     type Schedule {
-        time: [DateTime],
+        time: [DateTime]
         groupname: String
     }
 
@@ -63,23 +69,24 @@ scalar DateTime
         projectField: String
         memberCount: Int
         members: [Users!]!
+        appointments: [Appointments]
     } 
     
     input UserInput {
-        firstname: String,
-        lastname: String,
-        email: String,
-        login: String,
-        password: String,
+        firstname: String
+        lastname: String
+        email: String
+        login: String
+        password: String
         group: String
     }
 
     input ProfessorInput {
-        firstname: String,
-        lastname: String,
-        email: String,
-        login: String,
-        password: String,
+        firstname: String
+        lastname: String
+        email: String
+        login: String
+        password: String
         fieldOfInterest:String
     }
 
@@ -122,6 +129,11 @@ scalar DateTime
         projectField: String 
     }
 
+    input groupSchedule {
+        appointmentTime: DateTime
+
+    }
+
     type Query {
         getUser(ID:ID!) : Users!
         getProfessor(ID:ID!) : Professors!
@@ -143,6 +155,7 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
+        createGroupSchedule(groupSchedule: groupSchedule): Boolean
         
     }
 `
