@@ -58,48 +58,62 @@ function Login(props){
         },
         variables:{loginInput:values}
     });
+
+    const sliderSettings = ({
+        autoplay: true
+    });
     
     return(
         
         // coding front end part 
-        <div className='loginContainer'>
-            <Container>
-                <img src={logo} alt="Senior Design Schedular Logo"></img>
-                <h3>Login</h3>
+        <div className='webPage'>
+            <div className='loginContainer'>
+                <Container>
+                    <img src={logo} alt="Senior Design Schedular Logo"></img>
+                    <h3>Login</h3>
 
-                <Button sx={
-                    {backgroundColor: 'red',
-                    marginBottom: '5%',
-                    marginRight: 'auto',
-                    marginLeft: 'auto',
-                    display: 'block',
+                    <Button sx={
+                        {backgroundColor: 'red',
+                        marginBottom: '8%',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        display: 'block',
+                        }} 
+                    variant="contained">MyUCF coming soon</Button>
+
+                    <Stack spacing={2} paddingBottom={2}>
+                        <TextField InputLabelProps={{className: 'mylabel'}}
+                            label = "Email" 
+                            name = "email"
+                            onChange={onChange}
+                        />
+                        <TextField InputLabelProps={{className: 'mylabel'}}
+                            type="password"
+                            label="Password"
+                            name="password"
+                            onChange={onChange}
+                        />
+                    </Stack>
+                    {errors.map(function(error){
+                        return(
+                            <Alert severity="error">
+                                {error.message}
+                            </Alert>
+                        )
+                    })}
+                    <Button sx={{
+                        display: 'block',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        width: '99%',
+                    }}variant="contained" onClick={onSubmit}>Login</Button>
+                </Container>
+            </div>
+            <div className='imageContainer'>
                     
-                    }} 
-                variant="contained">Under Construction myUCF</Button>
-
-                <Stack spacing={2} paddingBottom={2}>
-                    <TextField
-                        label = "Email" 
-                        name = "email"
-                        onChange={onChange}
-                    />
-                    <TextField
-                        type="password"
-                        label="Password"
-                        name="password"
-                        onChange={onChange}
-                    />
-                </Stack>
-                {errors.map(function(error){
-                    return(
-                        <Alert severity="error">
-                            {error.message}
-                        </Alert>
-                    )
-                })}
-                <Button variant="contained" onClick={onSubmit}>Login</Button>
-            </Container>
+            </div>
         </div>
+
         
 
 
