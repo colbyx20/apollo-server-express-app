@@ -6,16 +6,20 @@ const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const Mongoose = require('mongoose');
 
 const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
 const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
 
 const resolvers = {
+
+
     Query:{
         getUser: async(_,{ID}) => {
             return await Users.findById(ID);
         },
-        getAllUsers: async () => {
+        getAllUsers: async (parent) => {
+            console.log(parent);
             return await Users.find();
         },   
         getProfessor: async(_,{ID}) => {
@@ -25,7 +29,15 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async() => {
-            return await Group.find();
+
+            return await Group.aggregate([
+                {$lookup:
+                    {   from:"users", 
+                        localField: "members",
+                        foreignField:"_id", 
+                        as:"members"
+                    }
+                }]);
         },
         getAdmins: async() =>{
             return await Admin.find();
@@ -163,8 +175,8 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}}) => {
-
+        loginUser: async (_,{loginInput: {email, password}}, context) => {
+            console.log(context);
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
@@ -348,19 +360,31 @@ const resolvers = {
                 ...res._doc
             }
         },
-        addGroupMember: async(_, {addToGroup:{firstname,lastname, role}, groupName:{name}}) =>{
+        addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
+
+            console.log(`name: ${groupname}, ID: ${id}`);
+            const newID = Mongoose.Types.ObjectId(id);
             
-            const groupExist = (await Group.find(({groupName:name})));
-            if(groupExist){
+            try{
 
-                const query = {groupName:name};
-                const update = {$push:{members:{firstname:firstname, lastname:lastname, role:role}}, $inc:{memberCount: 1}};
-                const options = {upsert:false};
+                const groupExist = (await Group.findOne({groupName:groupname}));
 
-                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                return addGroupMember;
-            }else{
-                throw ApolloError("Group Does Not Exist!");
+                console.log(groupExist);
+                if(groupExist){
+
+                    const query = {groupName:groupname};
+                    const update = {$push:{members: newID}, $inc:{memberCount: 1}};
+                    const options = {upsert:false};
+
+                    const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                    return addGroupMember;
+                }else{
+                    throw ApolloError("Group Does Not Exist!");
+                }
+            
+        
+        }catch(e){
+                throw new ApolloError("LUL");
             }
 
 
