@@ -83,12 +83,34 @@ function Login(props){
                     variant="contained">MyUCF coming soon</Button>
 
                     <Stack spacing={2} paddingBottom={2}>
-                        <TextField InputLabelProps={{className: 'mylabel'}}
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                           
+                              '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                            
+                        }}
+                            InputLabelProps={{className: 'mylabel'}}
                             label = "Email" 
                             name = "email"
                             onChange={onChange}
                         />
-                        <TextField InputLabelProps={{className: 'mylabel'}}
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                        }} 
+                            InputLabelProps={{className: 'mylabel'}}
                             type="password"
                             label="Password"
                             name="password"
@@ -112,7 +134,6 @@ function Login(props){
             </div>
             <div className='imageContainer'>
                     <Slider>
-                        
                     </Slider>
             </div>
         </div>
