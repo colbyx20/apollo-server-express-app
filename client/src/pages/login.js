@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
 import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
+import Slider from '../components/Slider'
 
 
 const LOGIN_USER = gql`
@@ -110,7 +111,9 @@ function Login(props){
                 </Container>
             </div>
             <div className='imageContainer'>
-                    
+                    <Slider>
+                        
+                    </Slider>
             </div>
         </div>
 
