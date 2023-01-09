@@ -44,6 +44,13 @@ function Login(props){
 
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
+
+            if(loading){
+                setInterval({
+                    // display <div>`Loading User Content ${User.name}`</div>
+                }, 3000);
+
+            }
             context.login(userData);
 
             if(STUDENT_EMAIL.test(userData.email)){
