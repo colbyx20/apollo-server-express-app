@@ -50,6 +50,7 @@ scalar DateTime
         appointments: [Appointments]
         image:String
         coordinator: Boolean
+        groups: [Group]
     }
 
     type Appointments {
