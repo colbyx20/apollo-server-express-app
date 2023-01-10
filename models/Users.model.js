@@ -37,7 +37,8 @@ const UsersSchema = new mongoose.Schema({
     },
     image:{
         type: String
-    }
+    },
+    role:{type: String}
 
 })
 

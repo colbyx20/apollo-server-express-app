@@ -18,8 +18,7 @@ const resolvers = {
         getUser: async(_,{ID}) => {
             return await Users.findById(ID);
         },
-        getAllUsers: async (parent) => {
-            console.log(parent);
+        getAllUsers: async () => {
             return await Users.find();
         },   
         getProfessor: async(_,{ID}) => {
@@ -397,12 +396,13 @@ const resolvers = {
             })).modifiedCount;
             return userEdited;
         },
-        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email,login}})=>{
+        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email,login, coordinator}})=>{
             const professorEdit = (await Professors.updateOne({_id:ID},{
                 firstname:firstname,
                 lastname:lastname,
                 email:email,
-                login:login
+                login:login,
+                coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
         }

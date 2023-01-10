@@ -20,7 +20,7 @@ scalar DateTime
     }
 
     type Users {
-        _id:ID
+        _id:ID!
         firstname: String
         lastname: String
         email: String
@@ -36,7 +36,7 @@ scalar DateTime
     }
 
     type Professors {
-        _id:ID
+        _id:ID!
         firstname: String
         lastname: String
         email: String
@@ -49,12 +49,12 @@ scalar DateTime
         schedule: [DateTime]
         appointments: [Appointments]
         image:String
+        coordinator: Boolean
     }
 
     type Appointments {
         date: DateTime 
         groupID: ID 
-
     }
 
     type Schedule {
@@ -88,6 +88,7 @@ scalar DateTime
         login: String
         password: String
         fieldOfInterest:String
+        coordinator: Boolean
     }
 
     input ProfessorScheduleInput {
