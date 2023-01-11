@@ -158,6 +158,7 @@ scalar DateTime
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         addProfessorRequest(ID:ID!,ProfessorRequestInput:ProfessorRequestInput):Boolean
+        resolveProfessorRequest(ID:ID!,ProfessorRequestInput:ProfessorRequestInput):Boolean
     }
 `
 
