@@ -30,6 +30,8 @@ const resolvers = {
         },
         getAllGroups: async() => {
 
+            
+
             return await Group.aggregate([
                 {$lookup:
                     {   from:"users", 
@@ -79,7 +81,7 @@ const resolvers = {
             console.log(PROFESSOR_EMAIL.test(email));
 
 
-            if(STUDENT_EMAIL.test(email)){
+            if(email = "andy@knights.ucf.edu"){
                 // student account creation
                 privilege = 1;
 
@@ -192,7 +194,7 @@ const resolvers = {
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
-            if(STUDENT_EMAIL.test(email) && user != null){
+            if(user != null){
                 if(user.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -200,7 +202,7 @@ const resolvers = {
                     if(user && (await bcrypt.compare(password, user.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
-                            {id : user._id, email, firstname:firstname, lastname:lastname}, 
+                            {id : user._id, email, firstname: user.firstname, lastname: user.lastname}, 
                             "UNSAFE_STRING", // stored in a secret file 
                             {
                                 expiresIn: "2h"
@@ -221,7 +223,7 @@ const resolvers = {
                         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
                     }
                 }
-            }else if(PROFESSOR_EMAIL.test(email) && professors != null){
+            }else if(professors != null){
                 if(professors.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
