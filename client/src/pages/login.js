@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
 import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
-
+import Slider from '../components/Slider'
 
 const LOGIN_USER = gql`
 
@@ -62,46 +62,82 @@ function Login(props){
     return(
         
         // coding front end part 
-        <div className='loginContainer'>
-            <Container>
-                <img src={logo} alt="Senior Design Schedular Logo"></img>
-                <h3>Login</h3>
+        <div className='webPage'>
+            <div className='loginContainer'>
+                <Container>
+                    <img src={logo} alt="Senior Design Schedular Logo"></img>
+                    <h3>Login</h3>
 
-                <Button sx={
-                    {backgroundColor: 'red',
-                    marginBottom: '5%',
-                    marginRight: 'auto',
-                    marginLeft: 'auto',
-                    display: 'block',
+                    <Button sx={
+                        {backgroundColor: 'red',
+                        marginBottom: '8%',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        display: 'block',
+                        }} 
+                    variant="contained">MyUCF coming soon</Button>
+
+                    <Stack spacing={2} paddingBottom={2}>
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                           
+                              '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                            
+                        }}
+                            InputLabelProps={{className: 'mylabel'}}
+                            label = "Email" 
+                            name = "email"
+                            onChange={onChange}
+                        />
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                        }} 
+                            InputLabelProps={{className: 'mylabel'}}
+                            type="password"
+                            label="Password"
+                            name="password"
+                            onChange={onChange}
+                        />
+                    </Stack>
+                    {errors.map(function(error){
+                        return(
+                            <Alert severity="error">
+                                {error.message}
+                            </Alert>
+                        )
+                    })}
+                    <Button sx={{
+                        display: 'block',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        marginBottom: '5%',
+                        width: '100%',
+                    }}variant="contained" onClick={onSubmit}>Login</Button>
+
+                    <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
+                    <span><a href='#'>Forgot password?</a></span>
                     
-                    }} 
-                variant="contained">Under Construction myUCF</Button>
 
-                <Stack spacing={2} paddingBottom={2}>
-                    <TextField
-                        label = "Email" 
-                        name = "email"
-                        onChange={onChange}
-                    />
-                    <TextField
-                        type="password"
-                        label="Password"
-                        name="password"
-                        onChange={onChange}
-                    />
-                </Stack>
-                {errors.map(function(error){
-                    return(
-                        <Alert severity="error">
-                            {error.message}
-                        </Alert>
-                    )
-                })}
-                <Button variant="contained" onClick={onSubmit}>Login</Button>
-            </Container>
+                </Container>
+            </div>
+            <div className='imageContainer'>
+                    <Slider>
+                    </Slider>
+            </div>
         </div>
-        
-
 
     )
 }
