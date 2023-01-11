@@ -415,6 +415,12 @@ const resolvers = {
                 coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
+        },
+        addProfessorRequest: async (_,{ID, ProfessorRequestInput: {request}})=>{
+            const addRequest = (Professors.updateOne({_id:ID},{
+                $push:{request:request}
+            }))
+            return addRequest
         }
     }
 }
