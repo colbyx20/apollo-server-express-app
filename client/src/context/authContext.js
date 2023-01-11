@@ -45,9 +45,9 @@ function AuthProvider(props){
 
     const login = (userData) => {
         localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
-        localStorage.setItem("firstname",userData.firstname);
-        localStorage.setItem("lastname",userData.lastname);
-        localStorage.setItem("email",userData.email);
+        // localStorage.setItem("firstname",userData.firstname);
+        // localStorage.setItem("lastname",userData.lastname);
+        // localStorage.setItem("email",userData.email);
 
 
 
@@ -59,9 +59,9 @@ function AuthProvider(props){
 
     function logout(){
         localStorage.removeItem("token");
-        localStorage.removeItem("firstname");
-        localStorage.removeItem("lastname");
-        localStorage.removeItem("email");
+        // localStorage.removeItem("firstname");
+        // localStorage.removeItem("lastname");
+        // localStorage.removeItem("email");
 
         dispatch({type:'LOGOUT'});
     }
