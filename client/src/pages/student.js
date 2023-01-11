@@ -14,6 +14,10 @@ function Student(props){
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
 
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+
+
     console.log("user data:: ----------------");
     console.log(user);
 
@@ -31,6 +35,8 @@ function Student(props){
 
             <div className="userInfo">
                 <p>{user.email}</p>
+                <p>{firstname}</p>
+                <p>{lastname}</p>
             </div>
 
         </>

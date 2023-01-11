@@ -8,8 +8,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 
-const STUDENT_EMAIL = new RegExp("^colbyx20@knights\.ucf\.edu$");
-const PROFESSOR_EMAIL = new RegExp("^colbyx20@gmail\.edu$");
+const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
+const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
 
 const resolvers = {
 
