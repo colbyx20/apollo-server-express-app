@@ -53,7 +53,7 @@ function Login(props){
             console.log(STUDENT_EMAIL.test(userData.email));
             console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
             
-            if(STUDENT_EMAIL.test(userData.email)){
+            if(userData.email === "andy@knights.ucf.edu"){
                 // go to student page 
                  window.location.href = '/student';
                 //navigate('/student');
