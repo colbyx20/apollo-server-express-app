@@ -15,10 +15,6 @@ function Student(props){
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
 
-    const firstname = localStorage.getItem("firstname");
-    const lastname = localStorage.getItem("lastname");
-    const email = localStorage.getItem("email");
-
 
     console.log("user data:: ----------------");
     console.log(user);

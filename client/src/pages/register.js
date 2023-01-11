@@ -17,7 +17,6 @@ const REGISTER_USER = gql`
             firstname
             lastname
             email
-            login
             password
             confirmpassword
   }
@@ -51,7 +50,6 @@ function Register(props){
     const{onChange,onSubmit,values} = useForm(registerUserCallback, {
         firstname: "",
         lastname:"",
-        login: "",
         email: "",
         password: "",
         confirmpassword: "",
