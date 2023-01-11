@@ -422,6 +422,13 @@ const resolvers = {
                 $push:{request:request}
             }));
             return addRequest;
+        },
+        resolveProfessorRequest:async(_,{ID, ProfessorRequestInput: {request}})=>{
+            const request = Mongoose.Types.ObjectId(request);
+            const addRequest = (Professors.updateOne({_id:ID},{
+                $pull:{request:request}
+            }));
+            return addRequest;
         }
     }
 }
