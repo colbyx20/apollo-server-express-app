@@ -9,7 +9,6 @@ scalar DateTime
         firstname: String 
         lastname: String 
         email: String 
-        login: String 
         password: String 
         confirmpassword: String 
         privilege: String 
@@ -24,7 +23,6 @@ scalar DateTime
         firstname: String
         lastname: String
         email: String
-        login: String
         password: String
         confirmpassword: String
         group: String
@@ -40,7 +38,6 @@ scalar DateTime
         firstname: String
         lastname: String
         email: String
-        login: String
         password: String
         privilege: Int
         fieldOfInterest:String
@@ -77,7 +74,6 @@ scalar DateTime
         firstname: String
         lastname: String
         email: String
-        login: String
         password: String
         group: String
     }
@@ -86,7 +82,6 @@ scalar DateTime
         firstname: String
         lastname: String
         email: String
-        login: String
         password: String
         fieldOfInterest:String
         coordinator: Boolean
@@ -104,7 +99,6 @@ scalar DateTime
     input RegisterInput {
         firstname: String
         lastname: String
-        login: String
         email: String
         password: String
         confirmpassword: String

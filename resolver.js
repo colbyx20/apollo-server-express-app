@@ -8,8 +8,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 
-const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
-const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
+const STUDENT_EMAIL = new RegExp("^colbyx20@knights\.ucf\.edu$");
+const PROFESSOR_EMAIL = new RegExp("^colbyx20@gmail\.edu$");
 
 const resolvers = {
 
@@ -43,12 +43,12 @@ const resolvers = {
         }
     },
     Mutation:{
-        registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
+        registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
                 throw new ApolloError("Passwords Do Not Match");
             }
-            if(password === "" || firstname === "" || lastname === "" || login === "" || email === ""){
+            if(password === "" || firstname === "" || lastname === "" || email === ""){
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
             // See if an old user or Professor exists with Email attempting to Register
@@ -60,9 +60,23 @@ const resolvers = {
                 throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
             }
 
-            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+            let transport = nodemailer.createTransport({ 
+                service: "Gmail", 
+                host:process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: { 
+                    user: process.env.EMAIL_USERNAME, 
+                    pass: process.env.EMAIL_PASSWORD 
+                }, 
+            
+            });
 
             let privilege = 0;
+
+            console.log("TESTING");
+            console.log(STUDENT_EMAIL.test(email));
+            console.log(PROFESSOR_EMAIL.test(email));
+
 
             if(STUDENT_EMAIL.test(email)){
                 // student account creation
@@ -75,7 +89,6 @@ const resolvers = {
                 const newUser = new Users({
                     firstname:firstname,
                     lastname:lastname,
-                    login:login,
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
@@ -128,7 +141,6 @@ const resolvers = {
                 const newProfessor = new Professors({
                     firstname:firstname,
                     lastname:lastname,
-                    login:login,
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
@@ -387,21 +399,19 @@ const resolvers = {
             const wasDeletedProfessor = (await Professors.deleteOne({_id:ID})).deletedCount;
             return wasDeletedProfessor;
         },
-        editUser: async(_,{ID,userInput:{firstname,lastname,email,login}})=>{
+        editUser: async(_,{ID,userInput:{firstname,lastname,email}})=>{
             const  userEdited = (await Users.updateOne({_id:ID},{
                 firstname:firstname,
                 lastname:lastname,
-                email:email,
-                login:login
+                email:email
             })).modifiedCount;
             return userEdited;
         },
-        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email,login, coordinator}})=>{
+        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email, coordinator}})=>{
             const professorEdit = (await Professors.updateOne({_id:ID},{
                 firstname:firstname,
                 lastname:lastname,
                 email:email,
-                login:login,
                 coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
