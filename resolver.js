@@ -417,10 +417,11 @@ const resolvers = {
             return professorEdit;
         },
         addProfessorRequest: async (_,{ID, ProfessorRequestInput: {request}})=>{
+            const request = Mongoose.Types.ObjectId(request);
             const addRequest = (Professors.updateOne({_id:ID},{
                 $push:{request:request}
-            }))
-            return addRequest
+            }));
+            return addRequest;
         }
     }
 }
