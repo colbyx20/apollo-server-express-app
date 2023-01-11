@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 
-const STUDENT_EMAIL = new RegExp('([A-Z]|[a-z])\w+@knights.ucf.edu');
+const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@gmail\.com$');
 
 const resolvers = {
@@ -80,7 +80,7 @@ const resolvers = {
             console.log(PROFESSOR_EMAIL.test(email));
 
 
-            if(email = "andy@knights.ucf.edu"){
+            if(STUDENT_EMAIL.test(email)){
                 // student account creation
                 privilege = 1;
 
@@ -193,7 +193,7 @@ const resolvers = {
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
-            if(user != null){
+            if(STUDENT_EMAIL.test(email) && user != null){
                 if(user.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -222,7 +222,7 @@ const resolvers = {
                         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
                     }
                 }
-            }else if(professors != null){
+            }else if(PROFESSOR_EMAIL.test(email) && professors != null){
                 if(professors.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
