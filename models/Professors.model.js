@@ -12,7 +12,9 @@ const professorSchema = new Schema({
     appointments: {type:Array, require:false},
     confirm:{type: Number},
     image:{type:String},
-    coordinator: {type: Boolean}
+    coordinator: {type: Boolean},
+    reqeust:{type: [Schema.Types.ObjectId]}
+
 });
 
 module.exports = model('Professor',professorSchema);

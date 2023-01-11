@@ -45,6 +45,7 @@ scalar DateTime
         token: String
         schedule: [DateTime]
         appointments: [Appointments]
+        reqeusts: [ID]
         image:String
         coordinator: Boolean
         groups: [Group]
@@ -76,6 +77,10 @@ scalar DateTime
         email: String
         password: String
         group: String
+    }
+
+    input ProfessorRequestInput{
+        Request:ID!
     }
 
     input ProfessorInput {
@@ -152,7 +157,7 @@ scalar DateTime
         addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        
+        createProfessorRequest(ID:ID!,ProfessorRequestInput:ProfessorRequestInput):Boolean
     }
 `
 
