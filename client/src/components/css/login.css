@@ -5,7 +5,7 @@
 }
 
 body{
-    background-color: #000000;
+    background-color: #231F20;
 }
 
 h3{
@@ -32,7 +32,7 @@ h3{
 
 .imageContainer{
     background-color: #ffffff;
-    width: 69%;
+    width: 70%;
     height: 100vh;
     display: inline-flexbox;
 }
