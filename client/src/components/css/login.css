@@ -52,3 +52,19 @@ img{
 .mylabel{
     color: aliceblue !important;
 }
+
+span{
+    margin-left: 1%;
+    color: white;
+}
+
+a{
+    text-decoration: none;
+    margin-top: 5%;
+    color: rgb(83, 177, 236);
+}
+
+a:hover{
+    text-decoration: none;
+    color: rgb(39, 158, 232);
+}

@@ -10,7 +10,6 @@ import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
 import Slider from '../components/Slider'
 
-
 const LOGIN_USER = gql`
 
     mutation Mutation($loginInput: loginInput) {
@@ -58,10 +57,6 @@ function Login(props){
             setErrors(graphQLErrors);
         },
         variables:{loginInput:values}
-    });
-
-    const sliderSettings = ({
-        autoplay: true
     });
     
     return(
@@ -128,8 +123,14 @@ function Login(props){
                         display: 'block',
                         marginRight: 'auto',
                         marginLeft: 'auto',
-                        width: '99%',
+                        marginBottom: '5%',
+                        width: '100%',
                     }}variant="contained" onClick={onSubmit}>Login</Button>
+
+                    <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
+                    <span><a href='#'>Forgot password?</a></span>
+                    
+
                 </Container>
             </div>
             <div className='imageContainer'>
@@ -137,9 +138,6 @@ function Login(props){
                     </Slider>
             </div>
         </div>
-
-        
-
 
     )
 }
