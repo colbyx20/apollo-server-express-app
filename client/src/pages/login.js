@@ -11,7 +11,6 @@ import logo from '../components/images/sdsLogo.png';
 import Slider from '../components/Slider'
 
 const LOGIN_USER = gql`
-
     mutation Mutation($loginInput: loginInput) {
         loginUser(loginInput: $loginInput) {
             email 
@@ -20,7 +19,6 @@ const LOGIN_USER = gql`
             token
         }
     }
-
 `
 
 function Login(props){
@@ -28,9 +26,9 @@ function Login(props){
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@gmail\.com$');
+    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){10,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){10,}@ucf\.edu$');
+    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){10,}@gmail\.com$');
 
     function loginUserCallback(){
         loginUser();
@@ -43,10 +41,12 @@ function Login(props){
 
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
+            console.log(userData);
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
-                window.location.href = '/student';
+                // window.location.href = '/student';
+                navigate('/student');
             }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
                 // go to professor page 
                 navigate('/');
