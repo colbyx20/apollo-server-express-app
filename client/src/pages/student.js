@@ -26,20 +26,10 @@ function Student(props){
     return (
         <>
         <Navbar />
-            <Sidebar>
-                <Menu>
-                    <SubMenu label="About">
-                        <MenuItem> Account Information </MenuItem>
-                        <MenuItem> Group </MenuItem>
-                    </SubMenu>
-                        <MenuItem> Schedule </MenuItem>
-                </Menu>
-            </Sidebar>;
-
             <div className="userInfo">
-                <p>{email}</p>
-                <p>{firstname}</p>
-                <p>{lastname}</p>
+                <p style={{textAlign:"left", margin: 0}}>{email}</p>
+                <p style={{textAlign:"left", margin: 0}}>{firstname}</p>
+                <p style={{textAlign:"left", margin: 0}}>{lastname}</p>
             </div>
 
         </>
