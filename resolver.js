@@ -199,7 +199,7 @@ const resolvers = {
                     if(user && (await bcrypt.compare(password, user.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
-                            {id : user._id, email}, 
+                            {id : user._id, email, firstname: user.firstname, lastname: user.lastname}, 
                             "UNSAFE_STRING", // stored in a secret file 
                             {
                                 expiresIn: "2h"
