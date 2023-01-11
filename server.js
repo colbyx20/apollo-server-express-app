@@ -18,21 +18,24 @@ async function startServer(){
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        plugins:[ApolloServerPluginDrainHttpServer({httpServer})],
+        plugins:[ApolloServerPluginDrainHttpServer({httpServer})]
     });
 
     await server.start();
+
 
     app.use(
         '/graphql',
         cors(),
         bodyParser.json(),
-        expressMiddleware(server),
+        expressMiddleware(server,{
+            context: async () => {await mongoose.connect(process.env.MONGODB_URI)}
+        }),
     );
     
 
-    await mongoose.connect(process.env.MONGODB_URI)
-     console.log("Mongoose Connected...");
+   
+    console.log("Mongoose Connected...");
     await new Promise((resolve) => httpServer.listen({port:process.env.PORT}, resolve));
 
     console.log(`🚀 Server ready at http://localhost:4000/`);
