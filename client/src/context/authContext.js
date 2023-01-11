@@ -43,11 +43,13 @@ function authReducer(state,action){
 function AuthProvider(props){
     const[state, dispatch] = useReducer(authReducer, initialState);
 
+
+    // this is not working idk why
     const login = (userData) => {
-        localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
-        localStorage.setItem("firstname",userData.firstname);
-        localStorage.setItem("lastname",userData.lastname);
-        localStorage.setItem("email",userData.email);
+        //localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
+        // localStorage.setItem("firstname",userData.firstname);
+        // localStorage.setItem("lastname",userData.lastname);
+        // localStorage.setItem("email",userData.email);
 
 
 

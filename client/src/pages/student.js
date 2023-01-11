@@ -8,17 +8,24 @@ import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import Navbar from '../components/navbar';
 
 function Student(props){
 
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
 
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+    const email = localStorage.getItem("email");
+
+
     console.log("user data:: ----------------");
     console.log(user);
 
     return (
         <>
+        <Navbar />
             <Sidebar>
                 <Menu>
                     <SubMenu label="About">
@@ -30,7 +37,9 @@ function Student(props){
             </Sidebar>;
 
             <div className="userInfo">
-                <p>{user.email}</p>
+                <p>{email}</p>
+                <p>{firstname}</p>
+                <p>{lastname}</p>
             </div>
 
         </>

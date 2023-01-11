@@ -5,10 +5,6 @@ import {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-const GROUP = gql`
-    
-`
-
 function Navbar(){
 
     let navigate = useNavigate();
@@ -24,7 +20,16 @@ function Navbar(){
     console.log(user);
 
 
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
 
+    if(firstname === undefined){
+        firstname = "";
+    }
+
+    if(lastname === undefined){
+        lastname = "";
+    }
 
 
 
@@ -34,7 +39,7 @@ function Navbar(){
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {user? user.firstname + " " + user.lastname : " "}</Link>
+                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {firstname} {lastname}</Link>
                     </Typography>
                     <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
                         {user?

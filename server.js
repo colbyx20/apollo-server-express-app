@@ -28,13 +28,11 @@ async function startServer(){
         '/graphql',
         cors(),
         bodyParser.json(),
-        expressMiddleware(server,{
-            context: async () => {await mongoose.connect(process.env.MONGODB_URI)}
-        }),
+        expressMiddleware(server),
     );
     
 
-   
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log("Mongoose Connected...");
     await new Promise((resolve) => httpServer.listen({port:process.env.PORT}, resolve));
 
