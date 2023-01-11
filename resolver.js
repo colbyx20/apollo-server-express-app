@@ -1,35 +1,54 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
+const Group = require('./models/Group.model');
+const Admin = require('./models/Admin.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const Mongoose = require('mongoose');
 
- const STUDENT_EMAIL = new RegExp(process.env.STUDENT_EMAIL);
- const PROFESSOR_EMAIL = new RegExp(process.env.PROFESSOR_EMAIL_TEST);
+const STUDENT_EMAIL = new RegExp("^colbyx20@knights\.ucf\.edu$");
+const PROFESSOR_EMAIL = new RegExp("^colbyx20@gmail\.edu$");
 
 const resolvers = {
+
+
     Query:{
-        getUser: async(_,{ID}) =>{
+        getUser: async(_,{ID}) => {
             return await Users.findById(ID);
         },
-        getAllUsers: async () =>{
+        getAllUsers: async () => {
             return await Users.find();
         },   
         getProfessor: async(_,{ID}) => {
             return await Professors.findById(ID);
         },
-        getAllProfessors: async () =>{
+        getAllProfessors: async () => {
             return await Professors.find();
         },
+        getAllGroups: async() => {
+
+            return await Group.aggregate([
+                {$lookup:
+                    {   from:"users", 
+                        localField: "members",
+                        foreignField:"_id", 
+                        as:"members"
+                    }
+                }]);
+        },
+        getAdmins: async() =>{
+            return await Admin.find();
+        }
     },
     Mutation:{
-        registerUser: async(_,{registerInput: {firstname,lastname,login, email, password, confirmpassword}}) =>{
+        registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
                 throw new ApolloError("Passwords Do Not Match");
             }
-            if(password === "" || firstname === "" || lastname === "" || login === "" || email === ""){
+            if(password === "" || firstname === "" || lastname === "" || email === ""){
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
             // See if an old user or Professor exists with Email attempting to Register
@@ -41,9 +60,23 @@ const resolvers = {
                 throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
             }
 
-            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+            let transport = nodemailer.createTransport({ 
+                service: "Gmail", 
+                host:process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: { 
+                    user: process.env.EMAIL_USERNAME, 
+                    pass: process.env.EMAIL_PASSWORD 
+                }, 
+            
+            });
 
             let privilege = 0;
+
+            console.log("TESTING");
+            console.log(STUDENT_EMAIL.test(email));
+            console.log(PROFESSOR_EMAIL.test(email));
+
 
             if(STUDENT_EMAIL.test(email)){
                 // student account creation
@@ -56,7 +89,6 @@ const resolvers = {
                 const newUser = new Users({
                     firstname:firstname,
                     lastname:lastname,
-                    login:login,
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
@@ -109,7 +141,6 @@ const resolvers = {
                 const newProfessor = new Professors({
                     firstname:firstname,
                     lastname:lastname,
-                    login:login,
                     email: email.toLowerCase(),
                     password: encryptedPassword,
                     privilege: privilege,
@@ -155,8 +186,8 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}}) => {
-
+        loginUser: async (_,{loginInput: {email, password}}, context) => {
+            // console.log(context);
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
@@ -278,23 +309,6 @@ const resolvers = {
                 }
             }
         },
-        createUser: async(_,{userInput:{firstname,lastname,email,login,password, group}}) =>{
-            const createdUser = new Users({
-                firstname:firstname,
-                lastname:lastname,
-                email:email,
-                login:login,
-                password:password,
-                group:group
-            });
-
-            const res = await createdUser.save();
-
-            return {
-                id:res.id,
-                ...res._doc // take all properties from result
-            }
-        },
         resetPassword: async(_,{resetPassword:{email,password,confirmPassword}}) =>{
 
             // encrypt new password and set to user.
@@ -331,27 +345,51 @@ const resolvers = {
             }
 
         },
-        createProfessor: async(_,{professorInput:{firstname,lastname,email,login,password,fieldOfInterest}}) =>{
-            const createdProfessor = new Professors({
-                firstname:firstname,
-                lastname:lastname,
-                email:email,
-                login:login,
-                password:password,
-                fieldOfInterest:fieldOfInterest
-            });
-            const professor = await createdProfessor.save();
-
-            return {
-                id:professor.id,
-                ...professor._doc
-            }
-        },
         createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
             const date = new Date(time).toISOString();
             const isoDate = new Date(date);
-            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:IsoDate}})).modifiedCount;
+            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
             return createdDate;
+        },
+        createGroup: async (_,{groupInfo:{groupName,groupProject,projectField}}) =>{
+
+            // create a new group Document
+            const newGroup = new Group({
+                groupName: groupName,
+                groupProject: groupProject,
+                projectField: projectField,
+                memberCount: 0
+            });
+            
+
+            // Save user in MongoDB
+            const res = await newGroup.save();
+
+            // return object created 
+            return{
+                id:res.id,
+                ...res._doc
+            }
+        },
+        addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
+            const ID = Mongoose.Types.ObjectId(id);
+            
+            const groupExist = (await Group.findOne({groupName:groupname}));
+            if(groupExist){
+
+                const query = {groupName:groupname};
+                const update = {$push:{members: ID}, $inc:{memberCount: 1}};
+                const options = {upsert:false};
+
+                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                return addGroupMember;
+            }else{
+                throw ApolloError("Group Does Not Exist!");
+            }
+            
+        
+
+
         },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
@@ -361,25 +399,23 @@ const resolvers = {
             const wasDeletedProfessor = (await Professors.deleteOne({_id:ID})).deletedCount;
             return wasDeletedProfessor;
         },
-        editUser: async(_,{ID,userInput:{firstname,lastname,email,login}})=>{
+        editUser: async(_,{ID,userInput:{firstname,lastname,email}})=>{
             const  userEdited = (await Users.updateOne({_id:ID},{
                 firstname:firstname,
                 lastname:lastname,
-                email:email,
-                login:login
+                email:email
             })).modifiedCount;
             return userEdited;
         },
-        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email,login}})=>{
+        editProfessor: async (_,{ID,professorInput:{firstname,lastname,email, coordinator}})=>{
             const professorEdit = (await Professors.updateOne({_id:ID},{
                 firstname:firstname,
                 lastname:lastname,
                 email:email,
-                login:login
+                coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
         }
-
     }
 }
 

@@ -4,7 +4,6 @@ const professorSchema = new Schema({
     firstname: {type:String, require:true},
     lastname: {type:String, require:true},
     email:{type:String, require:true, unique: true},
-    login: {type:String, require:true},
     password: {type:String, require:true},
     privilege: {type:Number, require:true},
     fieldOfInterest: {type:String, require:true},
@@ -12,6 +11,8 @@ const professorSchema = new Schema({
     schedule: {type: Array, require:false},
     appointments: {type:Array, require:false},
     confirm:{type: Number},
+    image:{type:String},
+    coordinator: {type: Boolean}
 });
 
 module.exports = model('Professor',professorSchema);

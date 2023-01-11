@@ -4,6 +4,11 @@ import { AuthContext } from '../context/authContext';
 import {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+const GROUP = gql`
+    
+`
+
 function Navbar(){
 
     let navigate = useNavigate();
@@ -15,7 +20,13 @@ function Navbar(){
         navigate('/');
     }
 
+    console.log("From Navbar");
     console.log(user);
+
+
+
+
+
 
     
     return(
@@ -23,7 +34,7 @@ function Navbar(){
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {user? user.firstname + " " + user.lastname : ""}</Link>
+                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {user? user.firstname + " " + user.lastname : " "}</Link>
                     </Typography>
                     <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
                         {user?
