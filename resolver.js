@@ -81,7 +81,7 @@ const resolvers = {
             console.log(PROFESSOR_EMAIL.test(email));
 
 
-            if(email = "andy@knights.ucf.edu"){
+            if(STUDENT_EMAIL.test(email)){
                 // student account creation
                 privilege = 1;
 
@@ -231,7 +231,7 @@ const resolvers = {
                     if(professors && (await bcrypt.compare(password, professors.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
-                            {id : professors._id, email, firstname:firstname, lastname:lastname}, 
+                            {id : professors._id, email, firstname: professors.firstname, lastname: professors.lastname}, 
                             "UNSAFE_STRING", // stored in a secret file 
                             {
                                 expiresIn: "2h"
