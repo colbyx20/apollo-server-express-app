@@ -15,7 +15,6 @@ const LOGIN_USER = gql`
     mutation Mutation($loginInput: loginInput) {
         loginUser(loginInput: $loginInput) {
             email 
-            login
             firstname
             lastname
             token
