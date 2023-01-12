@@ -2,14 +2,15 @@ const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
 const Admin = require('./models/Admin.model');
+const Coordinator = require('./models/Coordinator.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 
-const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
+const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
+const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 const resolvers = {
 
@@ -28,6 +29,8 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async() => {
+
+            
 
             return await Group.aggregate([
                 {$lookup:
@@ -191,7 +194,7 @@ const resolvers = {
             const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
             const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
 
-            if(STUDENT_EMAIL.test(email) && user != null){
+            if(user != null){
                 if(user.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -199,7 +202,7 @@ const resolvers = {
                     if(user && (await bcrypt.compare(password, user.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
-                            {id : user._id, email}, 
+                            {id : user._id, email, firstname: user.firstname, lastname: user.lastname}, 
                             "UNSAFE_STRING", // stored in a secret file 
                             {
                                 expiresIn: "2h"
@@ -220,7 +223,7 @@ const resolvers = {
                         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
                     }
                 }
-            }else if(PROFESSOR_EMAIL.test(email) && professors != null){
+            }else if(professors != null){
                 if(professors.confirm === 0){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
@@ -228,7 +231,7 @@ const resolvers = {
                     if(professors && (await bcrypt.compare(password, professors.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
-                            {id : professors._id, email}, 
+                            {id : professors._id, email, firstname: professors.firstname, lastname: professors.lastname}, 
                             "UNSAFE_STRING", // stored in a secret file 
                             {
                                 expiresIn: "2h"
@@ -386,10 +389,6 @@ const resolvers = {
             }else{
                 throw ApolloError("Group Does Not Exist!");
             }
-            
-        
-
-
         },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;

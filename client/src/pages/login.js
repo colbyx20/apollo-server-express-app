@@ -26,9 +26,9 @@ function Login(props){
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){5,}@gmail\.com$');
+    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.edu$');
+    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 
     function loginUserCallback(){
@@ -53,7 +53,7 @@ function Login(props){
             console.log(STUDENT_EMAIL.test(userData.email));
             console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
             
-            if(STUDENT_EMAIL.test(userData.email)){
+            if(userData.email === "andy@knights.ucf.edu"){
                 // go to student page 
                  window.location.href = '/student';
                 //navigate('/student');
