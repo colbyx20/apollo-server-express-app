@@ -402,37 +402,41 @@ const resolvers = {
             return createdDate;
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField}}) =>{
+
+            // check for unique
+            const checkUniqueGroup = await Group.find({groupName:groupName});
+
+            if(!checkUniqueGroup){
             
-            const ID = Mongoose.Types.ObjectId(coordinatorId);
-            console.log(ID);
-            
-            // create a new group Document
-            const newGroup = new Group({
-                coordinatorId: ID,
-                groupName: groupName,
-                projectField: projectField,
-                memberCount: 0
-            });
-            
+                const ID = Mongoose.Types.ObjectId(coordinatorId);
+                
+                // create a new group Document
+                const newGroup = new Group({
+                    coordinatorId: ID,
+                    groupName: groupName,
+                    projectField: projectField,
+                    memberCount: 0
+                });
+                
 
-            // Save user in MongoDB
-            const res = await newGroup.save();
+                // Save user in MongoDB
+                const res = await newGroup.save();
 
-            // convert new group Id into an objectId()
-            const groupId = Mongoose.Types.ObjectId(res.id);
+                // convert new group Id into an objectId()
+                const groupId = Mongoose.Types.ObjectId(res.id);
 
-            // testing
-            // await Coordinator.findById({_id:ID});
-
-            // add ReferencialId from new Group into Selected coordinators document
-            await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
-            
+                // add ReferencialId from new Group into Selected coordinators document
+                await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
+                
 
 
-            // return object created 
-            return{
-                id:res.id,
-                ...res._doc
+                // return object created 
+                return{
+                    id:res.id,
+                    ...res._doc
+                }
+            }else{
+                throw new ApolloError("Group Already Exists!!");
             }
         },
         addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
