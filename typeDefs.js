@@ -18,6 +18,21 @@ scalar DateTime
         role: String
     }
 
+    type Coordinator {
+        _id:ID!
+        firstname: String
+        lastname: String
+        email: String
+        password: String
+        confirmpassword: String
+        privilege: Int
+        confirm: Int
+        token: String
+        image: String
+        groups: [Group]
+        schedule: [DateTime]
+    }
+
     type Users {
         _id:ID!
         firstname: String
@@ -61,9 +76,9 @@ scalar DateTime
     }
 
     type Group {
-        _id:ID
+        _id:ID!
+        coordinatorId:ID
         groupName: String
-        groupProject: String
         projectField: String
         memberCount: Int
         members: [Users!]!
@@ -120,14 +135,22 @@ scalar DateTime
     }
 
     input groupInfo {
+        coordinatorId: ID
         groupName: String
-        groupProject: String 
         projectField: String 
     }
 
     input groupSchedule {
         appointmentTime: DateTime
 
+    }
+
+    input coordinatorInput {
+        firstname: String
+        lastname: String
+        email: String
+        password: String
+        confirmpassword: String
     }
 
     type Query {
@@ -152,7 +175,7 @@ scalar DateTime
         addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        
+        registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
     }
 `
 
