@@ -403,6 +403,10 @@ const resolvers = {
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField}}) =>{
 
+            if(coordinatorId === "" || groupName === "" || projectField === ""){
+                throw new ApolloError("Please fill all Fields!");
+            }
+
             // check for unique
             const checkUniqueGroup = await Group.find({groupName:groupName});
 
@@ -440,6 +444,10 @@ const resolvers = {
             }
         },
         addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
+            if(id === "" || groupname === ""){
+                throw new ApolloError("Please fill all Fields!");
+            }
+
             const ID = Mongoose.Types.ObjectId(id);
             
             const groupExist = (await Group.findOne({groupName:groupname}));
