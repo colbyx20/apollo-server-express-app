@@ -449,6 +449,9 @@ const resolvers = {
             }
 
             const ID = Mongoose.Types.ObjectId(id);
+            console.log(ID);
+            const b = await Users.findOne({_id:ID});
+            console.log(b);
             
             const groupExist = (await Group.findOne({groupName:groupname}));
             if(groupExist){
@@ -458,6 +461,9 @@ const resolvers = {
                 const options = {upsert:false};
 
                 const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
+
+                console.log(a);
                 return addGroupMember;
             }else{
                 throw ApolloError("Group Does Not Exist!");
