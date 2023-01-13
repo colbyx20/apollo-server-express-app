@@ -83,6 +83,11 @@ scalar DateTime
         Request:ID!
     }
 
+    input appointInput{
+        firstname: String
+        lastname: String
+    }
+    
     input ProfessorInput {
         firstname: String
         lastname: String
