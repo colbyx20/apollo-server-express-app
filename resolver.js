@@ -225,7 +225,8 @@ const resolvers = {
                 // create model for professors information 
                 const professorInfo = new UserInfo({
                     userId:res._id,
-                    email: email.toLowerCase()
+                    email: email.toLowerCase(),
+                    image:''
                 })
 
                 await professorInfo.save();
