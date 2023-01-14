@@ -257,7 +257,7 @@ const resolvers = {
         },
         loginUser: async (_,{loginInput: {email, password}}) => {
 
-            if(PROFESSOR_EMAIL.test(email)){
+            if(!STUDENT_EMAIL.test(email)){
 
                 // 3 small queries are faster than joining all 3 then searching
                 const professorsInfo = await UserInfo.findOne({email});
