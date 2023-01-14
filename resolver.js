@@ -282,8 +282,11 @@ const resolvers = {
                     await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
     
                     return {
-                        id: professors.id,
-                        ...professors._doc
+                        _id: professors._id,
+                        firstname:professors.professorFName,
+                        lastname:professors.professorLName,
+                        email: professorsInfo.email,
+                        token: professorsAuth.token
                     }          
                 }
             }

@@ -13,10 +13,11 @@ import Slider from '../components/Slider'
 const LOGIN_USER = gql`
     mutation Mutation($loginInput: loginInput) {
         loginUser(loginInput: $loginInput) {
-            email 
+            _id
             firstname
             lastname
-            token
+            email
+            token 
         }
     }
 `
@@ -43,7 +44,7 @@ function Login(props){
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
             console.log(userData);
-
+            localStorage.setItem("_id",userData._id);
             localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
             localStorage.setItem("firstname",userData.firstname);
             localStorage.setItem("lastname",userData.lastname);
@@ -59,7 +60,7 @@ function Login(props){
                 //navigate('/student');
             }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
                 // go to professor page 
-                navigate('/');
+                window.location.href = '/professor';
             }
         },
         onError({graphQLErrors}){

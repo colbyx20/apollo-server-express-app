@@ -34,7 +34,7 @@ scalar DateTime
     }
 
     type Users {
-        _id:ID!
+        _id:ID
         firstname: String
         lastname: String
         email: String
@@ -48,8 +48,16 @@ scalar DateTime
         image: String
     }
 
+    type UserLogin {
+        _id:ID
+        firstname: String 
+        lastname: String
+        email: String
+        token:String
+    }
+
     type Professors {
-        _id:ID!
+        _id:ID
         firstname: String
         lastname: String
         email: String
@@ -80,12 +88,12 @@ scalar DateTime
         groupName: String
         projectField: String
         memberCount: Int
-        members: [Users!]!
+        members: [Users]
         appointments: [Appointments]
     } 
     
     input UserInput {
-        firstname: String
+        name: String
         lastname: String
         email: String
         password: String
@@ -153,23 +161,23 @@ scalar DateTime
     }
 
     type Query {
-        getUser(ID:ID!) : Users!
-        getProfessor(ID:ID!) : Professors!
-        getAllProfessors : [Professors!]
-        getAllUsers :[Users!]
-        getAllGroups :[Group!]
-        getAdmins : Admin!
+        getUser(ID:ID!) : Users
+        getProfessor(ID:ID!) : Professors
+        getAllProfessors : [Professors]
+        getAllUsers :[Users]
+        getAllGroups :[Group]
+        getAdmins : Admin
     }
 
     type Mutation {
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         createCoordinatorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
-        deleteUser(ID:ID!):Users!
-        deleteProfessor(ID:ID!):Professors!
-        editUser(ID:ID!, userInput:UserInput):Users! 
-        editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
+        deleteUser(ID:ID!):Users
+        deleteProfessor(ID:ID!):Professors
+        editUser(ID:ID!, userInput:UserInput):Users!
+        editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         registerUser(registerInput: RegisterInput) : Users
-        loginUser(loginInput: loginInput): Users
+        loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
         addGroupMember(addToGroup:addToGroup): Boolean
