@@ -256,9 +256,14 @@ const resolvers = {
     
         },
         loginUser: async (_,{loginInput: {email, password}}) => {
-            // console.log(context);
-            const professors = await Professors.findOne({email});
-            const user = await Users.findOne({email} );
+
+            const professors = await UserInfo.findOne({email});
+            const professorsAuth = await Auth.findOne({userId:professors._id});
+
+
+
+
+            const user = await UserInfo.findOne({email} );
 
             if(user != null){
                 if(user.confirm === false){
@@ -290,11 +295,11 @@ const resolvers = {
                     }
                 }
             }else if(professors != null){
-                if(professors.confirm === false){
+                if(professorsAuth.confirm === false){
                     throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
                 }else{
                     // check if the entered password = encrypted password - use bcrypt
-                    if(professors && (await bcrypt.compare(password, professors.password))){
+                    if(professorsAuth && (await bcrypt.compare(password, professorsAuth.password))){
                         // create a new token ( when you login you give user a new token )
                         const token = jwt.sign(
                             {id : professors._id, email, firstname: professors.professorFName, lastname: professors.professorLName}, 
@@ -305,7 +310,7 @@ const resolvers = {
                         );
         
                         // attach token to user model that we found if user exists 
-                        await Auth.findOneAndUpdate({_id:user._id}, {$set:{token:token}})
+                        await Auth.findOneAndUpdate({userId:user._id}, {$set:{token:token}})
         
                         return {
                             id: professors.id,
