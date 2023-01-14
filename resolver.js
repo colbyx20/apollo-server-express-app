@@ -286,7 +286,8 @@ const resolvers = {
                         firstname:professors.professorFName,
                         lastname:professors.professorLName,
                         email: professorsInfo.email,
-                        token: professorsAuth.token
+                        token: professorsAuth.token,
+                        privilege: professorsInfo.privilege
                     }          
                 }
             }

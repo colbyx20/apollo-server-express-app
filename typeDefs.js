@@ -54,6 +54,7 @@ scalar DateTime
         lastname: String
         email: String
         token:String
+        privilege: String
     }
 
     type Professors {

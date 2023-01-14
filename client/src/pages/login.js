@@ -18,6 +18,7 @@ const LOGIN_USER = gql`
             lastname
             email
             token 
+            privilege
         }
     }
 `
@@ -49,6 +50,7 @@ function Login(props){
             localStorage.setItem("firstname",userData.firstname);
             localStorage.setItem("lastname",userData.lastname);
             localStorage.setItem("email",userData.email);
+            localStorage.setItem("privilege",userData.privilege);
 
 
             console.log(STUDENT_EMAIL.test(userData.email));
