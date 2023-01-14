@@ -257,77 +257,37 @@ const resolvers = {
         },
         loginUser: async (_,{loginInput: {email, password}}) => {
 
-            const professors = await UserInfo.findOne({email});
-            const professorsAuth = await Auth.findOne({userId:professors._id});
+            if(PROFESSOR_EMAIL.test(email)){
 
+                // 3 small queries are faster than joining all 3 then searching
+                const professorsInfo = await UserInfo.findOne({email});
+                const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
+                const professors = await Professors.findOne({_id:professorsInfo.userId});
 
+                if(professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
 
-
-            const user = await UserInfo.findOne({email} );
-
-            if(user != null){
-                if(user.confirm === false){
-                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-                }else{
-                    // check if the entered password = encrypted password - use bcrypt
-                    if(user && (await bcrypt.compare(password, user.password))){
-                        // create a new token ( when you login you give user a new token )
-                        const token = jwt.sign(
-                            {id : user._id, email, firstname: user.userFName, lastname: user.userLname}, 
-                            "UNSAFE_STRING", // stored in a secret file 
-                            {
-                                expiresIn: "1d"
-                            }
-                        );
-
-                        // search for user's auth and add token 
-                        await Auth.findOneAndUpdate({_id:user._id}, {$set:{token:token}})
-        
-                        return {
-                            id: user.id,
-                            ...user._doc
-                        }
-        
-        
-                    }else{
-                        // if user doesn't exists, return error
-                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                    }
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {
+                            id : professors._id, 
+                            email, 
+                            firstname: professors.professorFName, 
+                            lastname: professors.professorLName
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1d"}
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
+    
+                    return {
+                        id: professors.id,
+                        ...professors._doc
+                    }          
                 }
-            }else if(professors != null){
-                if(professorsAuth.confirm === false){
-                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-                }else{
-                    // check if the entered password = encrypted password - use bcrypt
-                    if(professorsAuth && (await bcrypt.compare(password, professorsAuth.password))){
-                        // create a new token ( when you login you give user a new token )
-                        const token = jwt.sign(
-                            {id : professors._id, email, firstname: professors.professorFName, lastname: professors.professorLName}, 
-                            "UNSAFE_STRING", // stored in a secret file 
-                            {
-                                expiresIn: "1d"
-                            }
-                        );
-        
-                        // attach token to user model that we found if user exists 
-                        await Auth.findOneAndUpdate({userId:user._id}, {$set:{token:token}})
-        
-                        return {
-                            id: professors.id,
-                            ...professors._doc
-                        }
-        
-        
-                    }else{
-                        // if user doesn't exists, return error
-                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                    }
-                }
-            }else{
-                throw new ApolloError("User Doesn't Exist, Please make an Account");
             }
         },
-
         // confirm email if valid, then provide another api to actually set the api.
         confirmEmail: async(_,{confirmEmail:{email}}) => {
 
