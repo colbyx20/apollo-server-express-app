@@ -4,6 +4,7 @@ const Group = require('./models/Group.model');
 const Admin = require('./models/Admin.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
+const UserInfo = require('./models/UserInfo.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -103,7 +104,8 @@ const resolvers = {
             }
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
-            const oldProfessor = await Professors.findOne({email});
+            const oldProfessor = await UserInfo.findOne({email:email});
+            console.log(oldProfessor);
     
             if(oldProfessor){
                 // throw an error 
@@ -193,11 +195,8 @@ const resolvers = {
         
                 // Build out mongoose model 
                 const newProfessor = new Professors({
-                    professorFName:firstname,
-                    professorLName:lastname,
-                    email: email.toLowerCase(),
-                    privilege: process.env.PROFESSOR_PRIVILEGE,
-                    coordinator: false
+                    professorFName:firstname.toLowerCase(),
+                    professorLName:lastname.toLowerCase()
                 });
         
                 // create JWT (attach to user model)
@@ -223,7 +222,13 @@ const resolvers = {
                 // save new professor profile
                 await authProfessor.save();
                 
-                // authProfessor.token = token;
+                // create model for professors information 
+                const professorInfo = new UserInfo({
+                    userId:res._id,
+                    email: email.toLowerCase()
+                })
+
+                await professorInfo.save();
 
                 transport.sendMail({
                     from: "group13confirmation@gmail.com",
