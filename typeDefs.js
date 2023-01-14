@@ -55,7 +55,6 @@ scalar DateTime
         email: String
         password: String
         privilege: Int
-        fieldOfInterest:String
         confirm: Int
         token: String
         schedule: [DateTime]
@@ -164,6 +163,7 @@ scalar DateTime
 
     type Mutation {
         createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
+        createCoordinatorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         deleteUser(ID:ID!):Users!
         deleteProfessor(ID:ID!):Professors!
         editUser(ID:ID!, userInput:UserInput):Users! 

@@ -2,16 +2,19 @@ const mongoose = require('mongoose');
 
 const UsersSchema = new mongoose.Schema({
 
-    firstname:{type: String},
-    lastname:{type: String},
+    userFName:{type: String},
+    userLname:{type: String},
     email:{type: String,require: true,unique: true},
-    password:{type: String,require: true},
-    group: {type: String,require: false},
-    privilege:{type: Number,require: true},
-    token:{type: String},
-    confirm:{type: Number},
+    groupNumber: {type: String,require: false},
     image:{type: String},
-    role:{type: String}
+    role:{type: String},
+    coordinatorId: {type: mongoose.ObjectId},
+    privilege:{
+        type: String,
+        require: true,
+        enum:['user','professor','coordinator'],
+        default:'user' 
+    },
 
 })
 
