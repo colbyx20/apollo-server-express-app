@@ -441,8 +441,12 @@ const resolvers = {
                 throw new ApolloError("Group Already Exists!!");
             }
         },
-        addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
-            if(id === "" || groupname === ""){
+
+        // Broken -- group info is stored in users instead of Groups
+        // Can add a two way relationships that's 1:M on a group and User but will have
+        // Duplicated Data on Lookups. Would rather keep that option if it's necessary.
+        addGroupMember: async(_, {addToGroup:{id, groupnumber}}) =>{
+            if(id === "" || groupnumber === ""){
                 throw new ApolloError("Please fill all Fields!");
             }
 
@@ -451,15 +455,15 @@ const resolvers = {
             const b = await Users.findOne({_id:ID});
             console.log(b);
             
-            const groupExist = (await Group.findOne({groupName:groupname}));
+            const groupExist = (await Group.findOne({groupNumber:groupnumber}));
             if(groupExist){
 
-                const query = {groupName:groupname};
+                const query = {groupNumber:groupnumber};
                 const update = {$push:{members: ID}, $inc:{memberCount: 1}};
                 const options = {upsert:false};
 
                 const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
+                // const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
 
                 console.log(a);
                 return addGroupMember;

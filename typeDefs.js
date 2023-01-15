@@ -115,7 +115,7 @@ scalar DateTime
 
     input addToGroup {
         id:ID
-        groupname: String
+        groupnumber: Int
     }
 
     input RegisterInput {
