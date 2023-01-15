@@ -55,6 +55,8 @@ scalar DateTime
         email: String
         token:String
         privilege: String
+        confirm: String
+        password: String
     }
 
     type Professors {
@@ -63,14 +65,10 @@ scalar DateTime
         lastname: String
         email: String
         password: String
-        privilege: Int
-        confirm: Int
+        privilege: String
+        confirm: Boolean
         token: String
-        schedule: [DateTime]
-        appointments: [Appointments]
-        image:String
-        coordinator: Boolean
-        groups: [Group]
+
     }
 
     type Appointments {
@@ -160,6 +158,7 @@ scalar DateTime
         getAllUsers :[Users]
         getAllGroups :[Group]
         getAdmins : Admin
+        viewCoordinatorSchedule: [Professors]
     }
 
     type Mutation {
@@ -168,7 +167,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
-        registerUser(registerInput: RegisterInput) : Users
+        registerUser(registerInput: RegisterInput) : UserLogin
         loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean

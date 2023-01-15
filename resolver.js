@@ -57,7 +57,7 @@ const resolvers = {
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
             const oldProfessor = await UserInfo.findOne({email:email});
-            console.log(oldProfessor);
+            console.log(`does Email Exist?? ${oldProfessor}`);
     
             if(oldProfessor){
                 // throw an error 
@@ -75,68 +75,6 @@ const resolvers = {
             
             });
 
-
-            //console.log("TESTING");
-            // console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
-            //console.log(`Professor: ${PROFESSOR_EMAIL.test(email)}`);
-
-
-            // // email matches student, create user profile, then add their ID to authmodel with passworm, and token
-            // if(STUDENT_EMAIL.test(email)){
-
-            //     // Encrypt password using bcryptjs
-            //     var encryptedPassword = await bcrypt.hash(password,10);
-        
-            //     // Build out mongoose model 
-            //     const newUser = new Users({
-            //         userFName:firstname.toLowerCase(),
-            //         userLName:lastname.toLowerCase(),
-            //         email: email.toLowerCase(),
-            //         confirm: 0,
-            //     });
-
-        
-            //     // create JWT (attach to user model)
-            //     const token = jwt.sign(
-            //         {id : newUser._id, email}, 
-            //         "UNSAFE_STRING", // stored in a secret file 
-            //         {
-            //             expiresIn: "2h"
-            //         }
-            //     );
-                
-                
-            //     // Save user in MongoDB
-            //     const res = await newUser.save();
-                
-            //     const authUser = new Auth({
-            //         userId : res._id,
-            //         password: encryptedPassword, 
-            //     })
-
-            //     // set up token to new user
-            //     authUser.token = token;
-
-            //     transport.sendMail({
-            //         from: "group13confirmation@gmail.com",
-            //         to: email,
-            //         subject: "mySDSchedule - Please Confirm Your Account",
-            //         html: `<h1>Email Confirmation</h1>
-            //         <h2>Hello ${firstname}</h2>
-            //         <p>Thank you for Registering!</p>
-            //         <p>To activate your account please click on the link below.</p>
-                    
-            //         </div>`,
-            //         // code up a confirmation
-            //         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-            //     })
-        
-            //     return{
-            //         id:res.id,
-            //         ...res._doc
-            //     }
-
-            // } 
             if(!STUDENT_EMAIL.test(email)){
 
                 console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
@@ -199,7 +137,14 @@ const resolvers = {
         
                 return{
                     id:res.id,
-                    ...res._doc
+                    firstname: res.professorFName,
+                    lastname: res.professorLName,
+                    email: professorInfo.email,
+                    privilege: professorInfo.privilege,
+                    password: authProfessor.password,
+                    confirm: authProfessor.confirm,
+                    token: authProfessor.token
+
                 }
 
             }else{
