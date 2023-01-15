@@ -31,7 +31,7 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async() => {
-            
+
             return await Group.aggregate([
                 {$lookup:
                     {   from:"users", 
@@ -335,6 +335,9 @@ const resolvers = {
             }
 
         },
+
+        // might take out if statement to differ between professor and coordinator
+        // depends if we will have a separate register for coordinator
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
 
