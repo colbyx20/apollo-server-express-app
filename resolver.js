@@ -31,9 +31,7 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async() => {
-
             
-
             return await Group.aggregate([
                 {$lookup:
                     {   from:"users", 
@@ -48,52 +46,6 @@ const resolvers = {
         }
     },
     Mutation:{
-        registerCoordinator: async(_,{coordinatorInput: {firstname,lastname,email,password,confirmpassword}}) =>{
-            if (password !== confirmpassword){
-                throw new ApolloError("Passwords Do Not Match");
-            }
-            if(password === "" || firstname === "" || lastname === "" || email === ""){
-                throw new ApolloError("Please fill in all of the Boxes!");
-            }
-
-            // const coordinatorExists = await Coordinator.findOne({email});
-
-            // if(coordinatorExists){
-            //     throw new ApolloError("Coordinator Already Exists with email " + email);
-            // }
-
-            // var encryptedPassword = await bcrypt.hash(password,10);
-        
-            //     // Build out mongoose model 
-            //     const newCoordinator = new Coordinator({
-            //         firstname:firstname,
-            //         lastname:lastname,
-            //         email: email.toLowerCase(),
-            //         password: encryptedPassword
-            //     });
-        
-            //     // create JWT (attach to user model)
-            //     const token = jwt.sign(
-            //         {id : newCoordinator._id, email}, 
-            //         "UNSAFE_STRING", // stored in a secret file 
-            //         {
-            //             expiresIn: "2h"
-            //         }
-            //     );
-                
-            //     // front end wants to see this token
-            //     // They will attach this token to the user when logging in.
-            //     newCoordinator.token = token;
-                
-            //     // Save user in MongoDB
-            //     const res = await newCoordinator.save();
-        
-            //     return{
-            //         id:res.id,
-            //         ...res._doc
-            //     }
-
-        },
         registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
@@ -382,19 +334,6 @@ const resolvers = {
                 }
             }
 
-        },
-        // Professors will look at coordinators schedule and select the times they will be available. With a Button System
-        // Onces professors pick times available, they will hit submit and those dates will be updated to their Avail Schedule field
-        createCoordinatorSchedule:async(_,{ID,professorScheduleInput:{time}}) => {
-            const dates = [];
-            
-           time.forEach((times) =>{
-                times = new Date(times).toISOString();
-                dates.push(new Date(times));
-            })
-            
-            const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-            return createdDate;
         },
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 

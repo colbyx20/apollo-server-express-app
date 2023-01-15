@@ -149,16 +149,8 @@ scalar DateTime
     }
 
     input groupSchedule {
-        appointmentTime: DateTime
+        appointmentTime: [DateTime]
 
-    }
-
-    input coordinatorInput {
-        firstname: String
-        lastname: String
-        email: String
-        password: String
-        confirmpassword: String
     }
 
     type Query {
@@ -172,7 +164,6 @@ scalar DateTime
 
     type Mutation {
         createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput):Boolean
-        createCoordinatorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
         deleteUser(ID:ID!):Users
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
@@ -184,7 +175,6 @@ scalar DateTime
         addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
     }
 `
 
