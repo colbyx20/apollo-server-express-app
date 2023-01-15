@@ -396,16 +396,32 @@ const resolvers = {
             const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
             return createdDate;
         },
-        createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {  
-            const dates = [];
-            
-           time.forEach((times) =>{
-                times = new Date(times).toISOString();
-                dates.push(new Date(times));
-            })
-            
-            const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-            return createdDate;
+        createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
+
+           async function addDateHelper(time, privilege){
+                const dates = [];
+    
+               time.forEach((times) =>{
+                    times = new Date(times).toISOString();
+                    dates.push(new Date(times));
+                })
+                
+                if(privilege === "professor"){
+                    const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    return createdDate;
+                }else{
+                    const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    return createdDate;
+
+                }
+            }
+
+            if(privilege === "professor"){
+               await addDateHelper(time, privilege);
+            }else if(privilege === 'coordinator'){
+                await addDateHelper(time, privilege);
+            }
+
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
