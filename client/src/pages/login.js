@@ -46,7 +46,7 @@ function Login(props){
         update(proxy,{data:{loginUser: userData}}){
             console.log(userData);
             localStorage.setItem("_id",userData._id);
-            localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
+            localStorage.setItem("token",userData.token); 
             localStorage.setItem("firstname",userData.firstname);
             localStorage.setItem("lastname",userData.lastname);
             localStorage.setItem("email",userData.email);
@@ -56,11 +56,11 @@ function Login(props){
             console.log(STUDENT_EMAIL.test(userData.email));
             console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
             
-            if(userData.email === "andy@knights.ucf.edu"){
+            if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
                  window.location.href = '/student';
                 //navigate('/student');
-            }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
+            }else if(!STUDENT_EMAIL.test(userData.email)){
                 // go to professor page 
                 window.location.href = '/professor';
             }

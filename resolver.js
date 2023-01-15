@@ -395,15 +395,18 @@ const resolvers = {
             const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{availSchedule:isoDate}})).modifiedCount;
             return createdDate;
         },
-        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField}}) =>{
+        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
-            if(coordinatorId === "" || groupName === "" || projectField === ""){
+            if(coordinatorId === "" || groupName === "" || projectField === "" || groupNumber == ""){
                 throw new ApolloError("Please fill all Fields!");
             }
 
             // check for unique
-            const checkUniqueGroup = await Group.find({groupName:groupName});
+            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber});
 
+            console.log(checkUniqueGroup);
+
+            // if group doesn't exist, make one
             if(!checkUniqueGroup){
             
                 const ID = Mongoose.Types.ObjectId(coordinatorId);
@@ -413,6 +416,7 @@ const resolvers = {
                     coordinatorId: ID,
                     groupName: groupName,
                     projectField: projectField,
+                    groupNumber: groupNumber,
                     memberCount: 0
                 });
                 
@@ -420,15 +424,15 @@ const resolvers = {
                 // Save user in MongoDB
                 const res = await newGroup.save();
 
-                // convert new group Id into an objectId()
-                const groupId = Mongoose.Types.ObjectId(res.id);
-
-                // add ReferencialId from new Group into Selected coordinators document
-                await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
                 
+                /* REALIZED THIS WOULD BE FOR MANY TO MANY RELATIONSHIP*/
+                // // convert new group Id into an objectId()
+                // const groupId = Mongoose.Types.ObjectId(res.id);
 
-
-                // return object created 
+                // // add ReferencialId from new Group into Selected coordinators document
+                // await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
+                
+                // return res
                 return{
                     id:res.id,
                     ...res._doc

@@ -88,9 +88,8 @@ scalar DateTime
         coordinatorId:ID
         groupName: String
         projectField: String
+        groupNumber: Int
         memberCount: Int
-        members: [Users]
-        appointments: [Appointments]
     } 
     
     input UserInput {
@@ -146,6 +145,7 @@ scalar DateTime
         coordinatorId: ID
         groupName: String
         projectField: String 
+        groupNumber: Int
     }
 
     input groupSchedule {
