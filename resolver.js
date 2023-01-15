@@ -398,9 +398,7 @@ const resolvers = {
                 times = new Date(times).toISOString();
                 dates.push(new Date(times));
             })
-
-
-            // const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{availSchedule:isoDate}})).modifiedCount;
+            
             const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
             return createdDate;
         },
