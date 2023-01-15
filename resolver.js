@@ -398,6 +398,11 @@ const resolvers = {
         },
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
+
+            privilege === "professor" ? 
+                await addDateHelper(time, privilege) : 
+                "Privilege Error in Schedule";
+
            async function addDateHelper(time, privilege){
                 const dates = [];
     
@@ -416,12 +421,7 @@ const resolvers = {
                 }
             }
 
-            if(privilege === "professor"){
-               await addDateHelper(time, privilege);
-            }else if(privilege === 'coordinator'){
-                await addDateHelper(time, privilege);
-            }
-
+            return (addDateHelper === null);
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
