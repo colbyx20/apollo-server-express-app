@@ -338,14 +338,6 @@ const resolvers = {
 
                 // Save user in MongoDB
                 const res = await newGroup.save();
-
-                
-                /* REALIZED THIS WOULD BE FOR MANY TO MANY RELATIONSHIP*/
-                // // convert new group Id into an objectId()
-                // const groupId = Mongoose.Types.ObjectId(res.id);
-
-                // // add ReferencialId from new Group into Selected coordinators document
-                // await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
                 
                 // return res
                 return{
@@ -365,12 +357,9 @@ const resolvers = {
                 throw new ApolloError("Please fill all Fields!");
             }
 
-            const ID = Mongoose.Types.ObjectId(id);
-            console.log(ID);
-            const b = await Users.findOne({_id:ID});
-            console.log(b);
-            
+            const ID = Mongoose.Types.ObjectId(id);        
             const groupExist = (await Group.findOne({groupNumber:groupnumber}));
+            
             if(groupExist){
 
                 const query = {groupNumber:groupnumber};
@@ -378,9 +367,6 @@ const resolvers = {
                 const options = {upsert:false};
 
                 const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                // const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
-
-                console.log(a);
                 return addGroupMember;
             }else{
                 throw ApolloError("Group Does Not Exist!");
