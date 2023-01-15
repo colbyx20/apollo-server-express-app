@@ -348,30 +348,6 @@ const resolvers = {
                 throw new ApolloError("Group Already Exists!!");
             }
         },
-
-        // Broken -- group info is stored in users instead of Groups
-        // Can add a two way relationships that's 1:M on a group and User but will have
-        // Duplicated Data on Lookups. Would rather keep that option if it's necessary.
-        addGroupMember: async(_, {addToGroup:{id, groupnumber}}) =>{
-            if(id === "" || groupnumber === ""){
-                throw new ApolloError("Please fill all Fields!");
-            }
-
-            const ID = Mongoose.Types.ObjectId(id);        
-            const groupExist = (await Group.findOne({groupNumber:groupnumber}));
-            
-            if(groupExist){
-
-                const query = {groupNumber:groupnumber};
-                const update = {$push:{members: ID}, $inc:{memberCount: 1}};
-                const options = {upsert:false};
-
-                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                return addGroupMember;
-            }else{
-                throw ApolloError("Group Does Not Exist!");
-            }
-        },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
             return wasDeletedUser;
