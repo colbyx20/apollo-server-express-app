@@ -383,16 +383,25 @@ const resolvers = {
             }
 
         },
+        // Professors will look at coordinators schedule and select the times they will be available. With a Button System
+        // Onces professors pick times available, they will hit submit and those dates will be updated to their Avail Schedule field
         createCoordinatorSchedule:async(_,{ID,professorScheduleInput:{time}}) => {
             const date = new Date(time).toISOString();
             const isoDate = new Date(date);
             const createdDate = (await Coordinator.findByIdAndUpdate({_id:ID},{$push:{availSchedule:isoDate}})).modifiedCount;
             return createdDate;
         },
-        createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
-            const date = new Date(time).toISOString();
-            const isoDate = new Date(date);
-            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{availSchedule:isoDate}})).modifiedCount;
+        createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {  
+            const dates = [];
+            
+           time.forEach((times) =>{
+                times = new Date(times).toISOString();
+                dates.push(new Date(times));
+            })
+
+
+            // const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{availSchedule:isoDate}})).modifiedCount;
+            const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
             return createdDate;
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{

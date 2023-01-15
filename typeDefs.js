@@ -110,7 +110,7 @@ scalar DateTime
     }
 
     input ProfessorScheduleInput {
-        time: DateTime
+        time: [DateTime]
     }
 
     input addToGroup {
