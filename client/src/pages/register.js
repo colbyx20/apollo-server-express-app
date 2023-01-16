@@ -17,8 +17,8 @@ const REGISTER_USER = gql`
             firstname
             lastname
             email
-            password
-            confirmpassword
+            privilege
+            token
   }
 }
 

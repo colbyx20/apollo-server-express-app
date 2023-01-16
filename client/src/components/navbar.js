@@ -22,6 +22,7 @@ function Navbar(){
 
     const firstname = localStorage.getItem("firstname");
     const lastname = localStorage.getItem("lastname");
+    const privilege = localStorage.getItem("privilege");
 
     if(firstname === undefined){
         firstname = "";
@@ -31,15 +32,16 @@ function Navbar(){
         lastname = "";
     }
 
+    if(privilege === undefined){
+        privilege = "";
+    }
 
-
-    
     return(
         <Box sx={{flexGrow:1}}>
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {firstname} {lastname}</Link>
+                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {privilege} {lastname}</Link>
                     </Typography>
                     <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
                         {user?

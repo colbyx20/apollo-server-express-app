@@ -13,10 +13,12 @@ import Slider from '../components/Slider'
 const LOGIN_USER = gql`
     mutation Mutation($loginInput: loginInput) {
         loginUser(loginInput: $loginInput) {
-            email 
+            _id
             firstname
             lastname
-            token
+            email
+            token 
+            privilege
         }
     }
 `
@@ -43,23 +45,24 @@ function Login(props){
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
             console.log(userData);
-
-            localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
+            localStorage.setItem("_id",userData._id);
+            localStorage.setItem("token",userData.token); 
             localStorage.setItem("firstname",userData.firstname);
             localStorage.setItem("lastname",userData.lastname);
             localStorage.setItem("email",userData.email);
+            localStorage.setItem("privilege",userData.privilege);
 
 
             console.log(STUDENT_EMAIL.test(userData.email));
             console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
             
-            if(userData.email === "andy@knights.ucf.edu"){
+            if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
                  window.location.href = '/student';
                 //navigate('/student');
-            }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
+            }else if(!STUDENT_EMAIL.test(userData.email)){
                 // go to professor page 
-                navigate('/');
+                window.location.href = '/professor';
             }
         },
         onError({graphQLErrors}){

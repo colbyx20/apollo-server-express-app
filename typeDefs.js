@@ -34,7 +34,7 @@ scalar DateTime
     }
 
     type Users {
-        _id:ID!
+        _id:ID
         firstname: String
         lastname: String
         email: String
@@ -48,21 +48,27 @@ scalar DateTime
         image: String
     }
 
+    type UserLogin {
+        _id:ID
+        firstname: String 
+        lastname: String
+        email: String
+        token:String
+        privilege: String
+        confirm: String
+        password: String
+    }
+
     type Professors {
-        _id:ID!
+        _id:ID
         firstname: String
         lastname: String
         email: String
         password: String
-        privilege: Int
-        fieldOfInterest:String
-        confirm: Int
+        privilege: String
+        confirm: Boolean
         token: String
-        schedule: [DateTime]
-        appointments: [Appointments]
-        image:String
-        coordinator: Boolean
-        groups: [Group]
+
     }
 
     type Appointments {
@@ -80,13 +86,12 @@ scalar DateTime
         coordinatorId:ID
         groupName: String
         projectField: String
+        groupNumber: Int
         memberCount: Int
-        members: [Users!]!
-        appointments: [Appointments]
     } 
     
     input UserInput {
-        firstname: String
+        name: String
         lastname: String
         email: String
         password: String
@@ -103,12 +108,12 @@ scalar DateTime
     }
 
     input ProfessorScheduleInput {
-        time: DateTime
+        time: [DateTime]
     }
 
     input addToGroup {
         id:ID
-        groupname: String
+        groupnumber: Int
     }
 
     input RegisterInput {
@@ -138,44 +143,36 @@ scalar DateTime
         coordinatorId: ID
         groupName: String
         projectField: String 
+        groupNumber: Int
     }
 
     input groupSchedule {
-        appointmentTime: DateTime
+        appointmentTime: [DateTime]
 
-    }
-
-    input coordinatorInput {
-        firstname: String
-        lastname: String
-        email: String
-        password: String
-        confirmpassword: String
     }
 
     type Query {
-        getUser(ID:ID!) : Users!
-        getProfessor(ID:ID!) : Professors!
-        getAllProfessors : [Professors!]
-        getAllUsers :[Users!]
-        getAllGroups :[Group!]
-        getAdmins : Admin!
+        getUser(ID:ID!) : Users
+        getProfessor(ID:ID!) : Professors
+        getAllProfessors : [Professors]
+        getAllUsers :[Users]
+        getAllGroups :[Group]
+        getAdmins : Admin
+        viewCoordinatorSchedule: [Professors]
     }
 
     type Mutation {
-        createProfessorSchedule(ID:ID!,professorScheduleInput:ProfessorScheduleInput):Boolean
-        deleteUser(ID:ID!):Users!
-        deleteProfessor(ID:ID!):Professors!
-        editUser(ID:ID!, userInput:UserInput):Users! 
-        editProfessor(ID:ID!, professorInput:ProfessorInput):Professors!
-        registerUser(registerInput: RegisterInput) : Users
-        loginUser(loginInput: loginInput): Users
+        createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput):Boolean
+        deleteUser(ID:ID!):Users
+        deleteProfessor(ID:ID!):Professors
+        editUser(ID:ID!, userInput:UserInput):Users!
+        editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
+        registerUser(registerInput: RegisterInput) : UserLogin
+        loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        addGroupMember(addToGroup:addToGroup): Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
     }
 `
 
