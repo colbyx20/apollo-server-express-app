@@ -196,7 +196,7 @@ const resolvers = {
             if(STUDENT_EMAIL.test(email)){
                 try{
                     // check if email is valid 
-                    const isValidEmail = await Users.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
+                    const isValidEmail = await Users.findOne({email});
                     
                     // set up email 
                     let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
@@ -351,7 +351,7 @@ const resolvers = {
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
             return wasDeletedUser;
-        },
+        }, 
         deleteProfessor: async(_,{ID}) =>{
             const wasDeletedProfessor = (await Professors.deleteOne({_id:ID})).deletedCount;
             return wasDeletedProfessor;
