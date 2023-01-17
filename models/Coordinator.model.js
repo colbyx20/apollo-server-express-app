@@ -8,8 +8,7 @@ const coordinatorSchema = new Schema({
     confirm:{type: Number}, // maybe turn this into a Boolean
     privilege:{type:Number},  // starting to think we don't need this
     token:{type:String},
-    image:{type:String},
-    classroom:{type:String}, 
+    image:{type:String}, 
     groups:{type:Array},
     schedule:{type:Array}
 

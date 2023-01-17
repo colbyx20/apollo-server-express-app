@@ -46,6 +46,53 @@ const resolvers = {
         }
     },
     Mutation:{
+        registerCoordinator: async(_,{coordinatorInput: {firstname,lastname,email,password,confirmpassword}}) =>{
+            if (password !== confirmpassword){
+                throw new ApolloError("Passwords Do Not Match");
+            }
+            if(password === "" || firstname === "" || lastname === "" || email === ""){
+                throw new ApolloError("Please fill in all of the Boxes!");
+            }
+
+            const coordinatorExists = await Coordinator.findOne({email});
+
+            if(coordinatorExists){
+                throw new ApolloError("Coordinator Already Exists with email " + email);
+            }
+
+            var encryptedPassword = await bcrypt.hash(password,10);
+        
+                // Build out mongoose model 
+                const newCoordinator = new Coordinator({
+                    firstname:firstname,
+                    lastname:lastname,
+                    email: email.toLowerCase(),
+                    password: encryptedPassword,
+                    confirm: 0,
+                });
+        
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    {id : newCoordinator._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+                
+                // front end wants to see this token
+                // They will attach this token to the user when logging in.
+                newCoordinator.token = token;
+                
+                // Save user in MongoDB
+                const res = await newCoordinator.save();
+        
+                return{
+                    id:res.id,
+                    ...res._doc
+                }
+
+        },
         registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
@@ -60,7 +107,7 @@ const resolvers = {
     
             if(oldUser || oldProfessor){
                 // throw an error 
-                throw new ApolloError("A user is already reigstered with the email" + email, "USER_ALREADY_EXISTS");
+                throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
 
             let transport = nodemailer.createTransport({ 
@@ -436,31 +483,60 @@ const resolvers = {
         createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
             const date = new Date(time).toISOString();
             const isoDate = new Date(date);
-            const createdDate = (await Professors.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
+            const createdDate = (await Coordinator.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
             return createdDate;
         },
-        createGroup: async (_,{groupInfo:{groupName,groupProject,projectField}}) =>{
+        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField}}) =>{
 
-            // create a new group Document
-            const newGroup = new Group({
-                groupName: groupName,
-                groupProject: groupProject,
-                projectField: projectField,
-                memberCount: 0
-            });
+            if(coordinatorId === "" || groupName === "" || projectField === ""){
+                throw new ApolloError("Please fill all Fields!");
+            }
+
+            // check for unique
+            const checkUniqueGroup = await Group.find({groupName:groupName});
+
+            if(!checkUniqueGroup){
             
+                const ID = Mongoose.Types.ObjectId(coordinatorId);
+                
+                // create a new group Document
+                const newGroup = new Group({
+                    coordinatorId: ID,
+                    groupName: groupName,
+                    projectField: projectField,
+                    memberCount: 0
+                });
+                
 
-            // Save user in MongoDB
-            const res = await newGroup.save();
+                // Save user in MongoDB
+                const res = await newGroup.save();
 
-            // return object created 
-            return{
-                id:res.id,
-                ...res._doc
+                // convert new group Id into an objectId()
+                const groupId = Mongoose.Types.ObjectId(res.id);
+
+                // add ReferencialId from new Group into Selected coordinators document
+                await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
+                
+
+
+                // return object created 
+                return{
+                    id:res.id,
+                    ...res._doc
+                }
+            }else{
+                throw new ApolloError("Group Already Exists!!");
             }
         },
         addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
+            if(id === "" || groupname === ""){
+                throw new ApolloError("Please fill all Fields!");
+            }
+
             const ID = Mongoose.Types.ObjectId(id);
+            console.log(ID);
+            const b = await Users.findOne({_id:ID});
+            console.log(b);
             
             const groupExist = (await Group.findOne({groupName:groupname}));
             if(groupExist){
@@ -470,6 +546,9 @@ const resolvers = {
                 const options = {upsert:false};
 
                 const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
+                const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
+
+                console.log(a);
                 return addGroupMember;
             }else{
                 throw ApolloError("Group Does Not Exist!");
