@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const UsersSchema = new mongoose.Schema({
 
     userFName:{type: String},
-    userLname:{type: String},
+    userLName:{type: String},
     groupNumber: {type: String,require: false},
     role:{type: String},
     coordinatorId: {type: mongoose.ObjectId},

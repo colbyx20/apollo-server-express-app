@@ -57,9 +57,9 @@ const resolvers = {
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
             const oldProfessor = await UserInfo.findOne({email:email});
-            console.log(`does Email Exist?? ${oldProfessor}`);
+            const oldUser = await UserInfo.findOne({email:email});
     
-            if(oldProfessor){
+            if(oldProfessor || oldUser){
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
@@ -75,7 +75,83 @@ const resolvers = {
             
             });
 
-            if(!STUDENT_EMAIL.test(email)){
+
+
+            if(STUDENT_EMAIL.test(email)){
+
+                console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
+                
+                // Encrypt password using bcryptjs
+                var encryptedPassword = await bcrypt.hash(password,10);
+        
+                // Build out mongoose model 
+                const newStudent = new Users({
+                    userFName:firstname.toLowerCase(),
+                    userLName:lastname.toLowerCase(),
+                    role: "",
+                    groupNumber:0,
+                });
+        
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    {id : newStudent._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "1d"
+                    }
+                );
+                
+                // Save user in MongoDB
+                const res = await newStudent.save();
+
+                // create professors auth information in separate collection called Auth
+                const authStudent = new Auth({
+                    userId: res._id,
+                    password: encryptedPassword,
+                    confirm: false,
+                    privilege: "student",
+                    token: token
+                })
+
+                // save new professor profile
+                await authStudent.save();
+                
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId:res._id,
+                    email: email.toLowerCase(),
+                    image:''
+                })
+
+                await studentInfo.save();
+
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Please Confirm Your Account",
+                    html: `<h1>Email Confirmation</h1>
+                    <h2>Hello ${firstname}</h2>
+                    <p>Thank you for Registering!</p>
+                    <p>To activate your account please click on the link below.</p>
+                    
+                    <p>Please Check you Junk/Spam folder</p>
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
+        
+                return{
+                    id:res._id,
+                    firstname: res.userFName,
+                    lastname: res.userLName,
+                    email: studentInfo.email,
+                    privilege: studentInfo.privilege,
+                    password: authStudent.password,
+                    confirm: authStudent.confirm,
+                    token: authStudent.token
+
+                }
+
+            } else if(!STUDENT_EMAIL.test(email)){
 
                 console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
                 console.log(`Professor: ${PROFESSOR_EMAIL.test(email)}`);
@@ -136,7 +212,7 @@ const resolvers = {
                 })
         
                 return{
-                    id:res.id,
+                    id:res._id,
                     firstname: res.professorFName,
                     lastname: res.professorLName,
                     email: professorInfo.email,
@@ -185,6 +261,39 @@ const resolvers = {
                         email: professorsInfo.email,
                         token: professorsAuth.token,
                         privilege: professorsInfo.privilege
+                    }          
+                }
+            }else if (STUDENT_EMAIL.test(email)){
+               
+                // 3 small queries are faster than joining all 3 then searching
+                const studentInfo = await UserInfo.findOne({email});
+                const studentAuth = await Auth.findOne({userId:studentInfo.userId});
+                const student = await Users.findOne({_id:studentInfo.userId});
+
+                if(studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))){
+
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {
+                            id : student._id, 
+                            email, 
+                            firstname: student.userFName, 
+                            lastname: student.userLName
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1d"}
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
+    
+                    return {
+                        _id: student._id,
+                        firstname:student.userFName,
+                        lastname:student.userLName,
+                        email: studentInfo.email,
+                        token: studentAuth.token,
+                        privilege: studentInfo.privilege
                     }          
                 }
             }
