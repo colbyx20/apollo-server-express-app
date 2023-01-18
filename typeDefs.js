@@ -158,7 +158,7 @@ scalar DateTime
         getAllUsers :[Users]
         getAllGroups :[Group]
         getAdmins : Admin
-        viewCoordinatorSchedule: [Professors]
+        getCoordinatorSchedule: DateTime
     }
 
     type Mutation {

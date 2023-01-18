@@ -7,8 +7,7 @@ const userInfoSchema = new Schema({
     privilege: {
         type: String,
         require: true,
-        enum:['student','professor','coordinator'],
-        default:'professor' 
+        enum:['student','professor','coordinator'] 
     }
 });
 
