@@ -41,6 +41,14 @@ const resolvers = {
                     }
                 }]);
         },
+        getCoordinatorSchedule: async() =>{
+            return await Coordinator.aggregate([
+                    {$group:{_id:"$schedule"}},
+                    {$unwind:"$_id"},
+                    {$group:{_id:"$_id"}},
+                    {$sort:{_id:1}}
+            ])
+        },
         getAdmins: async() =>{
             return await Admin.find();
         }
@@ -140,7 +148,6 @@ const resolvers = {
                 })
         
                 return{
-                    id:res._id,
                     firstname: res.userFName,
                     lastname: res.userLName,
                     email: studentInfo.email,
@@ -192,7 +199,8 @@ const resolvers = {
                 const professorInfo = new UserInfo({
                     userId:res._id,
                     email: email.toLowerCase(),
-                    image:''
+                    image:'',
+                    privilege:"professor"
                 })
 
                 await professorInfo.save();
