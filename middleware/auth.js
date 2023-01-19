@@ -18,10 +18,10 @@ module.exports = (context) => {
                     throw new AuthenticationError('Invalid/Expired token');
                 }
             }
-            throw new Error("Authentication token must be 'Bearer [token]'");
+            throw new Error("Not Authorized, no token");
         }
         throw new error("Authentication header must be provided");
     }catch(e){
-        throw new error("JWT DECODE IS UNDEFINED");
+        throw new error("Authentication header must be provided");
     }
 }

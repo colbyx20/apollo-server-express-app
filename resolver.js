@@ -41,6 +41,17 @@ const resolvers = {
                     }
                 }]);
         },
+        availSchedule: async() =>{
+            return Professors.aggregate([
+                {$group:{_id:"$availSchedule",pId:{$push:"$_id"}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$unwind:"$pId"},
+                {$unwind:"$pId"},
+                {$group:{_id:"$_id", pId:{$addToSet:"$pId"}}},
+                {$sort:{_id:1}}
+            ]);
+        },
         getCoordinatorSchedule: async() =>{
             return await Coordinator.aggregate([
                     {$group:{_id:"$schedule"}},

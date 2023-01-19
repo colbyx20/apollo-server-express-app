@@ -151,6 +151,10 @@ scalar DateTime
 
     }
 
+    type availSchedule {
+        _id: DateTime
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -159,6 +163,7 @@ scalar DateTime
         getAllGroups :[Group]
         getAdmins : Admin
         getCoordinatorSchedule: DateTime
+        availSchedule: DateTime
     }
 
     type Mutation {
