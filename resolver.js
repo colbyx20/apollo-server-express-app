@@ -43,13 +43,19 @@ const resolvers = {
         },
         availSchedule: async() =>{
             return Professors.aggregate([
+                // {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                // {$unwind:"$_id"},
+                // {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                // {$unwind:"$pId"},
+                // {$unwind:"$pId"},
+                // {$group:{_id:"$_id", pId:{$addToSet:"$pId"}}},
+                // {$sort:{_id:1}}
+
                 {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
                 {$unwind:"$_id"},
                 {$group:{_id:"$_id", pId:{$push:"$pId"}}},
-                {$unwind:"$pId"},
-                {$unwind:"$pId"},
-                {$group:{_id:"$_id", pId:{$addToSet:"$pId"}}},
-                {$sort:{_id:1}}
+                {$sort:{_id:1}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}}
             ]);
         },
         getCoordinatorSchedule: async() =>{
