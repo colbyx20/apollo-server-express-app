@@ -43,7 +43,7 @@ const resolvers = {
         },
         availSchedule: async() =>{
             return Professors.aggregate([
-                {$group:{_id:"$availSchedule",pId:{$push:"$_id"}}},
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
                 {$unwind:"$_id"},
                 {$group:{_id:"$_id", pId:{$push:"$pId"}}},
                 {$unwind:"$pId"},
