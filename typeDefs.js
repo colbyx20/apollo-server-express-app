@@ -164,6 +164,7 @@ scalar DateTime
         getAdmins : Admin
         getCoordinatorSchedule: DateTime
         availSchedule: DateTime
+        availScheduleByGroup(date:DateTime!): DateTime
     }
 
     type Mutation {

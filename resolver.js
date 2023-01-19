@@ -56,8 +56,22 @@ const resolvers = {
                 {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
                 {$unwind:"$_id"},
                 {$group:{_id:"$_id", pId:{$push:"$pId"}}},
-                {$sort:{_id:1}},
-                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}}
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
+            ]);
+        },
+        availScheduleByGroup: async(_,{date}) => {
+
+            const dateConversion = new Date(date).toISOString();
+            const viewDate = new Date(dateConversion);
+
+            return Professors.aggregate([
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$match:{_id:viewDate}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
             ]);
         },
         getCoordinatorSchedule: async() =>{
