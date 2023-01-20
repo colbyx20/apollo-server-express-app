@@ -1,7 +1,6 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
-const Admin = require('./models/Admin.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
 const UserInfo = require('./models/UserInfo.model');

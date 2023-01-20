@@ -188,7 +188,6 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
 
     }
 `
