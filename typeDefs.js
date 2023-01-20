@@ -61,8 +61,9 @@ scalar DateTime
 
     type Professors {
         _id:ID
-        firstname: String
-        lastname: String
+        professorFName: String
+        professorLName: String
+        availSchedule: [DateTime]
         email: String
         password: String
         privilege: String
