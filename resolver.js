@@ -82,9 +82,6 @@ const resolvers = {
                     {$group:{_id:"$_id"}},
                     {$sort:{_id:1}}
             ])
-        },
-        getAdmins: async() =>{
-            return await Admin.find();
         }
     },
     Mutation:{
@@ -270,159 +267,6 @@ const resolvers = {
             }
     
         },
-<<<<<<< HEAD
-    
-        appointCordinator: async (_,{appointInput:{firstname,lastname}}) =>{
-            const professor = await Professor.findOne({firstname},{lastname});//could also just do IDs 
-            const oldCoordinator = await Coordinator.findOne({firstname},{lastname});
-            if(oldCoordinator==null){
-                // Build out mongoose model with information from the professor doc 
-                const newCoordinator = new Coordinator({
-                    firstname:firstname,
-                    lastname:lastname,
-                    email: professor.email,
-                    password: professor.password,
-                    privilege:3,
-                });
-                //save
-                const res = await newCoordinator.save()
-                //notify them that they were successfully made coordinators
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: professor.email,
-                    subject: "Coordinator Account ready",
-                    html: `<h1>Email Confirmation</h1>
-                    <h2>Hello Professor ${lastname}</h2>
-                    <p>Your Coordinator account with Scheduler united is ready for use!</p>
-                    
-                    </div>`,
-                })
-            }else{
-                throw new ApolloError("Professor"+firstname+" "+lastname+" is already a coordinator");
-            }
-        },
-        loginUser: async (_,{loginInput: {email, password}}, context) => {
-            // console.log(context);
-            const professors = await Professors.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
-            const user = await Users.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
-            const coordinator = await Coordinator.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
-            const admin = await Admin.findOne({email}, {email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
-            if(user != null){
-                if(user.confirm === 0){
-                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-                }else{
-                    // check if the entered password = encrypted password - use bcrypt
-                    if(user && (await bcrypt.compare(password, user.password))){
-                        // create a new token ( when you login you give user a new token )
-                        const token = jwt.sign(
-                            {id : user._id, email, firstname: user.firstname, lastname: user.lastname}, 
-                            "UNSAFE_STRING", // stored in a secret file 
-                            {
-                                expiresIn: "2h"
-                            }
-                        );
-        
-                        // attach token to user model that we found if user exists 
-                        user.token = token;
-        
-                        return {
-                            id: user.id,
-                            ...user._doc
-                        }
-        
-        
-                    }else{
-                        // if user doesn't exists, return error
-                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                    }
-                }
-            }else if(professors != null && coordinator==null){
-                if(professors.confirm === 0){
-                    throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-                }else{
-                    // check if the entered password = encrypted password - use bcrypt
-                    if(professors && (await bcrypt.compare(password, professors.password))){
-                        // create a new token ( when you login you give user a new token )
-                        const token = jwt.sign(
-                            {id : professors._id, email, firstname: professors.firstname, lastname: professors.lastname}, 
-                            "UNSAFE_STRING", // stored in a secret file 
-                            {
-                                expiresIn: "2h"
-                            }
-                        );
-        
-                        // attach token to user model that we found if user exists 
-                        professors.token = token;
-        
-                        return {
-                            id: professors.id,
-                            ...professors._doc
-                        }
-        
-        
-                    }else{
-                        // if user doesn't exists, return error
-                        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                    }
-                }
-            }else if(coordinator != null){
-                    if(coordinator.confirm === 0){
-                        throw new ApolloError("Account Not confirmed " + email + " PLEASE SEE EMAIL CONFIRMATION");
-                    }else{
-                        // check if the entered password = encrypted password - use bcrypt
-                        if(coordinator && (await bcrypt.compare(password, coordinator.password))){
-                            // create a new token ( when you login you give user a new token )
-                            const token = jwt.sign(
-                                {id : coordinator._id, email, firstname: coordinator.firstname, lastname: coordinator.lastname}, 
-                                "UNSAFE_STRING", // stored in a secret file 
-                                {
-                                    expiresIn: "2h"
-                                }
-                            );
-            
-                            // attach token to user model that we found if user exists 
-                            coordinator.token = token;
-            
-                            return {
-                                id: coordinator.id,
-                                ...coordinator._doc
-                            }
-            
-            
-                        }else{
-                            // if user doesn't exists, return error
-                            throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                        }
-                    }
-            }else if(admin != null){
-                        // check if the entered password = encrypted password - use bcrypt
-                        if(admin && (await bcrypt.compare(password, admin.password))){
-                            // create a new token ( when you login you give user a new token )
-                            const token = jwt.sign(
-                                {id : admin._id, email, firstname: admin.firstname, lastname: admin.lastname}, 
-                                "UNSAFE_STRING", // stored in a secret file 
-                                {
-                                    expiresIn: "2h"
-                                }
-                            );
-            
-                            // attach token to user model that we found if user exists 
-                            admin.token = token;
-            
-                            return {
-                                id: admin.id,
-                                ...admin._doc
-                            }
-            
-            
-                        }else{
-                            // if user doesn't exists, return error
-                            throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
-                        }
-                }else{
-                    throw new ApolloError("LEARN HOW TO CODE NERD");
-                }
-=======
         loginUser: async (_,{loginInput: {email, password}}) => {
 
             if(!STUDENT_EMAIL.test(email)){
@@ -492,7 +336,6 @@ const resolvers = {
                     }          
                 }
             }
->>>>>>> master
         },
         // confirm email if valid, then provide another api to actually set the api.
         confirmEmail: async(_,{confirmEmail:{email}}) => {
@@ -677,20 +520,6 @@ const resolvers = {
                 coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
-        },
-        addProfessorRequest: async (_,{ID, ProfessorRequestInput: {request}})=>{
-            const request = Mongoose.Types.ObjectId(request);
-            const addRequest = (Professors.updateOne({_id:ID},{
-                $push:{request:request}
-            }));
-            return addRequest;
-        },
-        resolveProfessorRequest:async(_,{ID, ProfessorRequestInput: {request}})=>{
-            const request = Mongoose.Types.ObjectId(request);
-            const addRequest = (Professors.updateOne({_id:ID},{
-                $pull:{request:request}
-            }));
-            return addRequest;
         }
     }
 }
