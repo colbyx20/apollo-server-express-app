@@ -4,6 +4,7 @@ const groupSchema = new Schema({
     coordinatorId: mongoose.ObjectId,
     groupName: {type:String, require:true, unique: true},
     projectField: {type:String, require:true}, // maybe turn this into an ENUM??
+<<<<<<< HEAD
     memberCount:{type: Number, require:true},
     members:{type: Array, require:false},
 <<<<<<< HEAD
@@ -12,6 +13,10 @@ const groupSchema = new Schema({
     groups: {type:Array}
 =======
     appointments: {type: Array}
+>>>>>>> master
+=======
+    groupNumber: {type: Number, require: true, unique: true},
+    memberCount:{type: Number}
 >>>>>>> master
 })
 

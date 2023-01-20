@@ -3,6 +3,8 @@ const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
 const Admin = require('./models/Admin.model');
 const Coordinator = require('./models/Coordinator.model');
+const Auth = require('./models/Auth.model');
+const UserInfo = require('./models/UserInfo.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -30,8 +32,6 @@ const resolvers = {
         },
         getAllGroups: async() => {
 
-            
-
             return await Group.aggregate([
                 {$lookup:
                     {   from:"users", 
@@ -41,58 +41,53 @@ const resolvers = {
                     }
                 }]);
         },
+        availSchedule: async() =>{
+            return Professors.aggregate([
+
+                /* KEEP just in case I decide to turn this into it's own viewCollection  */
+
+                // {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                // {$unwind:"$_id"},
+                // {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                // {$unwind:"$pId"},
+                // {$unwind:"$pId"},
+                // {$group:{_id:"$_id", pId:{$addToSet:"$pId"}}},
+                // {$sort:{_id:1}}
+
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
+            ]);
+        },
+        availScheduleByGroup: async(_,{date}) => {
+
+            const dateConversion = new Date(date).toISOString();
+            const viewDate = new Date(dateConversion);
+
+            return Professors.aggregate([
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$match:{_id:viewDate}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
+            ]);
+        },
+        getCoordinatorSchedule: async() =>{
+            return await Coordinator.aggregate([
+                    {$group:{_id:"$schedule"}},
+                    {$unwind:"$_id"},
+                    {$group:{_id:"$_id"}},
+                    {$sort:{_id:1}}
+            ])
+        },
         getAdmins: async() =>{
             return await Admin.find();
         }
     },
     Mutation:{
-        registerCoordinator: async(_,{coordinatorInput: {firstname,lastname,email,password,confirmpassword}}) =>{
-            if (password !== confirmpassword){
-                throw new ApolloError("Passwords Do Not Match");
-            }
-            if(password === "" || firstname === "" || lastname === "" || email === ""){
-                throw new ApolloError("Please fill in all of the Boxes!");
-            }
-
-            const coordinatorExists = await Coordinator.findOne({email});
-
-            if(coordinatorExists){
-                throw new ApolloError("Coordinator Already Exists with email " + email);
-            }
-
-            var encryptedPassword = await bcrypt.hash(password,10);
-        
-                // Build out mongoose model 
-                const newCoordinator = new Coordinator({
-                    firstname:firstname,
-                    lastname:lastname,
-                    email: email.toLowerCase(),
-                    password: encryptedPassword,
-                    confirm: 0,
-                });
-        
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    {id : newCoordinator._id, email}, 
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-                
-                // front end wants to see this token
-                // They will attach this token to the user when logging in.
-                newCoordinator.token = token;
-                
-                // Save user in MongoDB
-                const res = await newCoordinator.save();
-        
-                return{
-                    id:res.id,
-                    ...res._doc
-                }
-
-        },
         registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
@@ -102,10 +97,11 @@ const resolvers = {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
             // See if an old user or Professor exists with Email attempting to Register
-            const oldUser = await Users.findOne({email},{email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
-            const oldProfessor = await Professors.findOne({email},{email:1, confirm:1, password:1, token:1, firstname:1, lastname:1});
+            // const oldUser = await Users.findOne({email});
+            const oldProfessor = await UserInfo.findOne({email:email});
+            const oldUser = await UserInfo.findOne({email:email});
     
-            if(oldUser || oldProfessor){
+            if(oldProfessor || oldUser){
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
@@ -121,45 +117,55 @@ const resolvers = {
             
             });
 
-            let privilege = 0;
-
-            console.log("TESTING");
-            console.log(STUDENT_EMAIL.test(email));
-            console.log(PROFESSOR_EMAIL.test(email));
 
 
             if(STUDENT_EMAIL.test(email)){
-                // student account creation
-                privilege = 1;
 
+                console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
+                
                 // Encrypt password using bcryptjs
                 var encryptedPassword = await bcrypt.hash(password,10);
         
                 // Build out mongoose model 
-                const newUser = new Users({
-                    firstname:firstname,
-                    lastname:lastname,
-                    email: email.toLowerCase(),
-                    password: encryptedPassword,
-                    privilege: privilege,
-                    confirm: 0,
+                const newStudent = new Users({
+                    userFName:firstname.toLowerCase(),
+                    userLName:lastname.toLowerCase(),
+                    role: "",
+                    groupNumber:0,
                 });
         
                 // create JWT (attach to user model)
                 const token = jwt.sign(
-                    {id : newUser._id, email}, 
+                    {id : newStudent._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "2h"
+                        expiresIn: "1d"
                     }
                 );
                 
-                // front end wants to see this token
-                // They will attach this token to the user when logging in.
-                newUser.token = token;
-                
                 // Save user in MongoDB
-                const res = await newUser.save();
+                const res = await newStudent.save();
+
+                // create professors auth information in separate collection called Auth
+                const authStudent = new Auth({
+                    userId: res._id,
+                    password: encryptedPassword,
+                    confirm: false,
+                    privilege: "student",
+                    token: token
+                })
+
+                // save new professor profile
+                await authStudent.save();
+                
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId:res._id,
+                    email: email.toLowerCase(),
+                    image:''
+                })
+
+                await studentInfo.save();
 
                 transport.sendMail({
                     from: "group13confirmation@gmail.com",
@@ -170,31 +176,34 @@ const resolvers = {
                     <p>Thank you for Registering!</p>
                     <p>To activate your account please click on the link below.</p>
                     
+                    <p>Please Check you Junk/Spam folder</p>
                     </div>`,
-                    // code up a confirmation
                     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                 })
         
                 return{
-                    id:res.id,
-                    ...res._doc
+                    firstname: res.userFName,
+                    lastname: res.userLName,
+                    email: studentInfo.email,
+                    privilege: studentInfo.privilege,
+                    password: authStudent.password,
+                    confirm: authStudent.confirm,
+                    token: authStudent.token
+
                 }
 
-            }else if(!STUDENT_EMAIL.test(email)){
-                // professor account creation
-                privilege = 2;
+            } else if(!STUDENT_EMAIL.test(email)){
+
+                console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
+                console.log(`Professor: ${PROFESSOR_EMAIL.test(email)}`);
                 
                 // Encrypt password using bcryptjs
                 var encryptedPassword = await bcrypt.hash(password,10);
         
                 // Build out mongoose model 
                 const newProfessor = new Professors({
-                    firstname:firstname,
-                    lastname:lastname,
-                    email: email.toLowerCase(),
-                    password: encryptedPassword,
-                    privilege: privilege,
-                    confirm: 0,
+                    professorFName:firstname.toLowerCase(),
+                    professorLName:lastname.toLowerCase()
                 });
         
                 // create JWT (attach to user model)
@@ -202,16 +211,33 @@ const resolvers = {
                     {id : newProfessor._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "2h"
+                        expiresIn: "1d"
                     }
                 );
                 
-                // front end wants to see this token
-                // They will attach this token to the user when logging in.
-                newProfessor.token = token;
-                
                 // Save user in MongoDB
                 const res = await newProfessor.save();
+
+                // create professors auth information in separate collection called Auth
+                const authProfessor = new Auth({
+                    userId: res._id,
+                    password: encryptedPassword,
+                    confirm: false,
+                    token: token
+                })
+
+                // save new professor profile
+                await authProfessor.save();
+                
+                // create model for professors information 
+                const professorInfo = new UserInfo({
+                    userId:res._id,
+                    email: email.toLowerCase(),
+                    image:'',
+                    privilege:"professor"
+                })
+
+                await professorInfo.save();
 
                 transport.sendMail({
                     from: "group13confirmation@gmail.com",
@@ -222,13 +248,21 @@ const resolvers = {
                     <p>Thank you for Registering!</p>
                     <p>To activate your account please click on the link below.</p>
                     
+                    <p>Please Check you Junk/Spam folder</p>
                     </div>`,
                     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                 })
         
                 return{
-                    id:res.id,
-                    ...res._doc
+                    id:res._id,
+                    firstname: res.professorFName,
+                    lastname: res.professorLName,
+                    email: professorInfo.email,
+                    privilege: professorInfo.privilege,
+                    password: authProfessor.password,
+                    confirm: authProfessor.confirm,
+                    token: authProfessor.token
+
                 }
 
             }else{
@@ -236,6 +270,7 @@ const resolvers = {
             }
     
         },
+<<<<<<< HEAD
     
         appointCordinator: async (_,{appointInput:{firstname,lastname}}) =>{
             const professor = await Professor.findOne({firstname},{lastname});//could also just do IDs 
@@ -387,8 +422,78 @@ const resolvers = {
                 }else{
                     throw new ApolloError("LEARN HOW TO CODE NERD");
                 }
-        },
+=======
+        loginUser: async (_,{loginInput: {email, password}}) => {
 
+            if(!STUDENT_EMAIL.test(email)){
+
+                // 3 small queries are faster than joining all 3 then searching
+                const professorsInfo = await UserInfo.findOne({email});
+                const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
+                const professors = await Professors.findOne({_id:professorsInfo.userId});
+
+                if(professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
+
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {
+                            id : professors._id, 
+                            email, 
+                            firstname: professors.professorFName, 
+                            lastname: professors.professorLName
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1d"}
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
+    
+                    return {
+                        _id: professors._id,
+                        firstname:professors.professorFName,
+                        lastname:professors.professorLName,
+                        email: professorsInfo.email,
+                        token: professorsAuth.token,
+                        privilege: professorsInfo.privilege
+                    }          
+                }
+            }else if (STUDENT_EMAIL.test(email)){
+               
+                // 3 small queries are faster than joining all 3 then searching
+                const studentInfo = await UserInfo.findOne({email});
+                const studentAuth = await Auth.findOne({userId:studentInfo.userId});
+                const student = await Users.findOne({_id:studentInfo.userId});
+
+                if(studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))){
+
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {
+                            id : student._id, 
+                            email, 
+                            firstname: student.userFName, 
+                            lastname: student.userLName
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1d"}
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
+    
+                    return {
+                        _id: student._id,
+                        firstname:student.userFName,
+                        lastname:student.userLName,
+                        email: studentInfo.email,
+                        token: studentAuth.token,
+                        privilege: studentInfo.privilege
+                    }          
+                }
+            }
+>>>>>>> master
+        },
         // confirm email if valid, then provide another api to actually set the api.
         confirmEmail: async(_,{confirmEmail:{email}}) => {
 
@@ -396,7 +501,7 @@ const resolvers = {
             if(STUDENT_EMAIL.test(email)){
                 try{
                     // check if email is valid 
-                    const isValidEmail = await Users.findOne({email}, {_id:1, email:1, firstname:1, lastname:1});
+                    const isValidEmail = await Users.findOne({email});
                     
                     // set up email 
                     let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
@@ -480,21 +585,48 @@ const resolvers = {
             }
 
         },
-        createProfessorSchedule: async(_,{ID,professorScheduleInput:{time}}) => {
-            const date = new Date(time).toISOString();
-            const isoDate = new Date(date);
-            const createdDate = (await Coordinator.findByIdAndUpdate({_id:ID},{$push:{schedule:isoDate}})).modifiedCount;
-            return createdDate;
-        },
-        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField}}) =>{
 
-            if(coordinatorId === "" || groupName === "" || projectField === ""){
+        // might take out if statement to differ between professor and coordinator
+        // depends if we will have a separate register for coordinator
+        createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
+
+
+            privilege === "professor" ? 
+                await addDateHelper(time, privilege) : 
+                "Privilege Error in Schedule";
+
+           async function addDateHelper(time, privilege){
+                const dates = [];
+    
+               time.forEach((times) =>{
+                    times = new Date(times).toISOString();
+                    dates.push(new Date(times));
+                })
+                
+                if(privilege === "professor"){
+                    const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    return createdDate;
+                }else{
+                    const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    return createdDate;
+
+                }
+            }
+
+            return (addDateHelper === null);
+        },
+        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
+
+            if(coordinatorId === "" || groupName === "" || projectField === "" || groupNumber == ""){
                 throw new ApolloError("Please fill all Fields!");
             }
 
             // check for unique
-            const checkUniqueGroup = await Group.find({groupName:groupName});
+            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber});
 
+            console.log(checkUniqueGroup);
+
+            // if group doesn't exist, make one
             if(!checkUniqueGroup){
             
                 const ID = Mongoose.Types.ObjectId(coordinatorId);
@@ -504,22 +636,15 @@ const resolvers = {
                     coordinatorId: ID,
                     groupName: groupName,
                     projectField: projectField,
+                    groupNumber: groupNumber,
                     memberCount: 0
                 });
                 
 
                 // Save user in MongoDB
                 const res = await newGroup.save();
-
-                // convert new group Id into an objectId()
-                const groupId = Mongoose.Types.ObjectId(res.id);
-
-                // add ReferencialId from new Group into Selected coordinators document
-                await Coordinator.findByIdAndUpdate({_id:ID}, {$push:{groups:groupId}});
                 
-
-
-                // return object created 
+                // return res
                 return{
                     id:res.id,
                     ...res._doc
@@ -528,36 +653,10 @@ const resolvers = {
                 throw new ApolloError("Group Already Exists!!");
             }
         },
-        addGroupMember: async(_, {addToGroup:{id, groupname}}) =>{
-            if(id === "" || groupname === ""){
-                throw new ApolloError("Please fill all Fields!");
-            }
-
-            const ID = Mongoose.Types.ObjectId(id);
-            console.log(ID);
-            const b = await Users.findOne({_id:ID});
-            console.log(b);
-            
-            const groupExist = (await Group.findOne({groupName:groupname}));
-            if(groupExist){
-
-                const query = {groupName:groupname};
-                const update = {$push:{members: ID}, $inc:{memberCount: 1}};
-                const options = {upsert:false};
-
-                const addGroupMember = (await Group.findOneAndUpdate(query, update, options)).modifiedCount;
-                const a = (await Users.findOneAndUpdate({_id:ID}, {$set:{group: groupname}})).modifiedCount;
-
-                console.log(a);
-                return addGroupMember;
-            }else{
-                throw ApolloError("Group Does Not Exist!");
-            }
-        },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
             return wasDeletedUser;
-        },
+        }, 
         deleteProfessor: async(_,{ID}) =>{
             const wasDeletedProfessor = (await Professors.deleteOne({_id:ID})).deletedCount;
             return wasDeletedProfessor;
