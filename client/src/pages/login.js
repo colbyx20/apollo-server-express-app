@@ -8,20 +8,19 @@ import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
 import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
-
+import Slider from '../components/Slider'
 
 const LOGIN_USER = gql`
-
     mutation Mutation($loginInput: loginInput) {
         loginUser(loginInput: $loginInput) {
-            email 
-            login
+            _id
             firstname
             lastname
-            token
+            email
+            token 
+            privilege
         }
     }
-
 `
 
 function Login(props){
@@ -29,9 +28,10 @@ function Login(props){
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){3,}@gmail\.com$');
+    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.edu$');
+    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
+
 
     function loginUserCallback(){
         loginUser();
@@ -44,13 +44,25 @@ function Login(props){
 
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
+            console.log(userData);
+            localStorage.setItem("_id",userData._id);
+            localStorage.setItem("token",userData.token); 
+            localStorage.setItem("firstname",userData.firstname);
+            localStorage.setItem("lastname",userData.lastname);
+            localStorage.setItem("email",userData.email);
+            localStorage.setItem("privilege",userData.privilege);
+
+
+            console.log(STUDENT_EMAIL.test(userData.email));
+            console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
-                window.location.href = '/student';
-            }else if(PROFESSOR_EMAIL_TEST.test(userData.email)){
+                 window.location.href = '/student';
+                //navigate('/student');
+            }else if(!STUDENT_EMAIL.test(userData.email)){
                 // go to professor page 
-                navigate('/');
+                window.location.href = '/professor';
             }
         },
         onError({graphQLErrors}){
@@ -62,46 +74,82 @@ function Login(props){
     return(
         
         // coding front end part 
-        <div className='loginContainer'>
-            <Container>
-                <img src={logo} alt="Senior Design Schedular Logo"></img>
-                <h3>Login</h3>
+        <div className='webPage'>
+            <div className='loginContainer'>
+                <Container>
+                    <img src={logo} alt="Senior Design Schedular Logo"></img>
+                    <h3>Login</h3>
 
-                <Button sx={
-                    {backgroundColor: 'red',
-                    marginBottom: '5%',
-                    marginRight: 'auto',
-                    marginLeft: 'auto',
-                    display: 'block',
+                    <Button sx={
+                        {backgroundColor: 'red',
+                        marginBottom: '8%',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        display: 'block',
+                        }} 
+                    variant="contained">MyUCF coming soon</Button>
+
+                    <Stack spacing={2} paddingBottom={2}>
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                           
+                              '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                            
+                        }}
+                            InputLabelProps={{className: 'mylabel'}}
+                            label = "Email" 
+                            name = "email"
+                            onChange={onChange}
+                        />
+                        <TextField sx={{
+                            input: { color: 'white' } ,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'yellow',},
+                            },
+                        }} 
+                            InputLabelProps={{className: 'mylabel'}}
+                            type="password"
+                            label="Password"
+                            name="password"
+                            onChange={onChange}
+                        />
+                    </Stack>
+                    {errors.map(function(error){
+                        return(
+                            <Alert severity="error">
+                                {error.message}
+                            </Alert>
+                        )
+                    })}
+                    <Button sx={{
+                        display: 'block',
+                        marginRight: 'auto',
+                        marginLeft: 'auto',
+                        marginBottom: '5%',
+                        width: '100%',
+                    }}variant="contained" onClick={onSubmit}>Login</Button>
+
+                    <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
+                    <span><a href='#'>Forgot password?</a></span>
                     
-                    }} 
-                variant="contained">Under Construction myUCF</Button>
 
-                <Stack spacing={2} paddingBottom={2}>
-                    <TextField
-                        label = "Email" 
-                        name = "email"
-                        onChange={onChange}
-                    />
-                    <TextField
-                        type="password"
-                        label="Password"
-                        name="password"
-                        onChange={onChange}
-                    />
-                </Stack>
-                {errors.map(function(error){
-                    return(
-                        <Alert severity="error">
-                            {error.message}
-                        </Alert>
-                    )
-                })}
-                <Button variant="contained" onClick={onSubmit}>Login</Button>
-            </Container>
+                </Container>
+            </div>
+            <div className='imageContainer'>
+                    <Slider>
+                    </Slider>
+            </div>
         </div>
-        
-
 
     )
 }

@@ -4,6 +4,7 @@ import { AuthContext } from '../context/authContext';
 import {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 function Navbar(){
 
     let navigate = useNavigate();
@@ -15,15 +16,32 @@ function Navbar(){
         navigate('/');
     }
 
+    console.log("From Navbar");
     console.log(user);
 
-    
+
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+    const privilege = localStorage.getItem("privilege");
+
+    if(firstname === undefined){
+        firstname = "";
+    }
+
+    if(lastname === undefined){
+        lastname = "";
+    }
+
+    if(privilege === undefined){
+        privilege = "";
+    }
+
     return(
         <Box sx={{flexGrow:1}}>
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {user? user.firstname + " " + user.lastname : ""}</Link>
+                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {privilege} {lastname}</Link>
                     </Typography>
                     <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
                         {user?

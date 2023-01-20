@@ -5,29 +5,37 @@
 }
 
 body{
-    background-color: #231F20;
+    background-color: white;
 }
 
 h3{
     text-align: center;
-    padding-top: 5%;
-    padding-bottom: 15px;
-    color: white;
 }
 
-.webPage{
-    width: 100%;
-    min-height: 100vh;
+p{
+    text-align: center;
+    color: #ffffff;
+}
+
+.registerPage{
     display: flex;
 }
 
-.loginContainer{
+.registerContainer{
     justify-content: center;
-    align-items: center;
-    background-color: #231F20;
-    height: 100vh;
+    align-content: center;
+    /* background-color: #231F20; */
     width: 30%;
+    height: 100vh;
     display: inline-flexbox;
+}
+
+p{
+    margin-bottom: 5%;
+}
+
+.mylabel{
+    color: white !important;
 }
 
 .imageContainer{
@@ -47,10 +55,6 @@ img{
     margin-left: auto;
     margin-right: auto;
     display: block;
-}
-
-.mylabel{
-    color: aliceblue !important;
 }
 
 span{

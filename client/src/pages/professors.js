@@ -10,7 +10,7 @@ import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/mater
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import Navbar from '../components/navbar';
 
-function Student(props){
+function Professors(props){
 
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
@@ -34,4 +34,4 @@ function Student(props){
     )
 }
 
-export default Student
+export default Professors
