@@ -68,16 +68,6 @@ scalar DateTime
         privilege: String
         confirm: Boolean
         token: String
-<<<<<<< HEAD
-        schedule: [DateTime]
-        appointments: [Appointments]
-        reqeusts: [ID]
-        image:String
-        coordinator: Boolean
-        groups: [Group]
-=======
-
->>>>>>> master
     }
 
     type Appointments {
@@ -197,15 +187,8 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-<<<<<<< HEAD
-<<<<<<< HEAD
-        addProfessorRequest(ID:ID!,ProfessorRequestInput:ProfessorRequestInput):Boolean
-        resolveProfessorRequest(ID:ID!,ProfessorRequestInput:ProfessorRequestInput):Boolean
-=======
         registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
->>>>>>> master
-=======
->>>>>>> master
+
     }
 `
 
