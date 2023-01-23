@@ -1,7 +1,6 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
-const Admin = require('./models/Admin.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
 const UserInfo = require('./models/UserInfo.model');
@@ -41,8 +40,47 @@ const resolvers = {
                     }
                 }]);
         },
-        getAdmins: async() =>{
-            return await Admin.find();
+        availSchedule: async() =>{
+            return Professors.aggregate([
+
+                /* KEEP just in case I decide to turn this into it's own viewCollection  */
+
+                // {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                // {$unwind:"$_id"},
+                // {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                // {$unwind:"$pId"},
+                // {$unwind:"$pId"},
+                // {$group:{_id:"$_id", pId:{$addToSet:"$pId"}}},
+                // {$sort:{_id:1}}
+
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
+            ]);
+        },
+        availScheduleByGroup: async(_,{date}) => {
+
+            const dateConversion = new Date(date).toISOString();
+            const viewDate = new Date(dateConversion);
+
+            return Professors.aggregate([
+                {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
+                {$unwind:"$_id"},
+                {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$match:{_id:viewDate}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
+                {$sort:{_id:1}}
+            ]);
+        },
+        getCoordinatorSchedule: async() =>{
+            return await Coordinator.aggregate([
+                    {$group:{_id:"$schedule"}},
+                    {$unwind:"$_id"},
+                    {$group:{_id:"$_id"}},
+                    {$sort:{_id:1}}
+            ])
         }
     },
     Mutation:{
@@ -140,7 +178,6 @@ const resolvers = {
                 })
         
                 return{
-                    id:res._id,
                     firstname: res.userFName,
                     lastname: res.userLName,
                     email: studentInfo.email,
@@ -192,7 +229,8 @@ const resolvers = {
                 const professorInfo = new UserInfo({
                     userId:res._id,
                     email: email.toLowerCase(),
-                    image:''
+                    image:'',
+                    privilege:"professor"
                 })
 
                 await professorInfo.save();
@@ -486,3 +524,5 @@ const resolvers = {
 }
 
 module.exports = resolvers;
+
+

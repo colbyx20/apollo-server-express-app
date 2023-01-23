@@ -61,14 +61,14 @@ scalar DateTime
 
     type Professors {
         _id:ID
-        firstname: String
-        lastname: String
+        professorFName: String
+        professorLName: String
+        availSchedule: [DateTime]
         email: String
         password: String
         privilege: String
         confirm: Boolean
         token: String
-
     }
 
     type Appointments {
@@ -98,6 +98,15 @@ scalar DateTime
         group: String
     }
 
+    input ProfessorRequestInput{
+        Request:ID!
+    }
+
+    input appointInput{
+        firstname: String
+        lastname: String
+    }
+    
     input ProfessorInput {
         firstname: String
         lastname: String
@@ -151,6 +160,10 @@ scalar DateTime
 
     }
 
+    type availSchedule {
+        _id: DateTime
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -158,7 +171,9 @@ scalar DateTime
         getAllUsers :[Users]
         getAllGroups :[Group]
         getAdmins : Admin
-        viewCoordinatorSchedule: [Professors]
+        getCoordinatorSchedule: DateTime
+        availSchedule: DateTime
+        availScheduleByGroup(date:DateTime!): DateTime
     }
 
     type Mutation {
@@ -173,6 +188,7 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
+
     }
 `
 
