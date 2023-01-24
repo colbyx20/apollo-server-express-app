@@ -266,6 +266,33 @@ const resolvers = {
             }
     
         },
+        createCoordinatorSchedule:async (_,{coordinatorSInput:{privilege,CID, roomNumber,time}})=>{
+            privilege === "coordinator" ? 
+                await addDateHelper(CID, roomNumber, time) : 
+                "Privilege Error in Schedule";
+            
+            async function addDateHelper(CID, roomNumber,time){
+                const dates = [];
+                time.forEach((times) =>{
+                    times = new Date(times).toISOString();
+                    const appointment = new Appointment({
+                        Time: new Date(times)
+                    })
+                    dates.push(appointment)})
+                const CoordinatorSchedule= new CoordSchedule({
+                    CoordinatorID:CID,
+                    Room:roomNumber,
+                    Appointment:dates
+                })
+                const res = await CoordinatorSchedule.save()
+                return{
+                    id:res._id,
+                    CoordinatorID: res.CoordinatorID,
+                    Room:res.Room
+                }
+            }
+        },
+
         loginUser: async (_,{loginInput: {email, password}}) => {
 
             if(!STUDENT_EMAIL.test(email)){

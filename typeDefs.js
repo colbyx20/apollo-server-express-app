@@ -17,7 +17,11 @@ scalar DateTime
         image: String
         role: String
     }
-
+    type Appointment{
+        Time: String
+        Group: ID
+        Attending:[ID]
+    }
     type Coordinator {
         _id:ID!
         firstname: String
