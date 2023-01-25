@@ -1,7 +1,7 @@
 import {AppBar, Box, Toolbar, Typography, Button} from '@mui/material';
 import {Link} from 'react-router-dom';
 import { AuthContext } from '../context/authContext'; 
-import {useContext} from 'react';
+import React, {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -16,8 +16,8 @@ function Navbar(){
         navigate('/');
     }
 
-    console.log("From Navbar");
-    console.log(user);
+    // console.log("From Navbar");
+    // console.log(user);
 
 
     const firstname = localStorage.getItem("firstname");
@@ -38,6 +38,7 @@ function Navbar(){
 
     return(
         <Box sx={{flexGrow:1}}>
+            <>
             <AppBar position="static">
                 <Toolbar>
                     <Typography varient='h5' component='div'>
@@ -53,10 +54,11 @@ function Navbar(){
                                 <Link to="/login" style={{textDecoration:"none", color:"white", marginRight:'10px'}}> Login </Link>
                                 <Link to="/register" style={{textDecoration:"none", color:"white"}}> Register </Link>
                             </>
-                    }
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>
+            </>
         </Box>
     )
 }

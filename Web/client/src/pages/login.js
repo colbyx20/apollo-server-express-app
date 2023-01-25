@@ -2,7 +2,7 @@ import {useContext, useState} from 'react';
 // When register is created, we needto call AuthProvider function
 import { AuthContext } from '../context/authContext'; 
 import {useForm} from "../utility/hooks";
-import {useMutation} from "@apollo/react-hooks";
+import {useLazyQuery, useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
@@ -55,6 +55,9 @@ function Login(props){
 
             console.log(STUDENT_EMAIL.test(userData.email));
             console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
+
+
+            if(loading) return <p>Loading...</p>
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
