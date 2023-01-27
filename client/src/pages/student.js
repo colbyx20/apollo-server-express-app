@@ -5,19 +5,25 @@ import { AuthContext } from '../context/authContext';
 import {useForm} from "../utility/hooks";
 import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import Navbar from '../components/navbar';
+import "../components/css/student.css";
 
 function Student(props){
 
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
+    let navigate = useNavigate();
 
 
     console.log("user data:: ----------------");
     console.log(user);
+
+    if(user.email === undefined){
+        navigate('/');
+    }
 
     return (
         <>

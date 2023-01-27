@@ -38,22 +38,39 @@ function Navbar(){
 
     return(
         <Box sx={{flexGrow:1}}>
-            <AppBar position="static">
+            <AppBar position="static" style={{ background: '#000000' }}>
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link to="/" style={{textDecoration:"none",color:"white"}}>Welcome {privilege} {lastname}</Link>
+                        <Link style={{textDecoration:"none",color:"white"}}>Welcome {privilege} {lastname}</Link>
                     </Typography>
-                    <Box alignItems="right" sx={{flexGrow:1,textAlign:"right"}}>
-                        {user?
+                    <Box alignItems="right" sx={{
+                        flexGrow:1,textAlign:"right",}}>
+                        {privilege === 'student'?
                             <>
-                                <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Logout</Button>
+                                <Button
+                                style={{textDecoration:"center", color: "white"}}
+                                sx={{marginRight: '2%'}}
+                                >Avalabilities</Button>
+
+                                <Button
+                                style={{textDecoration:"center", color: "white"}}
+                                sx={{marginRight: '2%'}}
+                                >Group Members</Button>
+
+                                <Button
+                                style={{textDecoration:"none", color:"white"}}
+                                onClick={onLogout}>Student Logout</Button>
                             </>
-                                :
+                            :
+                        privilege === 'professor'?
                             <>
-                                <Link to="/login" style={{textDecoration:"none", color:"white", marginRight:'10px'}}> Login </Link>
-                                <Link to="/register" style={{textDecoration:"none", color:"white"}}> Register </Link>
+                                <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
                             </>
-                    }
+                            :
+                            <>
+                                <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
+                            </>
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>
