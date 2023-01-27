@@ -4,6 +4,8 @@ const Group = require('./models/Group.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
 const UserInfo = require('./models/UserInfo.model');
+const Appointment= require('./models/Appointment.model');
+const CoordSchedule = require('./models/CoordSchedule.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -74,11 +76,11 @@ const resolvers = {
                 {$sort:{_id:1}}
             ]);
         },
-        getCoordinatorSchedule: async() =>{
+        getCoordinatorSchedule: async(_,{ID}) =>{
             return await Coordinator.aggregate([
+                    {$match:{_id:ID}},
                     {$group:{_id:"$schedule"}},
                     {$unwind:"$_id"},
-                    {$group:{_id:"$_id"}},
                     {$sort:{_id:1}}
             ])
         }
@@ -266,31 +268,27 @@ const resolvers = {
             }
     
         },
-        createCoordinatorSchedule:async (_,{coordinatorSInput:{privilege,CID, roomNumber,time}})=>{
-            privilege === "coordinator" ? 
-                await addDateHelper(CID, roomNumber, time) : 
-                "Privilege Error in Schedule";
-            
-            async function addDateHelper(CID, roomNumber,time){
+        createCoordinatorSchedule:async (_,{coordinatorSInput:{privilege,CID, roomNumber,Times}})=>{
                 const dates = [];
-                time.forEach((times) =>{
+                Times.forEach((times) =>{
                     times = new Date(times).toISOString();
                     const appointment = new Appointment({
                         Time: new Date(times)
-                    })
-                    dates.push(appointment)})
+                    });
+                    dates.push(appointment)});
                 const CoordinatorSchedule= new CoordSchedule({
                     CoordinatorID:CID,
                     Room:roomNumber,
-                    Appointment:dates
-                })
-                const res = await CoordinatorSchedule.save()
+                    Schedule:dates
+                });
+                const res = await CoordinatorSchedule.save();
                 return{
                     id:res._id,
                     CoordinatorID: res.CoordinatorID,
-                    Room:res.Room
+                    Room:res.Room,
+                    Appointment:res.Appointment
                 }
-            }
+    
         },
 
         loginUser: async (_,{loginInput: {email, password}}) => {

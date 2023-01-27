@@ -1,7 +1,8 @@
-const{model,Schema} = require('mongoose');
+const{model,Schema,mongoose} = require('mongoose');
 
-const coordinatorSchema = new Schema({
-    CoordinatorID:{type:ID},
+const coordScheduleSchema = new Schema({
+    CoordinatorID:{type:mongoose.ObjectId},
     Room:{type:String},
     Schedule:{type:Array}
 });
+module.exports = model('CoordSchedule', coordScheduleSchema);
