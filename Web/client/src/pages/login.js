@@ -143,7 +143,7 @@ function Login(props){
                     }}variant="contained" onClick={onSubmit}>Login</Button>
 
                     <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
-                    <span><a href='#'>Forgot password?</a></span>
+                    <span><a href='/'>Forgot password?</a></span>
                     
 
                 </Container>
