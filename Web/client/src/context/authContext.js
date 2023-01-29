@@ -54,11 +54,7 @@ function AuthProvider(props){
         localStorage.setItem("email",userData.email);
         localStorage.setItem("_id",userData._id);
         localStorage.setItem("privilege",userData.privilege);
-
         
-
-
-
         dispatch({
             type:'LOGIN',
             payload: userData
