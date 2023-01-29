@@ -2,7 +2,7 @@ import {useContext} from 'react';
 
 // When register is created, we needto call AuthProvider function
 import { AuthContext } from '../context/authContext'; 
-import Navbar from '../components/navbar';
+import Navbar from "../components/navbar";
 // import { GetGroups } from '../components/GetGroups';
 // import {GetAvailSchedule} from '../components/GetAvailSchedule';
 

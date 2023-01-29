@@ -8,7 +8,7 @@ import {gql} from 'graphql-tag';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import Navbar from '../components/navbar';
+import Navbar from '../components/navbar'
 import "../components/css/student.css";
 
 function Student(props){

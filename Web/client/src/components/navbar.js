@@ -5,7 +5,7 @@ import React, {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-function Navbar(){
+function Navbar(props) {
 
     let navigate = useNavigate();
 
@@ -20,9 +20,9 @@ function Navbar(){
     // console.log(user);
 
 
-    const firstname = localStorage.getItem("firstname");
-    const lastname = localStorage.getItem("lastname");
-    const privilege = localStorage.getItem("privilege");
+    let firstname = localStorage.getItem("firstname");
+    let lastname = localStorage.getItem("lastname");
+    let privilege = localStorage.getItem("privilege");
 
     if(firstname === undefined){
         firstname = "";
@@ -62,3 +62,5 @@ function Navbar(){
         </Box>
     )
 }
+
+export default Navbar;
