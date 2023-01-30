@@ -41,7 +41,7 @@ function Navbar(){
             <AppBar position="static" style={{ background: '#000000' }}>
                 <Toolbar>
                     <Typography varient='h5' component='div'>
-                        <Link style={{textDecoration:"none",color:"white"}}>Welcome {privilege} {lastname}</Link>
+                        <Link style={{textDecoration:"none",color:"white"}}>{privilege} {lastname}</Link>
                     </Typography>
                     <Box alignItems="right" sx={{
                         flexGrow:1,textAlign:"right",}}>

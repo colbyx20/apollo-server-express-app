@@ -8,7 +8,7 @@ import {gql} from 'graphql-tag';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import Navbar from '../components/navbar';
+import CustomSidebar from '../components/Sidebar';
 import "../components/css/student.css";
 
 function Student(props){
@@ -16,6 +16,8 @@ function Student(props){
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
     let navigate = useNavigate();
+
+    var year = new Date().getFullYear()
 
 
     console.log("user data:: ----------------");
@@ -26,16 +28,16 @@ function Student(props){
     }
 
     return (
-        <>
-        <Navbar />
-
+        <div className='studentPage'>
+            <CustomSidebar/>
             <div className="userInfo">
                 <p style={{textAlign:"left", margin:0}}>{user.email}</p>
                 <p style={{textAlign:"left", margin:0}}>{user.firstname}</p>
                 <p style={{textAlign:"left", margin:0}}>{user.lastname}</p>
+                <p style={{textAlign:"left", margin:0}}>{year}</p>
             </div>
 
-        </>
+        </div>
 
     )
 }

@@ -1,0 +1,46 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.sideBar{
+    background-color: #000000;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 100vh;
+    display: inline-block;
+}
+
+.currentUser{
+    height: 20vh;
+    width: 100%;
+    padding-top: 15%;
+    overflow: scroll;
+}
+
+/* p{
+    padding-top: 5%;
+} */
+
+.options{
+    height: 80vh;
+    width: 150px;
+    background-color:   #FFC904;
+    overflow: scroll;
+}
+
+.icon{
+    height: 35px;
+    width: 35px;
+    filter: invert(96%) sepia(0%) saturate(17%) hue-rotate(0deg) brightness(104%) contrast(107%);
+}
+
+.currentPic{
+    height: 60px;
+    width: 60px;
+    padding-bottom: 3%;
+    filter: invert(96%) sepia(0%) saturate(17%) hue-rotate(0deg) brightness(104%) contrast(107%);
+}
+
