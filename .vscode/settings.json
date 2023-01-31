@@ -1,0 +1,8 @@
+{
+    "[json]": {
+        "editor.quickSuggestions": {
+            "other": "inline",
+            "strings": "off"
+        }
+    }
+}
