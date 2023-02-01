@@ -344,16 +344,12 @@ const resolvers = {
 
             if(!STUDENT_EMAIL.test(email)){
 
-                // 3 small queries are faster than joining all 3 then searching
+                
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
-
-                console.log(professorsInfo.email);
-                console.log(professorsAuth.userId);
-                console.log(coordinator);
-
+              
 
 
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){

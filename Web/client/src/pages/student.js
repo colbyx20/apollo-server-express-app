@@ -16,6 +16,10 @@ function Student(props){
 
     // user data lives in here 
     const {user,logout} = useContext(AuthContext);
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+    const email = localStorage.getItem('email');
+
     let navigate = useNavigate();
 
     var year = new Date().getFullYear()
@@ -31,9 +35,9 @@ function Student(props){
                 <>
                 <CustomSidebar/>
                 <div className="userInfo">
-                    <p style={{textAlign:"left", margin:0}}>{user.email}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.firstname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.lastname}</p>
+                    <p style={{textAlign:"left", margin:0}}>{email}</p>
+                    <p style={{textAlign:"left", margin:0}}>{firstname}</p>
+                    <p style={{textAlign:"left", margin:0}}>{lastname}</p>
                     <p style={{textAlign:"left", margin:0}}>{year}</p>
                 </div>
                 </>
