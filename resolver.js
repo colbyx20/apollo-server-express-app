@@ -1,7 +1,6 @@
 const Users = require('./models/Users.model');
 const Professors = require('./models/Professors.model');
 const Group = require('./models/Group.model');
-const Admin = require('./models/Admin.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
 const UserInfo = require('./models/UserInfo.model');
@@ -85,6 +84,78 @@ const resolvers = {
         }
     },
     Mutation:{
+        registerCoordinator: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
+            if (password !== confirmpassword){
+                throw new ApolloError("Passwords Do Not Match");
+            }
+            if(password === "" || firstname === "" || lastname === "" || email === ""){
+                throw new ApolloError("Please fill in all of the Boxes!");
+            }
+
+            // See if an old user or Professor exists with Email attempting to Register
+            // const oldUser = await Users.findOne({email});
+            const doesExist = await UserInfo.findOne({email:email});
+
+            if(doesExist){
+                // throw an error 
+                throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
+            }
+
+
+            var encryptedPassword = await bcrypt.hash(password,10);
+        
+                // Build out mongoose model 
+                const newCoordinator = new Coordinator({
+                    coordinatorFName:firstname.toLowerCase(),
+                    coordinatorLName:lastname.toLowerCase(),
+                });
+        
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    {id : newCoordinator._id, email}, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "1d"
+                    }
+                );
+                
+                // Save user in MongoDB
+                const res = await newCoordinator.save();
+
+                // create professors auth information in separate collection called Auth
+                const authCoordinator = new Auth({
+                    userId: res._id,
+                    password: encryptedPassword,
+                    confirm: false,
+                    privilege: "coordinator",
+                    token: token
+                })
+
+                // save new professor profile
+                await authCoordinator.save();
+                
+                // create model for professors information 
+                const coordinatorInfo = new UserInfo({
+                    userId:res._id,
+                    email: email.toLowerCase(),
+                    image:'',
+                    privilege: "coordinator"
+                })
+
+                await coordinatorInfo.save();
+        
+                return{
+                    firstname: res.userFName,
+                    lastname: res.userLName,
+                    email: coordinatorInfo.email,
+                    privilege: coordinatorInfo.privilege,
+                    password: authCoordinator.password,
+                    confirm: authCoordinator.confirm,
+                    token: authCoordinator.token
+                }
+
+
+        },
         registerUser: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
 
             if (password !== confirmpassword){
@@ -113,6 +184,8 @@ const resolvers = {
                 }, 
             
             });
+
+
 
 
 
@@ -275,8 +348,15 @@ const resolvers = {
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
+                const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
 
-                if(professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
+                console.log(professorsInfo.email);
+                console.log(professorsAuth.userId);
+                console.log(coordinator);
+
+
+
+                if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
 
                     // create a new token ( when you login you give user a new token )
                     const token = jwt.sign(
@@ -301,6 +381,33 @@ const resolvers = {
                         token: professorsAuth.token,
                         privilege: professorsInfo.privilege
                     }          
+                }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
+                    // create a new token ( when you login you give user a new token )
+                    const token = jwt.sign(
+                        {
+                            id : coordinator._id, 
+                            email, 
+                            firstname: coordinator.professorFName, 
+                            lastname: coordinator.professorLName
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1d"}
+                    );
+    
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:token}})
+    
+                    return {
+                        _id: coordinator._id,
+                        firstname:coordinator.coordinatorFName,
+                        lastname:coordinator.coordinatorLName,
+                        email: professorsInfo.email,
+                        token: professorsAuth.token,
+                        privilege: professorsInfo.privilege
+                    } 
+
+                }else{
+                    throw new ApolloError("Something Went Wrong");
                 }
             }else if (STUDENT_EMAIL.test(email)){
                
@@ -525,3 +632,5 @@ const resolvers = {
 }
 
 module.exports = resolvers;
+
+

@@ -61,8 +61,9 @@ scalar DateTime
 
     type Professors {
         _id:ID
-        firstname: String
-        lastname: String
+        professorFName: String
+        professorLName: String
+        availSchedule: [DateTime]
         email: String
         password: String
         privilege: String
@@ -182,12 +183,12 @@ scalar DateTime
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         registerUser(registerInput: RegisterInput) : UserLogin
+        registerCoordinator(registerInput: RegisterInput): UserLogin
         loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        registerCoordinator(coordinatorInput: coordinatorInput) : Coordinator
 
     }
 `
