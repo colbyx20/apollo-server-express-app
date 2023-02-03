@@ -200,6 +200,7 @@ scalar DateTime
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         registerUser(registerInput: RegisterInput) : UserLogin
+        registerCoordinator(registerInput: RegisterInput): UserLogin
         loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
