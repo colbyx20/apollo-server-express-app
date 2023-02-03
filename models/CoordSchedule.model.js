@@ -1,8 +1,11 @@
 const{model,Schema,mongoose} = require('mongoose');
 
 const coordScheduleSchema = new Schema({
-    CoordinatorID:{type:mongoose.ObjectId},
-    Room:{type:String},
-    Schedule:{type:Array}
+    coordinatorID:mongoose.ObjectId,
+    room:{type:String},
+    groupId:{type: mongoose.ObjectId},
+    time:{type:Date,require:true},
+    attending:{type : [mongoose.ObjectId]}
+
 });
 module.exports = model('CoordSchedule', coordScheduleSchema);

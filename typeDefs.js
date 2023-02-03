@@ -170,12 +170,13 @@ scalar DateTime
     }
     type CoordSchedule{
         _id: ID
-        CID:ID
+        coordinatorID:ID
         Room:String
-        Scheduel:[Appointments]
+        time:DateTime
+        groupID:ID
+        attendi:[ID]
     }
     input coordinatorSInput{
-        privilege:String!
         CID:ID
         Room:String
         Times:[DateTime]
@@ -189,7 +190,7 @@ scalar DateTime
         getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
-        getCoordinatorSchedule(ID:ID):[Appointments]
+        getCoordinatorSchedule(ID:ID):CoordSchedule
     }
 
     type Mutation {
@@ -205,6 +206,7 @@ scalar DateTime
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
+
     }
 `
 
