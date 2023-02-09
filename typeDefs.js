@@ -187,7 +187,11 @@ scalar DateTime
         professorsAttending:[ID]
         time: DateTime
         CID:ID
-        SponCoordFlag:Boolean
+        reselectFlag:Boolean 
+    }
+    input cancelation{
+        CancelerID:ID
+        ApID:ID
     }
     type Query {
         getUser(ID:ID!) : Users
@@ -218,7 +222,7 @@ scalar DateTime
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
-
+        cancelAppointment(cancelation:cancelation):CoordSchedule
     }
 `
 
