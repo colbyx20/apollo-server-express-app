@@ -171,15 +171,23 @@ scalar DateTime
     type CoordSchedule{
         _id: ID
         coordinatorID:ID
-        Room:String
+        room:String
+        groupId:ID
         time:DateTime
-        groupID:ID
-        attendi:[ID]
+        attending:[ID]
+    
     }
     input coordinatorSInput{
         CID:ID
         Room:String
         Times:[DateTime]
+    }
+    input appointmentEdit{
+        GID:ID
+        professorsAttending:[ID]
+        time: DateTime
+        CID:ID
+        SponCoordFlag:Boolean
     }
     type Query {
         getUser(ID:ID!) : Users
@@ -190,7 +198,8 @@ scalar DateTime
         getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
-        getCoordinatorSchedule(ID:ID):CoordSchedule
+        getAllCoordinatorSchedule:[CoordSchedule]
+        getCoordinatorSchedule(coordinatorID:ID): [CoordSchedule]
     }
 
     type Mutation {
@@ -199,6 +208,8 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
+        makeAppointment(ID:ID!,AppointmentEdit:appointmentEdit):CoordSchedule
+        roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
         loginUser(loginInput: loginInput): UserLogin

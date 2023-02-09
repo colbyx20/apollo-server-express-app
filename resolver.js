@@ -76,9 +76,13 @@ const resolvers = {
                 {$sort:{_id:1}}
             ]);
         },
-        getCoordinatorSchedule: async(_,{ID}) =>{
-            const NID = Mongoose.Types.ObjectId(ID)
-            return await CoordSchedule.find({_id:NID})
+        getAllCoordinatorSchedule: async() =>{
+
+            return await CoordSchedule.find()
+        },
+        getCoordinatorSchedule: async(_,{coordinatorID}) =>{
+            const CID =coordinatorID
+            return await CoordSchedule.find({coordinatorID:CID})
         }
     },
     Mutation:{
@@ -643,6 +647,60 @@ const resolvers = {
                 coordinator: coordinator
             })).modifiedCount;
             return professorEdit;
+        },
+        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,SponCoordFlag}})=>{//adds groupID to appointment largely for testing purposes
+            const test =await CoordSchedule.findOne({groupId:GID})
+            const chrono =new Date(time).toISOString()
+            const group = mongoose.Types.ObjectId(GID);
+            const PA=[];   
+            const pu=[];
+            if(test)
+            { 
+                throw new ApolloError( "group already has an appointment");
+            }
+            //Validate proffesor Availability
+            // I wanted to put this in the for loop howeverit kept crashing
+            
+            const test2 =await Professors.findOne({_id:professorsAttending[0] })
+            console.log(test2.availSchedule)
+            console.log(chrono)
+            const test3 =await Professors.findOne({_id:professorsAttending[1], availSchedule:{$all:[Date(time)]}})
+            console.log(test3)
+            if(!SponCoordFlag)//if sponsor and coordinator are not the same person 
+            {
+                const test4 =await Professors.findOne({_id:professorsAttending[2], availSchedule:{$all:[time]} })
+                if(test2==null||test3==null||test4==null)// I wanted to put this in the for loop howeverit kept crashing
+                {                                        
+                    throw new ApolloError("prof not free")
+                }    
+            }
+            else if(test2==null||test3==null)
+            {                                        
+                throw new ApolloError("prof not free")
+            }   
+            
+            professorsAttending.forEach((prof)=>{//add to the attending professors
+                const pro= mongoose.Types.ObjectId(prof)
+                PA.push(pro)
+                
+            })
+            const CoordScheduleEdit=(await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{
+                groupId:group,
+                attending: PA
+            })).modifiedCount;
+            console.log(CoordSchedule)
+            //send out notifications
+            //Professor Notification
+            professorsAttending.forEach(async(prof)=>{
+
+            })
+            return CoordScheduleEdit;
+        },
+        roomChange:async(_,{CID,newRoom})=>{
+            const roomEdit= (await CoordSchedule.updateMany({coordinatorID:CID},{
+                room:newRoom
+            })).modifiedCount;
+            return
         }
     }
 }
