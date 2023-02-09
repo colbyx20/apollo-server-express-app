@@ -650,7 +650,7 @@ const resolvers = {
         },
         makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,SponCoordFlag}})=>{//adds groupID to appointment largely for testing purposes
             const test =await CoordSchedule.findOne({groupId:GID})
-            const chrono =new Date(time).toISOString()
+            const chrono =new Date(time)
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
             const pu=[];
@@ -661,14 +661,12 @@ const resolvers = {
             //Validate proffesor Availability
             // I wanted to put this in the for loop howeverit kept crashing
             
-            const test2 =await Professors.findOne({_id:professorsAttending[0] })
-            console.log(test2.availSchedule)
-            console.log(chrono)
-            const test3 =await Professors.findOne({_id:professorsAttending[1], availSchedule:{$all:[Date(time)]}})
+            const test2 =await Professors.findOne({_id:professorsAttending[0], availSchedule:{$all:[chrono]}})
+            const test3 =await Professors.findOne({_id:professorsAttending[1], availSchedule:{$all:[chrono]}})
             console.log(test3)
             if(!SponCoordFlag)//if sponsor and coordinator are not the same person 
             {
-                const test4 =await Professors.findOne({_id:professorsAttending[2], availSchedule:{$all:[time]} })
+                const test4 =await Professors.findOne({_id:professorsAttending[2], availSchedule:{$all:[chrono]} })
                 if(test2==null||test3==null||test4==null)// I wanted to put this in the for loop howeverit kept crashing
                 {                                        
                     throw new ApolloError("prof not free")
@@ -690,16 +688,47 @@ const resolvers = {
             })).modifiedCount;
             console.log(CoordSchedule)
             //send out notifications
-            //Professor Notification
-            professorsAttending.forEach(async(prof)=>{
+            // set up email 
+            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
+            //Professor Notification
+            
+            professorsAttending.forEach(async(prof)=>{
+                const notify= UserInfo.find({userId:prof})
+                
+                // send email to user. 
+                transport.sendMail({
+                    from: "SDSNotifier@gmail.com",
+                    to: notify.email,
+                    subject: "A Senior Design final Review has been schedule",
+                    html: `<h1>Demo Notin appointment at ${time}</h2>
+                    <p>If you need to cancel please get on the app or visit our website to do so  </p>
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
+            })
+            //Student Notification
+            const GN=await Group.find({_id:GID})
+            const members= await Users.find({groupNumber:GN.groupNumber})
+            members.forEach(async(member)=>{
+                const notify=UserInfo.find({userId:member._id})
+                // send email to user. 
+                transport.sendMail({
+                    from: "SDSNotifier@gmail.com",
+                    to: notify.email,
+                    subject: "A Senior Design final Review has been schedule",
+                    html: `<h1>Demo Notin appointment at ${time}</h2>
+                    <p>If you need to cancel please get on the app or visit our website to do so  </p>
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
             })
             return CoordScheduleEdit;
         },
         roomChange:async(_,{CID,newRoom})=>{
             const roomEdit= (await CoordSchedule.updateMany({coordinatorID:CID},{
                 room:newRoom
-            })).modifiedCount;
+            })).modifiedCount
             return
         }
     }
