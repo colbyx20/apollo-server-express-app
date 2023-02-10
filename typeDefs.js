@@ -17,7 +17,11 @@ scalar DateTime
         image: String
         role: String
     }
-
+    type Appointment{
+        Time: String
+        Group: ID
+        Attending:[ID]
+    }
     type Coordinator {
         _id:ID!
         firstname: String
@@ -74,6 +78,7 @@ scalar DateTime
     type Appointments {
         date: DateTime 
         groupID: ID 
+        Attending: [ID]
     }
 
     type Schedule {
@@ -163,7 +168,19 @@ scalar DateTime
     type availSchedule {
         _id: DateTime
     }
-
+    type CoordSchedule{
+        _id: ID
+        coordinatorID:ID
+        Room:String
+        time:DateTime
+        groupID:ID
+        attendi:[ID]
+    }
+    input coordinatorSInput{
+        CID:ID
+        Room:String
+        Times:[DateTime]
+    }
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -171,9 +188,9 @@ scalar DateTime
         getAllUsers :[Users]
         getAllGroups :[Group]
         getAdmins : Admin
-        getCoordinatorSchedule: DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
+        getCoordinatorSchedule(ID:ID):CoordSchedule
     }
 
     type Mutation {
@@ -189,6 +206,7 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
+        createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
 
     }
 `

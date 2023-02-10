@@ -4,11 +4,13 @@ const Group = require('./models/Group.model');
 const Coordinator = require('./models/Coordinator.model');
 const Auth = require('./models/Auth.model');
 const UserInfo = require('./models/UserInfo.model');
+const CoordSchedule = require('./models/CoordSchedule.model');
 const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
+const { ObjectId, default: mongoose } = require('mongoose');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
@@ -74,13 +76,9 @@ const resolvers = {
                 {$sort:{_id:1}}
             ]);
         },
-        getCoordinatorSchedule: async() =>{
-            return await Coordinator.aggregate([
-                    {$group:{_id:"$schedule"}},
-                    {$unwind:"$_id"},
-                    {$group:{_id:"$_id"}},
-                    {$sort:{_id:1}}
-            ])
+        getCoordinatorSchedule: async(_,{ID}) =>{
+            const NID = Mongoose.Types.ObjectId(ID)
+            return await CoordSchedule.find({_id:NID})
         }
     },
     Mutation:{
@@ -340,6 +338,24 @@ const resolvers = {
             }
     
         },
+        createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
+                const ID =Mongoose.Types.ObjectId(CID)
+                console.log(Room)
+                Times.forEach(async(time) =>{
+                    t = new Date(time).toISOString();
+                    const CoordinatorSchedule = new CoordSchedule({
+                        coordinatorID:ID,
+                        room:Room,
+                        time: t
+                    });
+                    const happens=await CoordinatorSchedule.save()
+                    if(happens==null)
+                        return false;
+                })
+                return true;
+    
+        },
+
         loginUser: async (_,{loginInput: {email, password}}) => {
 
             if(!STUDENT_EMAIL.test(email)){
