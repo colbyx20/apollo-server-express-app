@@ -25,7 +25,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run build",
+    "startTest": "react-scripts start",
     "build": "react-scripts build",
     "client": "npm start --prefix client",
     "test": "react-scripts test",
