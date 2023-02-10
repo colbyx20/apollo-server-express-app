@@ -344,7 +344,6 @@ const resolvers = {
         },
         createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
                 const ID =Mongoose.Types.ObjectId(CID)
-                console.log(Room)
                 for( time of Times){//time is flagged as VSCode does not know that Times will be an array
                                     //not that while ,forEach is a great function when made with async
                                     //it cannot contain an error throw as it will cause the code to crash
@@ -665,6 +664,7 @@ const resolvers = {
             const takenTest= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
+            const PE=[];
             if(bookedTest&&!reselectFlag)
             { 
                 throw new ApolloError( "group already has an appointment");
@@ -673,17 +673,24 @@ const resolvers = {
             {
                 throw new ApolloError("Appoinment already booked")
             }*/
+            
             //Validate proffesor Availability
             // I wanted to put this in the for loop howeverit kept crashing
             for(prof of professorsAttending){
                 const availTest=await Professors.findOne({_id:prof, availSchedule:{$in:[chrono]}})
-                if (!availTest){
-                    throw new ApolloError("that professor is no longer available")
+                if (!availTest){//unavailable
+                    const who =await Professors.find({_id:prof})
+                    PE.push(who.professorLName)
+                    continue
                 }
                 else{
                     const pro= mongoose.Types.ObjectId(prof);//might make it a try catch
                     PA.push(pro);    //add to the attending professor
                 }
+            }
+            if(PE.length!=0)
+            {
+                throw new ApolloError("professor(s)"+PE+"unavailable")
             }
             const CoordScheduleEdit=(await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{
                 groupId:group,
@@ -695,7 +702,7 @@ const resolvers = {
 
                 //send out notifications
                 // set up email 
-                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+                /*let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
                 //Professor Notification and availability removal
 
@@ -728,24 +735,74 @@ const resolvers = {
                         </div>`,
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
-                })
+                })*/
                 return CoordScheduleEdit;
             }
             else{// might branch out if more then one
                 throw new ApolloError("Unknown error")
             }
         },
+        //profAppointmentNotify
         roomChange:async(_,{CID,newRoom})=>{
             const roomEdit= (await CoordSchedule.updateMany({coordinatorID:CID},{
                 room:newRoom
             })).modifiedCount
             return
         },
-        cancelAppointment:async(_,{cancelation:{CancelerID,ApID}})=>{// passes the ID of the person canceling and the appointment being canceled
+        cancelAppointment:async(_,{cancelation:{CancelerID,ApID,reason}})=>{// passes the ID of the person canceling and the appointment being canceled
             const canceler= await UserInfo.find({userId:CancelerID});//find out whose canceling
             const appointment= await CoordSchedule.find({_id:ApID});//find the information on the appoinment being canceled
-            //alternative call with time instead
-            //const appointment= await CoordSchedule.find({})
+            //alternative call with time and CID instead
+            //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
+            //Student i.e. User
+            if(canceler.privilege=='student')
+            {
+                const user= await Users.find({_id:canceler.userId})
+                const members= await Users.find({groupNumber:user.groupNumber})
+                for(prof of appointment.attending)//notify the professors of the canceled appointment
+                {
+                    time= new Date(appointment.time);
+                    await Professors.updateOne({_id:prof},{$push:{availSchedule:time},$pull:{appointments:appoinment._id}});
+                    const notify= UserInfo.find({userId:prof})
+                    await emailer(notify.email,appointment.time,appointment.room)
+                }
+                for(person of members)
+                {
+                    await emailer(person.email,appointment.time,appointment.room)
+                }
+                if(reason)//dislike the time
+                {
+                    //reset the appointment: need to now what populates an empty field i think its null but have no proof
+                }
+                else// reselect profs
+                {
+                    await Group.updateOne({groupNumber:user.groupNumber},{$set:{reselectFlag:true}})
+                    await CoordSchedule.updateOne({_id:ApID},{$set:{attending:[]}})   
+                }
+            }
+            //Professor on a side note for professors the reason flag should be false
+            else if(canceler.privilege=='professor')
+            {
+
+            }
+            //coordinator
+            else if(canceler.privilege=='coordinator')
+            {
+
+            }           
+
+           async function emailer(email, time, room){
+                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+                transport.sendMail({
+                    from: "SDSNotifier@gmail.com",
+                    to: email,
+                    subject: "A Senior Design final Review has been canceled",
+                    html: `<h1>Demo Notin appointment a ${time} in room ${room}</h2>
+                    <p>If you need to cancel please get on the app or visit our website to do so  </p>
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
+            }
             return
         }
     }

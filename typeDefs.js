@@ -192,6 +192,7 @@ scalar DateTime
     input cancelation{
         CancelerID:ID
         ApID:ID
+        reason:Boolean
     }
     type Query {
         getUser(ID:ID!) : Users
