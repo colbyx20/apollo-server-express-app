@@ -17,7 +17,11 @@ scalar DateTime
         image: String
         role: String
     }
-
+    type Appointment{
+        Time: String
+        Group: ID
+        Attending:[ID]
+    }
     type Coordinator {
         _id:ID!
         firstname: String
@@ -74,6 +78,7 @@ scalar DateTime
     type Appointments {
         date: DateTime 
         groupID: ID 
+        Attending: [ID]
     }
 
     type Schedule {
@@ -163,7 +168,27 @@ scalar DateTime
     type availSchedule {
         _id: DateTime
     }
-
+    type CoordSchedule{
+        _id: ID
+        coordinatorID:ID
+        room:String
+        groupId:ID
+        time:DateTime
+        attending:[ID]
+    
+    }
+    input coordinatorSInput{
+        CID:ID
+        Room:String
+        Times:[DateTime]
+    }
+    input appointmentEdit{
+        GID:ID
+        professorsAttending:[ID]
+        time: DateTime
+        CID:ID
+        SponCoordFlag:Boolean
+    }
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -171,9 +196,10 @@ scalar DateTime
         getAllUsers :[Users]
         getAllGroups :[Group]
         getAdmins : Admin
-        getCoordinatorSchedule: DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
+        getAllCoordinatorSchedule:[CoordSchedule]
+        getCoordinatorSchedule(coordinatorID:ID): [CoordSchedule]
     }
 
     type Mutation {
@@ -182,6 +208,8 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
+        makeAppointment(ID:ID!,AppointmentEdit:appointmentEdit):CoordSchedule
+        roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
         loginUser(loginInput: loginInput): UserLogin
@@ -189,6 +217,7 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
+        createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
 
     }
 `
