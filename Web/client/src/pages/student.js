@@ -14,11 +14,10 @@ function Student(props){
     const {user} = useContext(AuthContext);
 
     let navigate = useNavigate();
-    
+
 
     return (
         <>
-
             <Sidebar />
         </>
 
