@@ -48,12 +48,12 @@ function AuthProvider(props){
     const login = async(userData) => {
         // console.log(`from AuthContext folder ${userData}`);
         try{
-            localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
-            localStorage.setItem("firstname",userData.firstname);
-            localStorage.setItem("lastname",userData.lastname);
-            localStorage.setItem("email",userData.email);
-            localStorage.setItem("_id",userData._id);
-            localStorage.setItem("privilege",userData.privilege);
+            await localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
+            await localStorage.setItem("firstname",userData.firstname);
+            await localStorage.setItem("lastname",userData.lastname);
+            await localStorage.setItem("email",userData.email);
+            await localStorage.setItem("_id",userData._id);
+            await localStorage.setItem("privilege",userData.privilege);
         }catch{
             console.log("Error on Login");
         }
