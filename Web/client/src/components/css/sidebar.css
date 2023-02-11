@@ -8,10 +8,10 @@
     background-color: #FFC904;
     top: 0;
     left: 0;
-    width: 110px;
+    width: 7%;
     max-height: 100vh;
     /* display:ruby-base-container; */
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .coordinatorBar{
