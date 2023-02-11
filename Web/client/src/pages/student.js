@@ -7,13 +7,12 @@ import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import Navbar from '../components/navbar';
+import Sidebar from "../components/Sidebar"
 
 function Student(props){
 
     // user data lives in here 
-    const {user,logout} = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
 
     let navigate = useNavigate();
 
@@ -23,7 +22,9 @@ function Student(props){
 
     return (
         <>
-        <Navbar />
+
+            <Sidebar />
+        
 
             <div className="userInfo">
                 <p style={{textAlign:"left", margin:0}}>{user.email}</p>
@@ -36,4 +37,4 @@ function Student(props){
     )
 }
 
-export default Student
+export default Student;
