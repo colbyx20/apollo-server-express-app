@@ -9,7 +9,7 @@ import {commonbuttons} from './commonbuttons'
 import Logo from './images/ucfLogo.png'
 
 
-function Sidebar(){
+function Sidebar(props){
 
     let navigate = useNavigate();
 
@@ -20,9 +20,9 @@ function Sidebar(){
         navigate('/');
     }
 
-    const firstname = localStorage.getItem("firstname");
-    const lastname = localStorage.getItem("lastname");
-    const privilege = localStorage.getItem("privilege");
+    let firstname = localStorage.getItem("firstname");
+    let lastname = localStorage.getItem("lastname");
+    let privilege = localStorage.getItem("privilege");
 
     if(firstname === undefined){
         firstname = "";
