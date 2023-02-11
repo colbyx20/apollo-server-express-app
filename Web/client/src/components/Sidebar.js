@@ -20,9 +20,9 @@ function Sidebar(props){
         navigate('/');
     }
 
-    let firstname = localStorage.getItem("firstname");
-    let lastname = localStorage.getItem("lastname");
-    let privilege = localStorage.getItem("privilege");
+    let firstname = user.firstname
+    let lastname = user.lastname
+    let privilege = user.privilege
 
     if(firstname === undefined){
         firstname = "";
@@ -47,7 +47,7 @@ function Sidebar(props){
 
     return(
         <div className='sideBar-wrapper'>
-            <img className='ucfLogo' src={Logo}></img>
+            <img className='ucfLogo' src={Logo} alt="/"></img>
             <h3 className='ucfText'>UCF</h3>
             {privilege === 'student'?
                 <>
