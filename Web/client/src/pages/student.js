@@ -12,13 +12,16 @@ function Student(props){
 
     // user data lives in here 
     const {user} = useContext(AuthContext);
-
+    console.log(user)
     let navigate = useNavigate();
 
 
     return (
         <>
+        <div style = {{dipslay:"flex"}}>
             <Sidebar />
+            
+        </div>
         </>
 
     )

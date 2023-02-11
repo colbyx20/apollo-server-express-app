@@ -46,7 +46,6 @@ function AuthProvider(props){
 
     // this is not working idk why
     const login = async(userData) => {
-        // console.log(`from AuthContext folder ${userData}`);
         try{
             await localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
             await localStorage.setItem("firstname",userData.firstname);
@@ -54,13 +53,14 @@ function AuthProvider(props){
             await localStorage.setItem("email",userData.email);
             await localStorage.setItem("_id",userData._id);
             await localStorage.setItem("privilege",userData.privilege);
+
+            dispatch({
+                type:'LOGIN',
+                payload: userData
+            })
         }catch{
             console.log("Error on Login");
         }
-        dispatch({
-            type:'LOGIN',
-            payload: userData
-        })
     }
 
     function logout(){
