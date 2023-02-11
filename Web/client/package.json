@@ -25,10 +25,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npm run build",
+    "start": "npm run start",
     "startTest": "react-scripts start",
-    "build": "react-scripts build",
-    "client": "npm start --prefix client",
+    "build": "npm run build",
+    "client": "npm start",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
