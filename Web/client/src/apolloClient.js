@@ -1,8 +1,10 @@
 import {ApolloClient, createHttpLink, InMemoryCache} from '@apollo/client';
 import {setContext} from '@apollo/client/link/context';
 
+const web_uri = "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql"
+const local_uri = "http://localhost:4000/graphql"
 const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: local_uri,
     cache: new InMemoryCache(),
 });
 
