@@ -1,69 +1,154 @@
-import React, {useState} from 'react';
-import { StyleSheet, Image, Text, StatusBar, ImageBackground, Dimensions} from "react-native";
-import AppButton from '../components/AppButton';
-import AppTextInput from '../components/AppTextInput';
-import Constants from "expo-constants";
+import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
-import Screen from "../components/Screen"
+import AppButton from "../components/AppButton";
+import AppTextInput from "../components/AppTextInput";
+import AppText from "../components/AppText";
+import Constants from "expo-constants";
+//import apiClient from "../api/client";
+import { useQuery } from "@apollo/client";
+import { GROUPS } from "../gql/getAllGroups";
+
+import Screen from "../components/Screen";
 import colors from "../config/styles";
+import ErrorMessage from "../components/ErrorMessage";
+import { useEffect, useState } from "react";
+
+const validationSchema = Yup.object().shape({
+  email: Yup.string()
+    .required()
+    .email()
+    .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
+    .label("Email"),
+  password: Yup.string().required().min(7).label("Password"),
+});
 
 function LoginScreen(props) {
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+  //   const [groups, setGroups] = useState([]);
 
-    return (
+  //   useEffect(() => {
+  //     loadGroups();
+  //   }, []);
+
+  //   const loadGroups = async () => {
+  //     const response = await apiClient.get("getAllGroups");
+  //     setGroups(response.data);
+  //   };
+
+  //   console.log(groups);
+
+  //-----------------
+
+  //   const [groups, setGroups] = useState([]);
+
+  //   useEffect(() => {
+  //     loadGroups();
+  //   }, []);
+
+  //   const loadGroups = async () => {
+  //     //const response = await useQuery(GROUPS);
+  //     const { data, loading } = await useQuery(GROUPS);
+  //     setGroups(data);
+  //   };
+
+  //   console.log(groups);
+
+  const { data, loading, error } = useQuery(GROUPS);
+
+  if (error) {
+    return <AppText>Error: {error.message}</AppText>; //while loading return this
+  }
+
+  if (loading) {
+    return <AppText>Fetching data...</AppText>; //while loading return this
+  }
+
+  console.log(data.getAllGroups[0].groupName);
+
+  return (
     <ImageBackground
-        blurRadius={1.5}
-        style={styles.background}
-        source={require("../assets/ucf_51449133.jpg")}
-      >
-      <Screen style={styles.container}>   
-        <Image 
-            style={styles.logo}
-            source={require("../assets/TheTab_KGrgb_300ppi.png")}/>
-        <AppTextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            icon="email"
-            keyboardType="email-address"
-            onChangeText={text => setEmail(text)}
-            placeholder="Email"
-            textContectType="emailAddress" //might need to remove
+      blurRadius={1.5}
+      style={styles.background}
+      source={require("../assets/ucf_51449133.jpg")}
+    >
+      <Screen style={styles.container}>
+        <Image
+          style={styles.logo}
+          source={require("../assets/TheTab_KGrgb_300ppi.png")}
         />
-        <AppTextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            icon="lock"
-            onChangeText={text => setPassword(text)}
-            placeholder="Password"
-            secureTextEntry
-            textContectType="password" //might need to remove
-        />
-        <AppButton title="Login" color='gold' onPress={() => console.log(email, password)}></AppButton>
+
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          onSubmit={(values) => console.log(values)}
+          validationSchema={validationSchema}
+        >
+          {({
+            handleChange,
+            handleSubmit,
+            errors,
+            setFieldTouched,
+            touched,
+          }) => (
+            <>
+              <AppText>{data.getAllGroups[0].groupName}</AppText>
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="email"
+                keyboardType="email-address"
+                onBlur={() => setFieldTouched("email")}
+                onChangeText={handleChange("email")}
+                placeholder="UCF Email"
+                textContectType="emailAddress" //might need to remove
+              />
+              <ErrorMessage error={errors.email} visible={touched.email} />
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="lock"
+                onBlur={() => setFieldTouched("password")}
+                onChangeText={handleChange("password")}
+                placeholder="Password"
+                secureTextEntry
+                textContectType="password" //might need to remove
+              />
+              <ErrorMessage
+                error={errors.password}
+                visible={touched.password}
+              />
+              <AppButton
+                title="Login"
+                color="gold"
+                onPress={handleSubmit}
+              ></AppButton>
+            </>
+          )}
+        </Formik>
       </Screen>
-      </ImageBackground>
-    );
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 10,
-    },
-    logo: {
-        width: 80,
-        height: 100,
-        alignSelf: "center",
-        borderRadius: 10,
-        marginTop: 50,
-        marginBottom: 50,
-    },
-    background: {
-        position: "absolute",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: Dimensions.get('window').height+Constants.statusBarHeight+10,
-      },
-})
+  container: {
+    padding: 10,
+  },
+  logo: {
+    width: 80,
+    height: 100,
+    alignSelf: "center",
+    borderRadius: 10,
+    marginTop: 50,
+    marginBottom: 50,
+  },
+  background: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: "100%",
+    height: Dimensions.get("window").height + Constants.statusBarHeight + 10,
+  },
+});
 
 export default LoginScreen;
