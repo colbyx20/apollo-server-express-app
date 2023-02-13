@@ -1,7 +1,6 @@
 import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
-
 import AppButton from "../components/AppButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
@@ -9,11 +8,12 @@ import Constants from "expo-constants";
 //import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
-
 import Screen from "../components/Screen";
 import colors from "../config/styles";
 import ErrorMessage from "../components/ErrorMessage";
 import { useEffect, useState } from "react";
+
+
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -65,6 +65,7 @@ function LoginScreen(props) {
     // console.log(groups);
 
    const { data, loading, error } = useQuery(GROUPS);
+
       if (error) {
         return <AppText>Error: {error.message}</AppText>; //while loading return this
       }
@@ -77,6 +78,7 @@ function LoginScreen(props) {
 
   console.log(data.getAllGroups)
   console.log(data.getAllGroups[0].groupName);
+
 
   return (
     <ImageBackground

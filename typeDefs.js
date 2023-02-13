@@ -39,8 +39,8 @@ scalar DateTime
 
     type Users {
         _id:ID
-        firstname: String
-        lastname: String
+        userFName: String
+        userLName: String
         email: String
         password: String
         confirmpassword: String
