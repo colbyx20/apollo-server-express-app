@@ -13,30 +13,31 @@ function Sidebar(props){
 
     let navigate = useNavigate();
 
-    const {logout} = useContext(AuthContext);
+    // all user data lives here
+    const {user, logout} = useContext(AuthContext);
 
     const onLogout = () => {
         logout();
         navigate('/');
     }
 
-    let firstname = localStorage.getItem("firstname");
-    let lastname = localStorage.getItem("lastname");
-    let privilege = localStorage.getItem("privilege");
+    // let firstname = localStorage.getItem("firstname");
+    // let lastname = localStorage.getItem("lastname");
+    // let privilege = localStorage.getItem("privilege");
 
-    if(firstname === undefined){
-        firstname = "";
-    }
+    // if(firstname === undefined){
+    //     firstname = "";
+    // }
 
-    if(lastname === undefined){
-        lastname = "";
-    }
+    // if(lastname === undefined){
+    //     lastname = "";
+    // }
 
-    if(privilege === undefined){
-        privilege = "";
-    }
+    // if(privilege === undefined){
+    //     privilege = "";
+    // }
 
-    if(firstname === ""){
+    if(user.firstname === ""){
         navigate('/');
     }
 
@@ -49,7 +50,7 @@ function Sidebar(props){
         <div className='sideBar-wrapper'>
             <img className='ucfLogo' src={Logo} alt="/"></img>
             <h3 className='ucfText'>UCF</h3>
-            {privilege === 'student'?
+            {user.privilege === 'student'?
                 <>
                     <div className='coordinatorBar'>
                         <ul className='coordList'>
@@ -65,7 +66,7 @@ function Sidebar(props){
                     </div>
                     
                 </>
-                : privilege === 'professor'?
+                : user.privilege === 'professor'?
                 <>
                     <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
                 </>

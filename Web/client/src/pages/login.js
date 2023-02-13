@@ -24,13 +24,10 @@ const LOGIN_USER = gql`
 `
 
 function Login(props){
-    let navigate = useNavigate();
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
     const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 
     function loginUserCallback(){
@@ -42,24 +39,11 @@ function Login(props){
         password:""
     });
 
-    const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
+    const [loginUser]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
             context.login(userData)
-            console.log("MyDATA");
-            console.log(userData);
-            // localStorage.setItem("_id",userData._id);
-            // localStorage.setItem("token",userData.token); 
-            // localStorage.setItem("firstname",userData.firstname);
-            // localStorage.setItem("lastname",userData.lastname);
-            // localStorage.setItem("email",userData.email);
-            // localStorage.setItem("privilege",userData.privilege);
-
-
-            // console.log(STUDENT_EMAIL.test(userData.email));
-            // console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
-
-
-            // if(loading) return <p>Loading...</p>
+            localStorage.setItem("firstname",userData.firstname);
+            localStorage.setItem("lastname",userData.lastname)
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 

@@ -9,7 +9,9 @@ import {useNavigate} from 'react-router-dom';
 const firstInitial = localStorage.getItem("firstname");
 const lastname = localStorage.getItem("lastname");
 
+
 function Formatter(string) {
+
     if(string === null)
         return "";
     return string.charAt(0).toUpperCase() + string.slice(1);

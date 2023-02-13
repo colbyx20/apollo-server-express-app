@@ -5,12 +5,10 @@ import { AuthContext } from '../context/authContext';
 import {useForm} from "../utility/hooks";
 import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
-import { Navigate, useNavigate } from 'react-router-dom';
-import {TextField, Button, Container, Stack, Alert, AlertTitle} from "@mui/material";
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { useNavigate } from 'react-router-dom';
+import {Button} from "@mui/material";
 import CustomSidebar from '../components/Sidebar';
 import "../components/css/student.css";
-import { color } from '@mui/system';
 
 
 function Student(props){
