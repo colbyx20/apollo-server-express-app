@@ -6,8 +6,10 @@ import LoginScreen from "./app/screens/LoginScreen";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 // Initialize Apollo Client
+const uri= "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql";
+const local_uri = "http://localhost:8080/graphql"
 const client = new ApolloClient({
-  uri: "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql",
+  uri: local_uri,
   cache: new InMemoryCache(),
 });
 

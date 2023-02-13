@@ -21,7 +21,7 @@ const validationSchema = Yup.object().shape({
     .email()
     .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
     .label("Email"),
-  password: Yup.string().required().min(7).label("Password"),
+  password: Yup.string().required().min(4).label("Password"),
 });
 
 function LoginScreen(props) {
@@ -40,30 +40,42 @@ function LoginScreen(props) {
 
   //-----------------
 
-  //   const [groups, setGroups] = useState([]);
+    // const [groups, setGroups] = useState([]);
+    // const [errors, setError] = useState([]);
 
-  //   useEffect(() => {
-  //     loadGroups();
-  //   }, []);
+    // useEffect(() => {
+    //   loadGroups();
+    // }, [groups]);
 
-  //   const loadGroups = async () => {
-  //     //const response = await useQuery(GROUPS);
-  //     const { data, loading } = await useQuery(GROUPS);
-  //     setGroups(data);
-  //   };
+    // const loadGroups = async () => {
+    //   //const response = await useQuery(GROUPS);
+    //   const { data, loading, error} = await useQuery(GROUPS);
 
-  //   console.log(groups);
+    //   if (error) {
+    //     return <AppText>Error: {error.message}</AppText>; //while loading return this
+    //   }
+    
+    //   if (loading) {
+    //     return <AppText>Fetching data...</AppText>; //while loading return this
+    //   }
+    //   setGroups(data);
+    //   setError(error);
+    // };
 
-  const { data, loading, error } = useQuery(GROUPS);
+    // console.log(groups);
 
-  if (error) {
-    return <AppText>Error: {error.message}</AppText>; //while loading return this
-  }
+   const { data, loading, error } = useQuery(GROUPS);
+      if (error) {
+        return <AppText>Error: {error.message}</AppText>; //while loading return this
+      }
+    
+      if (loading) {
+        return <AppText>Fetching data...</AppText>; //while loading return this
+      }
 
-  if (loading) {
-    return <AppText>Fetching data...</AppText>; //while loading return this
-  }
 
+
+  console.log(data.getAllGroups)
   console.log(data.getAllGroups[0].groupName);
 
   return (
