@@ -432,6 +432,8 @@ const resolvers = {
                 const studentAuth = await Auth.findOne({userId:studentInfo.userId});
                 const student = await Users.findOne({_id:studentInfo.userId});
 
+                console.log(studentInfo)
+
                 if(studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))){
 
                     // create a new token ( when you login you give user a new token )
@@ -440,7 +442,8 @@ const resolvers = {
                             id : student._id, 
                             email, 
                             firstname: student.userFName, 
-                            lastname: student.userLName
+                            lastname: student.userLName,
+                            privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}

@@ -3,8 +3,10 @@ import {setContext} from '@apollo/client/link/context';
 
 const web_uri = "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql"
 const local_uri = "http://localhost:8080/graphql"
+
+
 const httpLink = createHttpLink({
-    uri: web_uri,
+    uri: local_uri,
     cache: new InMemoryCache(),
 });
 

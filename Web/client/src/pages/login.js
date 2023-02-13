@@ -44,20 +44,22 @@ function Login(props){
 
     const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
+            context.login(userData)
+            console.log("MyDATA");
             console.log(userData);
-            localStorage.setItem("_id",userData._id);
-            localStorage.setItem("token",userData.token); 
-            localStorage.setItem("firstname",userData.firstname);
-            localStorage.setItem("lastname",userData.lastname);
-            localStorage.setItem("email",userData.email);
-            localStorage.setItem("privilege",userData.privilege);
+            // localStorage.setItem("_id",userData._id);
+            // localStorage.setItem("token",userData.token); 
+            // localStorage.setItem("firstname",userData.firstname);
+            // localStorage.setItem("lastname",userData.lastname);
+            // localStorage.setItem("email",userData.email);
+            // localStorage.setItem("privilege",userData.privilege);
 
 
-            console.log(STUDENT_EMAIL.test(userData.email));
-            console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
+            // console.log(STUDENT_EMAIL.test(userData.email));
+            // console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
 
 
-            if(loading) return <p>Loading...</p>
+            // if(loading) return <p>Loading...</p>
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 

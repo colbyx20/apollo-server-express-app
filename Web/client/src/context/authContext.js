@@ -9,6 +9,7 @@ const initialState = {
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
+    // check Auth expiration -- if expired, remove token
     if (decodedToken.exp * 1000 < Date.now()){
         localStorage.removeItem("token");
     }else{
@@ -42,25 +43,14 @@ function authReducer(state,action){
 
 function AuthProvider(props){
     const[state, dispatch] = useReducer(authReducer, initialState);
-
-
-    // this is not working idk why
-    const login = async(userData) => {
-        try{
-            await localStorage.setItem("token",userData.token); // we have the correct stuff from our apollo server (this is successful repsonse)
-            await localStorage.setItem("firstname",userData.firstname);
-            await localStorage.setItem("lastname",userData.lastname);
-            await localStorage.setItem("email",userData.email);
-            await localStorage.setItem("_id",userData._id);
-            await localStorage.setItem("privilege",userData.privilege);
-
-            dispatch({
-                type:'LOGIN',
-                payload: userData
-            })
-        }catch{
-            console.log("Error on Login");
-        }
+    
+    const login = (userData) => {
+        
+        localStorage.setItem("token",userData.token);
+        dispatch({
+            type:'LOGIN',
+            payload: userData
+        })
     }
 
     function logout(){

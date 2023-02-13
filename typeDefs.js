@@ -193,7 +193,7 @@ scalar DateTime
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
-        getAllUsers :[Users]
+        getAllUsers : [Users]
         getAllGroups :[Group]
         getAdmins : Admin
         availSchedule: DateTime
