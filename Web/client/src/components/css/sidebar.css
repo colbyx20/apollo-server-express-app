@@ -9,9 +9,8 @@
     top: 0;
     left: 0;
     width: 7%;
-    min-height: 100vh;
-    /* display:ruby-base-container; */
-    overflow: hidden;
+    height: 100vh;
+    overflow: scroll;
 }
 
 .coordinatorBar{
@@ -26,20 +25,13 @@
     height: 100%;
 }
 
-.row:hover{
+.coordList :hover{
     cursor: pointer;
-    background-color: blue;
+    background-color: #dfb006;
 }
 
-.commonContainer{
-    display: inline-block;
-    overflow: hidden;
-}
-
-.commonItems{
-    height: auto;
-    width: 110px;
-    display: inline-block;
+.coordList .row #active{
+    background-color: aliceblue;
 }
 
 .ucfLogo{
