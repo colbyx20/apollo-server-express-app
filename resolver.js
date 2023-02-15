@@ -360,7 +360,10 @@ const resolvers = {
     
         },
 
-        loginUser: async (_,{loginInput: {email, password}}) => {
+        loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
+
+            console.log("contextValue");
+            console.log(contextValue);
 
             if(!STUDENT_EMAIL.test(email)){
 
@@ -560,29 +563,44 @@ const resolvers = {
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
 
-            privilege === "professor" ? 
-                await addDateHelper(time, privilege) : 
-                "Privilege Error in Schedule";
+            if(ID === null || privilege === null){
+                return false;
+            }else{
+                
+                privilege === "professor" || "coordinator" ? 
+                    await addDateHelper(time, privilege) : 
+                    "Privilege Error in Schedule";
 
            async function addDateHelper(time, privilege){
                 const dates = [];
+
+                let UniqueTimes = new Set(time);
     
-               time.forEach((times) =>{
+               UniqueTimes.forEach((times) =>{
                     times = new Date(times).toISOString();
                     dates.push(new Date(times));
                 })
                 
                 if(privilege === "professor"){
-                    const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
+                    const isScheduled = (await Professors.find({_id:ID, availSchedule:{$in:dates}}).count());
+                    if(!isScheduled){
+                        (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
                 }else{
-                    const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
-
+                    const isScheduled = (await Coordiantor.find({_id:ID, availSchedule:{$in:dates}}).count());
+                    if(!isScheduled){
+                     (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
                 }
             }
+        }
 
-            return (addDateHelper === null);
+            // return (addDateHelper === null);
+            return true;
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
