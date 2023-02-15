@@ -44,6 +44,7 @@ function Login(props){
             context.login(userData)
             localStorage.setItem("firstname",userData.firstname);
             localStorage.setItem("lastname",userData.lastname)
+            localStorage.setItem("token",userData.token);
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
