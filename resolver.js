@@ -82,7 +82,7 @@ const resolvers = {
         },
         getCoordinatorSchedule: async(_,{coordinatorID}) =>{
             const CID = coordinatorID
-            return await CoordSchedule.find({coordinatorID:CID})
+            return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
         }
     },
     Mutation:{
