@@ -187,10 +187,6 @@ const resolvers = {
             
             });
 
-
-
-
-
             if(STUDENT_EMAIL.test(email)){
 
                 console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
@@ -342,14 +338,10 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
-
-            console.log("contextValue");
-            console.log(contextValue);
+        loginUser: async (_,{loginInput: {email, password}} ) => {
 
             if(!STUDENT_EMAIL.test(email)){
 
-                
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});

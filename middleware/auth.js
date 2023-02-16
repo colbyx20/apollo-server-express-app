@@ -2,8 +2,6 @@ const {AuthenticationError} = require('apollo-server');
 
 const jwt = require('jsonwebtoken');
 
-
-// how auth works in the front end.
 module.exports = (context) => {
     // context = {... headers} 
 

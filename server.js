@@ -8,6 +8,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
+const cookieParser = require("cookie-parser");
 const path = require('path');
 require('dotenv').config();
 
@@ -30,6 +31,7 @@ async function startServer(){
     app.use(
         '/graphql',
         cors(),
+        cookieParser(),
         bodyParser.json(),
         expressMiddleware(server),
     );

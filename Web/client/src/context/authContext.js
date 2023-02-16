@@ -58,9 +58,6 @@ function AuthProvider(props){
         localStorage.removeItem("token");
         localStorage.removeItem("firstname");
         localStorage.removeItem("lastname");
-        localStorage.removeItem("email");
-        localStorage.removeItem('privilege');
-        localStorage.removeItem('_id');
 
         dispatch({type:'LOGOUT'});
     }
