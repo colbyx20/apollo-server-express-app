@@ -624,7 +624,7 @@ const resolvers = {
             }
 
             // check for unique
-            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber});
+            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber}).count();
 
             console.log(checkUniqueGroup);
 
