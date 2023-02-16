@@ -1,0 +1,85 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+.coordPage{
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+}
+
+.coordWrapper{
+    width: 100%;
+}
+
+.userInfo{
+    width: 300px;
+    height: 8%;
+    min-height: 50px;
+}
+
+.coordHeader{
+    padding: 0%;
+    margin: 0 auto;
+    font-size: 3em;
+    padding-top: 5px;
+}
+
+.searchWrapper{
+    width: 50%;
+    height: 90%;
+    float: left;
+    overflow-x: scroll;
+    overflow-y: none;
+}
+
+.searchBar{
+    width: 93%;
+    min-width: 400px;
+    height: 110px;
+    background-color: #FFC904;
+    margin-top: 20px;
+    margin-left: 30px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 15px -1px;
+    border-radius: 5px;
+    
+}
+
+.searchInput{
+    margin-top: 25px;
+    margin-left: 15px;
+    padding-left: 15px;
+    height: 70px;
+    width: 75%;
+    background-color: white;
+    border-radius: 5px;
+    font-size: 1.2em;
+    border-style: none;
+}
+
+.searchInput:focus{
+    outline: 10px black;
+    border:1px solid red;
+    box-shadow: 0 0 5px #030303;
+}
+
+.searchResults{
+    width: 93%;
+    min-width: 400px;
+    height: 80%;
+    margin-left: 30px;
+    background-color: #FFC904;
+    border-radius: 5px;
+    
+}
+
+.importerWrapper{
+    width: 50%;
+    /* background-color: bisque; */
+    height: 88%;
+    float: right;
+    overflow-x: scroll;
+}

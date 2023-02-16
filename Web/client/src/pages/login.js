@@ -51,7 +51,7 @@ function Login(props){
                 //navigate('/student');
             }else if(!STUDENT_EMAIL.test(userData.email)){
                 // go to professor page 
-                window.location.href = '/professor';
+                window.location.href = '/coordinator';
             }
         },
         onError({graphQLErrors}){
@@ -128,7 +128,6 @@ function Login(props){
                         width: '100%',
                     }}variant="contained" onClick={onSubmit}>Login</Button>
 
-                    <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
                     <span><a href='/'>Forgot password?</a></span>
                     
 

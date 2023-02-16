@@ -8,8 +8,8 @@
     background-color: #FFC904;
     top: 0;
     left: 0;
-    width: 7%;
-    height: 100vh;
+    width: 110px;
+    min-height: 100vh;
     overflow: scroll;
 }
 
@@ -30,8 +30,8 @@
     background-color: #dfb006;
 }
 
-.coordList .row #active{
-    background-color: aliceblue;
+.coordList #active{
+    background-color: white;
 }
 
 .ucfLogo{

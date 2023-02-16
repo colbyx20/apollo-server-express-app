@@ -29,7 +29,6 @@ function Sidebar(props){
     }
 
     function ButtonRouting(link){
-        console.log(link);
         if(link === "/")
             onLogout();
     }
@@ -39,6 +38,14 @@ function Sidebar(props){
             <img className='ucfLogo' src={Logo} alt="/"></img>
             <h3 className='ucfText'>UCF</h3>
             {user.privilege === 'student'?
+                <>
+                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Logout</Button>
+                </>
+                : user.privilege === 'professor'?
+                <>
+                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
+                </>
+                :
                 <>
                     <div className='coordinatorBar'>
                         <ul className='coordList'>
@@ -55,15 +62,6 @@ function Sidebar(props){
                             })}
                         </ul>
                     </div>
-                    
-                </>
-                : user.privilege === 'professor'?
-                <>
-                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
-                </>
-                :
-                <>
-                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
                 </>
             }
            

@@ -11,23 +11,17 @@ import Logout from '../components/images/door-open.svg'
 const firstInitial = localStorage.getItem("firstname");
 const lastname = localStorage.getItem("lastname");
 
-function Formatter(string) {
-
-    if(string === null)
-        return "";
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 export const datasidebar = [
     {
-        title: <p className='sideBarText'>{Formatter(firstInitial).charAt(0)}. {Formatter(lastname)}</p>,
+        title: <p className='sideBarText'>Account</p>,
         icon: <img className='iconHeader' src={Profile}></img>,
         link: "/user"
     },
     {
         title: <p className='sideBarText'>Home</p>,
         icon: <img className='icon' src={Home}></img>,
-        link: "Homepage"
+        link: "/"
     },
     {
         title: <p className='sideBarText'>Semester</p>,
