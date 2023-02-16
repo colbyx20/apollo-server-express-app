@@ -584,29 +584,37 @@ const resolvers = {
                 throw new ApolloError("Please Fill Room/Times");
             }
 
+            
+            
             const ID = Mongoose.Types.ObjectId(CID)
-            const t = new Date(Times).toISOString();
-
-            const duplicateTime = (await CoordSchedule.findOne({time:t}).count());
-            if(duplicateTime){
-                throw new ApolloError("Time Splot is Already assigned");
-            }else{
-                try{
-                    const CoordinatorSchedule = new CoordSchedule({
-                        coordinatorID:ID,
-                        room:Room,
-                        group: 0,
-                        time: t,
-                        numberOfAttending: 0,
-                        attending:[]
-                    });
-
-                    await CoordinatorSchedule.save();
+            const UniqueTimes = new Set(Times);
+            UniqueTimes.forEach(async(time) => {
+                let t = new Date(time).toISOString();
+                let duplicateTime = (await CoordSchedule.findOne({time:t}).count());
+                
+                if(duplicateTime){
+                    // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
+                    return false;
+                }else{
+                    try{
+                        const CoordinatorSchedule = new CoordSchedule({
+                            coordinatorID:ID,
+                            room:Room,
+                            group: 0,
+                            time: t,
+                            numberOfAttending: 0,
+                            attending:[]
+                        });
+                        
+                        await CoordinatorSchedule.save();
                     
-                }catch(e){
-                    throw new ApolloError("Something Went Wrong!");
+                    }catch(e){
+                        throw new ApolloError("Something Went Wrong!");
+                    }
+    
                 }
-            }      
+            });
+   
             return true;    
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
@@ -633,7 +641,6 @@ const resolvers = {
                     groupNumber: groupNumber,
                     memberCount: 0
                 });
-                
 
                 // Save user in MongoDB
                 const res = await newGroup.save();
