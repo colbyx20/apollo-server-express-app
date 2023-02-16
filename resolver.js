@@ -343,23 +343,35 @@ const resolvers = {
     
         },
         createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
+
+                if(Room === null || Times === null){
+                    throw new ApolloError("Please Fill Room/Times");
+                }
+
                 const ID = Mongoose.Types.ObjectId(CID)
+                const t = new Date(Times).toISOString();
 
-                const UniqueTimes = new Set(Times);
+                const duplicateTime = (await CoordSchedule.findOne({time:t}).count());
+                if(duplicateTime){
+                    throw new ApolloError("Time Splot is Already assigned");
+                }else{
+                    try{
+                        const CoordinatorSchedule = new CoordSchedule({
+                            coordinatorID:ID,
+                            room:Room,
+                            group: 0,
+                            time: t,
+                            numberOfAttending: 0,
+                            attending:[]
+                        });
 
-                UniqueTimes.forEach(async(time) =>{
-                    t = new Date(time).toISOString();
-                    const CoordinatorSchedule = new CoordSchedule({
-                        coordinatorID:ID,
-                        room:Room,
-                        time: t
-                    });
-                    const happens = await CoordinatorSchedule.save()
-                    if(happens === null)
-                        return false;
-                })
-                return true;
-    
+                        await CoordinatorSchedule.save();
+                        
+                    }catch(e){
+                        throw new ApolloError("Something Went Wrong!");
+                    }
+                }      
+                return true;    
         },
 
         loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
