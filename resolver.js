@@ -343,17 +343,19 @@ const resolvers = {
     
         },
         createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
-                const ID =Mongoose.Types.ObjectId(CID)
-                console.log(Room)
-                Times.forEach(async(time) =>{
+                const ID = Mongoose.Types.ObjectId(CID)
+
+                const UniqueTimes = new Set(Times);
+
+                UniqueTimes.forEach(async(time) =>{
                     t = new Date(time).toISOString();
                     const CoordinatorSchedule = new CoordSchedule({
                         coordinatorID:ID,
                         room:Room,
                         time: t
                     });
-                    const happens=await CoordinatorSchedule.save()
-                    if(happens==null)
+                    const happens = await CoordinatorSchedule.save()
+                    if(happens === null)
                         return false;
                 })
                 return true;
@@ -583,13 +585,14 @@ const resolvers = {
                 
                 if(privilege === "professor"){
                     const isScheduled = (await Professors.find({_id:ID, availSchedule:{$in:dates}}).count());
+
                     if(!isScheduled){
                         (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
                     }else{
                         return false;
                     }
                 }else{
-                    const isScheduled = (await Coordiantor.find({_id:ID, availSchedule:{$in:dates}}).count());
+                    const isScheduled = (await Coordinator.find({_id:ID, availSchedule:{$in:dates}}).count());
                     if(!isScheduled){
                      (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
                     }else{
@@ -666,7 +669,7 @@ const resolvers = {
             return professorEdit;
         },
         makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,SponCoordFlag}})=>{//adds groupID to appointment largely for testing purposes
-            const test =await CoordSchedule.findOne({groupId:GID})
+            const test = await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time).toISOString()
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
