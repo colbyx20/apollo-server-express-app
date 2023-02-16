@@ -342,38 +342,6 @@ const resolvers = {
             }
     
         },
-        createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
-
-                if(Room === null || Times === null){
-                    throw new ApolloError("Please Fill Room/Times");
-                }
-
-                const ID = Mongoose.Types.ObjectId(CID)
-                const t = new Date(Times).toISOString();
-
-                const duplicateTime = (await CoordSchedule.findOne({time:t}).count());
-                if(duplicateTime){
-                    throw new ApolloError("Time Splot is Already assigned");
-                }else{
-                    try{
-                        const CoordinatorSchedule = new CoordSchedule({
-                            coordinatorID:ID,
-                            room:Room,
-                            group: 0,
-                            time: t,
-                            numberOfAttending: 0,
-                            attending:[]
-                        });
-
-                        await CoordinatorSchedule.save();
-                        
-                    }catch(e){
-                        throw new ApolloError("Something Went Wrong!");
-                    }
-                }      
-                return true;    
-        },
-
         loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
 
             console.log("contextValue");
@@ -576,24 +544,19 @@ const resolvers = {
         // depends if we will have a separate register for coordinator
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
-
             if(ID === null || privilege === null){
-                return false;
+                throw new ApolloError("Missing Field Data");
             }else{
-                
-                privilege === "professor" || "coordinator" ? 
-                    await addDateHelper(time, privilege) : 
-                    "Privilege Error in Schedule";
+                privilege === "professor" || "coordinator" ? await addDateHelper(time, privilege) : "Privilege Error in Schedule";
 
-           async function addDateHelper(time, privilege){
-                const dates = [];
-
-                let UniqueTimes = new Set(time);
-    
-               UniqueTimes.forEach((times) =>{
-                    times = new Date(times).toISOString();
-                    dates.push(new Date(times));
-                })
+                async function addDateHelper(time, privilege){
+                    const dates = [];
+                    let UniqueTimes = new Set(time);
+            
+                    UniqueTimes.forEach((times) =>{
+                            times = new Date(times).toISOString();
+                            dates.push(new Date(times));
+                    })
                 
                 if(privilege === "professor"){
                     const isScheduled = (await Professors.find({_id:ID, availSchedule:{$in:dates}}).count());
@@ -613,9 +576,38 @@ const resolvers = {
                 }
             }
         }
-
-            // return (addDateHelper === null);
             return true;
+        },
+        createCoordinatorSchedule: async (_,{coordinatorSInput:{CID, Room,Times}})=>{
+
+            if(Room === null || Times === null){
+                throw new ApolloError("Please Fill Room/Times");
+            }
+
+            const ID = Mongoose.Types.ObjectId(CID)
+            const t = new Date(Times).toISOString();
+
+            const duplicateTime = (await CoordSchedule.findOne({time:t}).count());
+            if(duplicateTime){
+                throw new ApolloError("Time Splot is Already assigned");
+            }else{
+                try{
+                    const CoordinatorSchedule = new CoordSchedule({
+                        coordinatorID:ID,
+                        room:Room,
+                        group: 0,
+                        time: t,
+                        numberOfAttending: 0,
+                        attending:[]
+                    });
+
+                    await CoordinatorSchedule.save();
+                    
+                }catch(e){
+                    throw new ApolloError("Something Went Wrong!");
+                }
+            }      
+            return true;    
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
