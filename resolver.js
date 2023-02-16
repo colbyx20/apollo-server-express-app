@@ -600,7 +600,7 @@ const resolvers = {
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID:ID,
                             room:Room,
-                            group: 0,
+                            groupId: 0,
                             time: t,
                             numberOfAttending: 0,
                             attending:[]

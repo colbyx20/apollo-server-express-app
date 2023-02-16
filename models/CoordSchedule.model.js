@@ -4,7 +4,7 @@ const coordScheduleSchema = new Schema({
     coordinatorID:mongoose.ObjectId,
     room:{type:String},
     // groupId:{type: mongoose.ObjectId},
-    group:{type: Number},
+    groupId:{type: Number},
     time:{type:Date,require:true},
     numberOfAttending: {type:Number},
     attending:{type : [mongoose.ObjectId]}
