@@ -8,12 +8,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
-const cookieParser = require("cookie-parser");
+const cookie = require("cookie");
 const path = require('path');
 require('dotenv').config();
 
 
 async function startServer(){
+
     const app = express();
 
     const httpServer = http.createServer(app);
@@ -24,16 +25,40 @@ async function startServer(){
         plugins:[ApolloServerPluginDrainHttpServer({httpServer})]
     });
 
+
     await server.start();
 
     app.set('view engine', 'ejs');
 
     app.use(
         '/graphql',
-        cors(),
-        cookieParser(),
+        cors({
+            origin: ['http://localhost:3000','http://localhost:8080/graphql', 'https://studio.apollogrpahql.com'],
+            credentials: true,
+        }),
         bodyParser.json(),
-        expressMiddleware(server),
+        expressMiddleware(server, {
+            context: async ({req,res}) => {
+                const token = req.headers.authorization || '';
+                console.log("Token??");
+                console.log(token);
+
+            res.cookie("token",token,
+            {
+                expires: new Date(Date.now() + 9000000),
+                httpOnly: true,
+                secure: true,
+                sameSite: true
+            });
+
+            const cookies = cookie.parse(req.headers.cookie);
+            console.log(cookies);
+
+                req,res
+            },
+        }
+        ),
+        
     );
 
     // app.use(express.static(path.join(__dirname, "Web/client", "build")));

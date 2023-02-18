@@ -10,6 +10,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
+const cookie = require("cookie");
 const { ObjectId, default: mongoose } = require('mongoose');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
@@ -338,7 +339,20 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}} ) => {
+        loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
+
+            // res.cookie("token","TOKEN_VALUE",
+            // {
+            //     expires: new Date(Date.now() + 9000000),
+            //     httpOnly: true,
+            //     secure: true,
+            //     sameSite: true
+            // });
+
+            // if(req && req.headers){
+            //     const cookies = cookie.parse(req.headers.cookie);
+            //     console.log(cookies);
+            // }
 
             if(!STUDENT_EMAIL.test(email)){
 
@@ -362,7 +376,7 @@ const resolvers = {
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}
-                    );
+                    );                
     
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
