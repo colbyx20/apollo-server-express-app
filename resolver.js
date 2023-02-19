@@ -84,6 +84,17 @@ const resolvers = {
         getCoordinatorSchedule: async(_,{coordinatorID}) =>{
             const CID = coordinatorID
             return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
+        },
+        getCookie: async(_,__,{req,res}) =>{
+            if(req && req.headers){
+                const cookies = cookie.parse(req.headers.cookie);
+                console.log("Cookie from login")
+                console.log(cookies);
+                return cookies;
+            }
+            return {
+                getCookie: 'cookie?'
+            }
         }
     },
     Mutation:{
@@ -340,31 +351,18 @@ const resolvers = {
     
         },
         loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
-
-            // res.cookie("token","TOKEN_VALUE",
-            // {
-            //     expires: new Date(Date.now() + 9000000),
-            //     httpOnly: true,
-            //     secure: true,
-            //     sameSite: true
-            // });
-
-            // if(req && req.headers){
-            //     const cookies = cookie.parse(req.headers.cookie);
-            //     console.log(cookies);
-            // }
-
+         
             if(!STUDENT_EMAIL.test(email)){
-
+                
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
-              
-
-
+                
+                
+                
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
-
+                    
                     // create a new token ( when you login you give user a new token )
                     const token = jwt.sign(
                         {
@@ -376,17 +374,17 @@ const resolvers = {
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}
-                    );                
-    
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
-    
-                    return {
-                        _id: professors._id,
-                        firstname:professors.professorFName,
-                        lastname:professors.professorLName,
-                        email: professorsInfo.email,
-                        token: professorsAuth.token,
+                        );                
+                        
+                        // attach token to user model that we found if user exists 
+                        await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
+                        
+                        return {
+                            _id: professors._id,
+                            firstname:professors.professorFName,
+                            lastname:professors.professorLName,
+                            email: professorsInfo.email,
+                            token: professorsAuth.token,
                         privilege: professorsInfo.privilege
                     }          
                 }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
