@@ -22,6 +22,7 @@ async function startServer(){
     const server = new ApolloServer({
         typeDefs,
         resolvers,
+        introspection: true,
         plugins:[ApolloServerPluginDrainHttpServer({httpServer})]
     });
 
@@ -43,19 +44,10 @@ async function startServer(){
                 console.log("Token??");
                 console.log(token);
 
-            res.cookie("token",token,
-            {
-                expires: new Date(Date.now() + 9000000),
-                httpOnly: true,
-                secure: true,
-                sameSite: true
-            });
 
-            const cookies = cookie.parse(req.headers.cookie);
-            console.log(cookies);
-
-                req,res
+                return {req,res}
             },
+            listen:{port:8080},
         }
         ),
         

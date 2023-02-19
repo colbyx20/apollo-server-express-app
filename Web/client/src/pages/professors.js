@@ -4,9 +4,13 @@ import CustomSidebar from '../components/Sidebar';
 import { GetGroups } from '../components/GetGroups';
 import { useNavigate } from 'react-router-dom';
 import {Button} from "@mui/material";
+import {gql, useQuery} from '@apollo/client';
+
 
 
 // import {GetAvailSchedule} from '../components/GetAvailSchedule';
+
+
 
 function Professors(props){
 
@@ -14,7 +18,6 @@ function Professors(props){
     const {user, logout} = useContext(AuthContext);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
-
 
     const onLogout = () => {
         logout();

@@ -189,6 +189,11 @@ scalar DateTime
         CID:ID
         SponCoordFlag:Boolean
     }
+
+    type Cookie{
+        getCookie: String
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -200,6 +205,7 @@ scalar DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         getAllCoordinatorSchedule:[CoordSchedule]
         getCoordinatorSchedule(coordinatorID:ID): [CoordSchedule]
+        getCookie: Cookie
     }
 
     type Mutation {
