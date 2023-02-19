@@ -129,7 +129,7 @@ const resolvers = {
                     {id : newCoordinator._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -219,7 +219,7 @@ const resolvers = {
                     {id : newStudent._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -291,7 +291,7 @@ const resolvers = {
                     {id : newProfessor._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -351,7 +351,14 @@ const resolvers = {
     
         },
         loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
-         
+
+            if(!req.headers.cookie){
+                return;
+            }
+
+            const cookies = cookie.parse(req.headers.cookie);
+            console.log(cookies);
+
             if(!STUDENT_EMAIL.test(email)){
                 
                 const professorsInfo = await UserInfo.findOne({email});
@@ -373,7 +380,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
+                        {expiresIn: "2h"}
                         );                
                         
                         // attach token to user model that we found if user exists 
@@ -385,7 +392,7 @@ const resolvers = {
                             lastname:professors.professorLName,
                             email: professorsInfo.email,
                             token: professorsAuth.token,
-                        privilege: professorsInfo.privilege
+                            privilege: professorsInfo.privilege
                     }          
                 }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
                     // create a new token ( when you login you give user a new token )
@@ -398,7 +405,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
+                        {expiresIn: "2h"}
                     );
     
                     // attach token to user model that we found if user exists 
@@ -435,7 +442,7 @@ const resolvers = {
                             privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
+                        {expiresIn: "2h"}
                     );
     
                     // attach token to user model that we found if user exists 

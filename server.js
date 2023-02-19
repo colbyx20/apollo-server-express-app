@@ -44,6 +44,17 @@ async function startServer(){
                 console.log("Token??");
                 console.log(token);
 
+            // res.cookie("token",token,
+            // {
+            //     expires: new Date(Date.now() + 9000000),
+            //     httpOnly: true,
+            //     secure: true,
+            //     sameSite: true
+            // });
+
+            // const cookies = cookie.parse(req.headers.cookie);
+            // console.log("My cookie");
+            // console.log(cookies);
 
                 return {req,res}
             },
