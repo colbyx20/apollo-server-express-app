@@ -11,6 +11,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 const { ObjectId, default: mongoose } = require('mongoose');
+
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
@@ -599,9 +600,9 @@ const resolvers = {
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID:ID,
                             room:Room,
-                            groupNumber: 0,// due to the minimum group value being 1 no group should have this
+                            //groupId: 0, wholey unessary due to the nature of $set
                             time: t,
-                            numberOfAttending: 0,
+                            numberOfAttending: 0, // nessecity debatable
                             attending:[]
                         });
                         
@@ -678,51 +679,47 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         },
-        makeAppointment:async(_,{AppointmentEdit:{ Gnum,professorsAttending, time,CID }})=>{//adds groupNumber to appointment largely for testing purposes
-            //const groupExists = await Group.findOne({groupNumber:Gnum})
-            const bookedTest =await CoordSchedule.findOne({groupNumber:Gnum})
+        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
+            const bookedTest =await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time)
-            const coord= Mongoose.Types.ObjectId(CID)
-            const appointment= await CoordSchedule.findOne ({coordinatorID:coord,time:chrono})
-            const PA=[];   
+            const appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
             const PE=[];
-            console.log(appointment)
+            console.log(appointment.groupId)
             if(bookedTest)
             {
-                if(bookedTest.groupNumber != Gnum  )//could be mongoose.Types.ObjectId(Gnum)
-                {
-                    throw new ApolloError("Appoinment already booked")
-                }
-                
-            }
-            if(appointment)
-            {
-
-               if(appointment.attending.length==3)
+                if(bookedTest.professorsAttending.length==3)
                 { 
                     throw new ApolloError( "group already has an appointment and has all profs");
                 }
-                if((appointment.attending.length + professorsAttending.length )>3)
+                if(appointment)
                 {
-                    throw new ApolloError("To many professors")
+                    if(appointment.groupId && bookedTest.groupId != appointment.groupId  )//could be mongoose.Types.ObjectId(GID)
+                    {
+                        throw new ApolloError("Appoinment already booked")
+                    }
+                    if((appointment.numberOfAttending + professorsAttending.length )>3)
+                    {
+                        throw new ApolloError("To many professors")
+                    }
+                    
                 }
-            }           
-            const CoordScheduleEdit=await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{$set:{groupNumber: Gnum}});
-            var modification= CoordScheduleEdit.modifiedCount;
-            console.log(CoordScheduleEdit.modifiedCount)
+            }
+            //claim appointment for the group
+            const CoordScheduleEdit=await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{$set:{groupId: mongoose.Types.ObjectId(GID)}})
+            var modification = CoordScheduleEdit.modifiedCount
             //Validate proffesor Availability
-            // I wanted to put this in the for loop howeverit kept crashing
             for(prof of professorsAttending){
                 const availTest=await Professors.findOne({_id:prof, availSchedule:{$in:[chrono]}})
                 if (!availTest){//unavailable
                     const who =await Professors.find({_id:prof})
                     PE.push(who.professorLName)
+                    continue
                 }
-                else{//should we worry about suplicates i argue not to. as there should be no duplicates possible
+                else{
                     const pro= mongoose.Types.ObjectId(prof);//might make it a try catch
-                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appointment._id}}).modifiedCount
+                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}}).modifiedCount
                     await CoordSchedule.updateOne({coordinatorID:CID, time:chrono},{$push:{attending:pro},$inc:{numberOfAttending:1}})   //add to the attending professor
-                    modification= modification+1;
+                    modification=modification +1;
                 }
             }
             if(PE.length!=0)
@@ -753,7 +750,7 @@ const resolvers = {
                     })
                 }
                 //Student Notification
-                const GN=await Group.find({_id:Gnum})
+                const GN=await Group.find({_id:GID})
                 const members= await Users.find({groupNumber:GN.groupNumber})
                 members.forEach(async(member)=>{// this for each will be left alone for now
                     const notify=UserInfo.find({userId:member._id})
@@ -767,19 +764,19 @@ const resolvers = {
                         </div>`,
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
-                })d*/
+                })*/
                 const changes = await CoordSchedule.find({coordinatorID:CID,time:chrono})
                 return {
                     _id: changes._id,
                     coordinatorID:changes.coordinatorID,
                     room:changes.room,
-                    groupNumber:changes.groupNumber,
+                    groupId:changes.groupId,
                     time:changes.time,
                     attending:changes.attending
                 };
             }
             else{// might branch out if more then one
-                throw new ApolloError("no changes made")
+                throw new ApolloError("Unknown error")
             }
         },
         //profAppointmentNotify
@@ -802,7 +799,7 @@ const resolvers = {
             {
                 time= new Date(appointment.time);
                 await Professors.updateOne({_id:canceler._id},{$pull:{appointments:appoinment._id}});
-                const group = await Group.find({_id:appointment.groupNumber})
+                const group = await Group.find({_id:appointment.groupId})
                 await CoordSchedule.updateOne({_id:ApID}, {$pull:{attending:prof._id}})//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
                 return {
                     Group:group._id,

@@ -183,7 +183,7 @@ scalar DateTime
         Times:[DateTime]
     }
     input appointmentEdit{
-        Gnum:Int
+        GID:ID
         professorsAttending:[ID]
         time: DateTime
         CID:ID
