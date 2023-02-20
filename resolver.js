@@ -353,11 +353,11 @@ const resolvers = {
         loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
 
             if(!req.headers.cookie){
-                return;
+                console.log("no cookie")
             }
 
-            const cookies = cookie.parse(req.headers.cookie);
-            console.log(cookies);
+            // const cookies = cookie.parse(req.headers.cookie);
+            // console.log(cookies);
 
             if(!STUDENT_EMAIL.test(email)){
                 
@@ -391,7 +391,7 @@ const resolvers = {
                             firstname:professors.professorFName,
                             lastname:professors.professorLName,
                             email: professorsInfo.email,
-                            token: professorsAuth.token,
+                            token: token,
                             privilege: professorsInfo.privilege
                     }          
                 }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
@@ -416,7 +416,7 @@ const resolvers = {
                         firstname:coordinator.coordinatorFName,
                         lastname:coordinator.coordinatorLName,
                         email: professorsInfo.email,
-                        token: professorsAuth.token,
+                        token: token,
                         privilege: professorsInfo.privilege
                     } 
 
@@ -453,7 +453,7 @@ const resolvers = {
                         firstname:student.userFName,
                         lastname:student.userLName,
                         email: studentInfo.email,
-                        token: studentAuth.token,
+                        token: token,
                         privilege: studentInfo.privilege
                     }          
                 }

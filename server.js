@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
 const cookie = require("cookie");
+const Auth = require('./models/Auth.model');
+const Mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config();
 
@@ -40,10 +42,17 @@ async function startServer(){
         bodyParser.json(),
         expressMiddleware(server, {
             context: async ({req,res}) => {
-                const token = req.headers.authorization || '';
-                console.log("Token??");
+                const token = req.headers.authorization.split('Bearer')[1];
+                console.log(req.cookies);
                 console.log(token);
-
+                
+                if(!token){
+                    return {req,res}
+                }else{
+                    const isValidUser = await Auth.findOne({token:token});
+                    console.log(isValidUser);
+                    return isValidUser;
+                }
             // res.cookie("token",token,
             // {
             //     expires: new Date(Date.now() + 9000000),
@@ -56,7 +65,6 @@ async function startServer(){
             // console.log("My cookie");
             // console.log(cookies);
 
-                return {req,res}
             },
             listen:{port:8080},
         }
