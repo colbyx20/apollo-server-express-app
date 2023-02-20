@@ -658,24 +658,40 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         },
-        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,reselectFlag}})=>{//adds groupID to appointment largely for testing purposes
+        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
             const bookedTest =await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time)
-            const takenTest= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
+            const appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
             const PE=[];
-            if(bookedTest&&!reselectFlag)
-            { 
-                throw new ApolloError( "group already has an appointment");
-            }
-            /*if(takenTest.groupId)
+            console.log(appointment.groupId)
+            if(bookedTest)
             {
-                throw new ApolloError("Appoinment already booked")
-            }*/
+                if(bookedTest.professorsAttending.length==3)
+                { 
+                    throw new ApolloError( "group already has an appointment and has all profs");
+                }
+                if(appointment)
+                {
+                    if(appointment.groupId && bookedTest._id != appointment.groupId  )//could be mongoose.Types.ObjectId(GID)
+                    {
+                    throw new ApolloError("Appoinment already booked")
+                    }
+                    if((appointment.attending.length + professorsAttending.length )>3)
+                    {
+                        throw new ApolloError("To many professors")
+                    }
+                    
+                }
+            }
+            /**/console.log(appointment)
             
+            const CoordScheduleEdit=await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{$set:{'groupId': mongoose.Types.ObjectId(GID)}}).modifiedCount;
             //Validate proffesor Availability
             // I wanted to put this in the for loop howeverit kept crashing
+            const appointmen= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
+            console.log(appointmen)
             for(prof of professorsAttending){
                 const availTest=await Professors.findOne({_id:prof, availSchedule:{$in:[chrono]}})
                 if (!availTest){//unavailable
@@ -685,20 +701,16 @@ const resolvers = {
                 }
                 else{
                     const pro= mongoose.Types.ObjectId(prof);//might make it a try catch
-                    PA.push(pro);    //add to the attending professor
+                    //await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}}).modifiedCount
+                    //await CoordSchedule.updateOne({coordinatorID:CID, time:chrono},{$push:{attending:pro}})   //add to the attending professor
                 }
             }
             if(PE.length!=0)
             {
                 throw new ApolloError("professor(s)"+PE+"unavailable")
             }
-            const CoordScheduleEdit=(await CoordSchedule.updateOne({coordinatorID:CID, time:chrono },{
-                groupId:group,
-                attending: PA
-            })).modifiedCount;
             if (CoordScheduleEdit==1 )//if make was successful
             {
-                const appoinment = await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
 
                 //send out notifications
                 // set up email 
@@ -736,7 +748,15 @@ const resolvers = {
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
                 })*/
-                return CoordScheduleEdit;
+                const changes = await CoordSchedule.find({coordinatorID:CID,time:chrono})
+                return {
+                    _id: changes._id,
+                    coordinatorID:changes.coordinatorID,
+                    room:changes.room,
+                    groupId:changes.groupId,
+                    time:changes.time,
+                    attending:changes.attending
+                };
             }
             else{// might branch out if more then one
                 throw new ApolloError("Unknown error")
@@ -755,35 +775,20 @@ const resolvers = {
             //alternative call with time and CID instead
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
             //Student i.e. User
-            if(canceler.privilege=='student')
-            {
-                const user= await Users.find({_id:canceler.userId})
-                const members= await Users.find({groupNumber:user.groupNumber})
-                for(prof of appointment.attending)//notify the professors of the canceled appointment
-                {
-                    time= new Date(appointment.time);
-                    await Professors.updateOne({_id:prof},{$push:{availSchedule:time},$pull:{appointments:appoinment._id}});
-                    const notify= UserInfo.find({userId:prof})
-                    await emailer(notify.email,appointment.time,appointment.room)
-                }
-                for(person of members)
-                {
-                    await emailer(person.email,appointment.time,appointment.room)
-                }
-                if(reason)//dislike the time
-                {
-                    //reset the appointment: need to now what populates an empty field i think its null but have no proof
-                }
-                else// reselect profs
-                {
-                    await Group.updateOne({groupNumber:user.groupNumber},{$set:{reselectFlag:true}})
-                    await CoordSchedule.updateOne({_id:ApID},{$set:{attending:[]}})   
-                }
-            }
+            if(canceler.privilege=='student')//np longer need
+            {}
             //Professor on a side note for professors the reason flag should be false
             else if(canceler.privilege=='professor')
             {
-
+                time= new Date(appointment.time);
+                await Professors.updateOne({_id:canceler._id},{$pull:{appointments:appoinment._id}});
+                const group = await Group.find({_id:appointment.groupId})
+                await CoordSchedule.updateOne({_id:ApID}, {$pull:{attending:prof._id}})//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                return {
+                    Group:group._id,
+                    Time:time,
+                    Room:appointment.room
+                }
             }
             //coordinator
             else if(canceler.privilege=='coordinator')
