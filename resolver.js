@@ -352,10 +352,6 @@ const resolvers = {
         },
         loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
 
-            if(!req.headers.cookie){
-                console.log("no cookie")
-            }
-
             // const cookies = cookie.parse(req.headers.cookie);
             // console.log(cookies);
 
@@ -386,6 +382,8 @@ const resolvers = {
                         // attach token to user model that we found if user exists 
                         await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
                         
+                        res.cookie("token",token);
+
                         return {
                             _id: professors._id,
                             firstname:professors.professorFName,
@@ -410,7 +408,7 @@ const resolvers = {
     
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:token}})
-    
+                    res.cookie("token",token);
                     return {
                         _id: coordinator._id,
                         firstname:coordinator.coordinatorFName,
@@ -447,7 +445,7 @@ const resolvers = {
     
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
-    
+                    res.cookie("token",token);
                     return {
                         _id: student._id,
                         firstname:student.userFName,

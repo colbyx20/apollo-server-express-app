@@ -32,6 +32,7 @@ async function startServer(){
     await server.start();
 
     app.set('view engine', 'ejs');
+    
 
     app.use(
         '/graphql',
@@ -42,17 +43,17 @@ async function startServer(){
         bodyParser.json(),
         expressMiddleware(server, {
             context: async ({req,res}) => {
-                const token = req.headers.authorization.split('Bearer')[1];
-                console.log(req.cookies);
-                console.log(token);
+                const token = req.headers.authorization || " ";
+                // console.log(req.cookies);
+                // console.log(token);
                 
-                if(!token){
-                    return {req,res}
-                }else{
-                    const isValidUser = await Auth.findOne({token:token});
-                    console.log(isValidUser);
-                    return isValidUser;
-                }
+                // if(!token){
+                //     return {req,res}
+                // }else{
+                //     const isValidUser = await Auth.findOne({token:token});
+                //     console.log(isValidUser);
+                //     return isValidUser;
+                // }
             // res.cookie("token",token,
             // {
             //     expires: new Date(Date.now() + 9000000),
@@ -64,6 +65,8 @@ async function startServer(){
             // const cookies = cookie.parse(req.headers.cookie);
             // console.log("My cookie");
             // console.log(cookies);
+
+            return {req,res}
 
             },
             listen:{port:8080},

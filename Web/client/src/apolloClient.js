@@ -11,8 +11,8 @@ const local_uri = "http://localhost:8080/graphql"
 
 const httpLink = createHttpLink({
     uri: "http://localhost:8080/graphql",
-    cache: new InMemoryCache(),
     credentials:'include',
+    cache: new InMemoryCache(),
 });
 
 // auth link 
