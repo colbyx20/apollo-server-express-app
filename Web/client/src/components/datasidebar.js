@@ -21,7 +21,7 @@ export const datasidebar = [
     {
         title: <p className='sideBarText'>Home</p>,
         icon: <img className='icon' src={Home}></img>,
-        link: "/"
+        link: "/coordinator"
     },
     {
         title: <p className='sideBarText'>Semester</p>,

@@ -9,8 +9,7 @@
     top: 0;
     left: 0;
     width: 110px;
-    min-height: 100vh;
-    overflow: scroll;
+    height: auto;
 }
 
 .coordinatorBar{
@@ -20,6 +19,8 @@
 }
 
 .row{
+    margin: 0%;
+    padding: 0%;
     text-align: center;
     display: inline;
     height: 100%;
@@ -30,8 +31,16 @@
     background-color: #dfb006;
 }
 
+.coordList{
+    background-color: #FFC904;
+}
+
 .coordList #active{
-    background-color: white;
+    text-decoration: underline;
+}
+
+.coordList .row .item{
+    height: 100%;
 }
 
 .ucfLogo{

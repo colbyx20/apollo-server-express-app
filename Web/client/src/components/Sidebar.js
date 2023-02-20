@@ -32,6 +32,7 @@ function Sidebar(props){
         if(link === "/")
             onLogout();
     }
+
       
     return(
         <div className='sideBar-wrapper'>
@@ -57,7 +58,7 @@ function Sidebar(props){
                                     ButtonRouting(val.link);
                                     window.location.pathname = val.link;
                                 }}>
-                                    <div>{val.icon}{val.title}</div> 
+                                    <div className='item'>{val.icon}{val.title}</div> 
                                 </li>)
                             })}
                         </ul>
