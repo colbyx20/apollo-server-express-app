@@ -12,13 +12,11 @@ import {ProSidebarProvider} from 'react-pro-sidebar';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider>
-  <ApolloProvider client={client}>
-    <BrowserRouter>
-      <ProSidebarProvider>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
         <App />
-      </ProSidebarProvider>
-    </BrowserRouter>
-  </ApolloProvider>
+      </BrowserRouter>
+    </ApolloProvider>
   </AuthProvider>
 );
 

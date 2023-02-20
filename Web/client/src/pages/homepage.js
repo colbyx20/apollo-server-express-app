@@ -1,5 +1,6 @@
 import { AuthContext } from '../context/authContext'; 
 import {useContext} from 'react';
+import CustomSidebar from '../components/Sidebar';
 
 function Homepage(){
     const {user, logout} = useContext(AuthContext);
@@ -7,6 +8,7 @@ function Homepage(){
  
     return(
         <>
+        <CustomSidebar/>
         <h1> this is the Home Page </h1>
         {user ? 
             <>

@@ -24,13 +24,10 @@ const LOGIN_USER = gql`
 `
 
 function Login(props){
-    let navigate = useNavigate();
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
 
     const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.edu$');
-    const PROFESSOR_EMAIL_TEST = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 
     function loginUserCallback(){
@@ -42,22 +39,12 @@ function Login(props){
         password:""
     });
 
-    const [loginUser, {loading}]  = useMutation(LOGIN_USER,{
+    const [loginUser]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
-            console.log(userData);
-            localStorage.setItem("_id",userData._id);
-            localStorage.setItem("token",userData.token); 
+            context.login(userData)
             localStorage.setItem("firstname",userData.firstname);
-            localStorage.setItem("lastname",userData.lastname);
-            localStorage.setItem("email",userData.email);
-            localStorage.setItem("privilege",userData.privilege);
-
-
-            console.log(STUDENT_EMAIL.test(userData.email));
-            console.log(PROFESSOR_EMAIL_TEST.test(userData.email));
-
-
-            if(loading) return <p>Loading...</p>
+            localStorage.setItem("lastname",userData.lastname)
+            localStorage.setItem("token",userData.token);
             
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
@@ -65,7 +52,7 @@ function Login(props){
                 //navigate('/student');
             }else if(!STUDENT_EMAIL.test(userData.email)){
                 // go to professor page 
-                window.location.href = '/professor';
+                window.location.href = '/coordinator';
             }
         },
         onError({graphQLErrors}){
@@ -142,7 +129,6 @@ function Login(props){
                         width: '100%',
                     }}variant="contained" onClick={onSubmit}>Login</Button>
 
-                    <span>New to SDS?<a href='/register'> Sign Up</a><br/></span>
                     <span><a href='/'>Forgot password?</a></span>
                     
 

@@ -81,8 +81,8 @@ const resolvers = {
             return await CoordSchedule.find()
         },
         getCoordinatorSchedule: async(_,{coordinatorID}) =>{
-            const CID =coordinatorID
-            return await CoordSchedule.find({coordinatorID:CID})
+            const CID = coordinatorID
+            return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
         }
     },
     Mutation:{
@@ -342,6 +342,7 @@ const resolvers = {
             }
     
         },
+<<<<<<< HEAD
         createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
                 const ID =Mongoose.Types.ObjectId(CID)
                 for( time of Times){//time is flagged as VSCode does not know that Times will be an array
@@ -369,21 +370,21 @@ const resolvers = {
                 return true;
     
         },
+=======
+        loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
+>>>>>>> master
 
-        loginUser: async (_,{loginInput: {email, password}}) => {
+            console.log("contextValue");
+            console.log(contextValue);
 
             if(!STUDENT_EMAIL.test(email)){
 
-                // 3 small queries are faster than joining all 3 then searching
+                
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
-
-                console.log(professorsInfo.email);
-                console.log(professorsAuth.userId);
-                console.log(coordinator);
-
+              
 
 
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
@@ -394,7 +395,8 @@ const resolvers = {
                             id : professors._id, 
                             email, 
                             firstname: professors.professorFName, 
-                            lastname: professors.professorLName
+                            lastname: professors.professorLName,
+                            privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}
@@ -418,7 +420,8 @@ const resolvers = {
                             id : coordinator._id, 
                             email, 
                             firstname: coordinator.professorFName, 
-                            lastname: coordinator.professorLName
+                            lastname: coordinator.professorLName,
+                            privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}
@@ -454,7 +457,8 @@ const resolvers = {
                             id : student._id, 
                             email, 
                             firstname: student.userFName, 
-                            lastname: student.userLName
+                            lastname: student.userLName,
+                            privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "1d"}
@@ -570,30 +574,78 @@ const resolvers = {
         // depends if we will have a separate register for coordinator
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
+            if(ID === null || privilege === null){
+                throw new ApolloError("Missing Field Data");
+            }else{
+                privilege === "professor" || "coordinator" ? await addDateHelper(time, privilege) : "Privilege Error in Schedule";
 
-            privilege === "professor" ? 
-                await addDateHelper(time, privilege) : 
-                "Privilege Error in Schedule";
-
-           async function addDateHelper(time, privilege){
-                const dates = [];
-    
-               time.forEach((times) =>{
-                    times = new Date(times).toISOString();
-                    dates.push(new Date(times));
-                })
+                async function addDateHelper(time, privilege){
+                    const dates = [];
+                    let UniqueTimes = new Set(time);
+            
+                    UniqueTimes.forEach((times) =>{
+                            times = new Date(times).toISOString();
+                            dates.push(new Date(times));
+                    })
                 
                 if(privilege === "professor"){
-                    const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
-                }else{
-                    const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
+                    const isScheduled = (await Professors.find({_id:ID, availSchedule:{$in:dates}}).count());
 
+                    if(!isScheduled){
+                        (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    const isScheduled = (await Coordinator.find({_id:ID, availSchedule:{$in:dates}}).count());
+                    if(!isScheduled){
+                     (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
                 }
             }
+        }
+            return true;
+        },
+        createCoordinatorSchedule: async (_,{coordinatorSInput:{CID, Room,Times}})=>{
 
-            return (addDateHelper === null);
+            if(Room === null || Times === null){
+                throw new ApolloError("Please Fill Room/Times");
+            }
+
+            
+            
+            const ID = Mongoose.Types.ObjectId(CID)
+            const UniqueTimes = new Set(Times);
+            UniqueTimes.forEach(async(time) => {
+                let t = new Date(time).toISOString();
+                let duplicateTime = (await CoordSchedule.findOne({time:t}).count());
+                
+                if(duplicateTime){
+                    // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
+                    return false;
+                }else{
+                    try{
+                        const CoordinatorSchedule = new CoordSchedule({
+                            coordinatorID:ID,
+                            room:Room,
+                            groupId: 0,
+                            time: t,
+                            numberOfAttending: 0,
+                            attending:[]
+                        });
+                        
+                        await CoordinatorSchedule.save();
+                    
+                    }catch(e){
+                        throw new ApolloError("Something Went Wrong!");
+                    }
+    
+                }
+            });
+   
+            return true;    
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
@@ -602,7 +654,7 @@ const resolvers = {
             }
 
             // check for unique
-            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber});
+            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber}).count();
 
             console.log(checkUniqueGroup);
 
@@ -619,7 +671,6 @@ const resolvers = {
                     groupNumber: groupNumber,
                     memberCount: 0
                 });
-                
 
                 // Save user in MongoDB
                 const res = await newGroup.save();
@@ -658,10 +709,16 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         },
+<<<<<<< HEAD
         makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
             const bookedTest =await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time)
             const appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
+=======
+        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,SponCoordFlag}})=>{//adds groupID to appointment largely for testing purposes
+            const test = await CoordSchedule.findOne({groupId:GID})
+            const chrono =new Date(time).toISOString()
+>>>>>>> master
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
             const PE=[];

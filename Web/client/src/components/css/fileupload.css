@@ -1,0 +1,14 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.uploadWrapper{
+    background-color: aliceblue;
+    height: 50%;
+}
+
+.uploadedFiles{
+    height: 90%;
+    background-color: black;
+}

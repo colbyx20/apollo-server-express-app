@@ -1,4 +1,4 @@
-const {gql} = require('apollo-server-express');
+const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
 
@@ -39,8 +39,8 @@ scalar DateTime
 
     type Users {
         _id:ID
-        firstname: String
-        lastname: String
+        userFName: String
+        userLName: String
         email: String
         password: String
         confirmpassword: String
@@ -198,7 +198,7 @@ scalar DateTime
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
-        getAllUsers :[Users]
+        getAllUsers : [Users]
         getAllGroups :[Group]
         getAdmins : Admin
         availSchedule: DateTime
@@ -208,7 +208,7 @@ scalar DateTime
     }
 
     type Mutation {
-        createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput):Boolean
+        createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput): Boolean
         deleteUser(ID:ID!):Users
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
