@@ -183,11 +183,11 @@ scalar DateTime
         Times:[DateTime]
     }
     input appointmentEdit{
-        GID:ID
+        Gnum:Int
         professorsAttending:[ID]
         time: DateTime
         CID:ID
-        reselectFlag:Boolean 
+
     }
     input cancelation{
         CancelerID:ID
@@ -213,7 +213,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
-        makeAppointment(ID:ID!,AppointmentEdit:appointmentEdit):CoordSchedule
+        makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
