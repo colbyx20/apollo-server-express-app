@@ -4,7 +4,8 @@ import Register from './pages/register';
 import Login from './pages/login';
 import Student from './pages/student';
 import Loginpath from './pages/login';
-import Professors from "./pages/professors";
+// import Professors from "./pages/professors";
+import Coordinator from "./pages/coordinator"
 
 
 function App() {
@@ -16,8 +17,8 @@ function App() {
         <Route path="/homepage" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/student" element={<Student />} />
-        <Route path="/professor" element={<Professors />} />
-
+        {/* <Route path="/professor" element={<Professors />} /> */}
+        <Route path="/coordinator" element={<Coordinator />} />
       </Routes>
       
     </div>
