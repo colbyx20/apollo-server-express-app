@@ -81,8 +81,8 @@ const resolvers = {
             return await CoordSchedule.find()
         },
         getCoordinatorSchedule: async(_,{coordinatorID}) =>{
-            const CID =coordinatorID
-            return await CoordSchedule.find({coordinatorID:CID})
+            const CID = coordinatorID
+            return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
         }
     },
     Mutation:{
@@ -342,25 +342,10 @@ const resolvers = {
             }
     
         },
-        createCoordinatorSchedule:async (_,{coordinatorSInput:{CID, Room,Times}})=>{
-                const ID =Mongoose.Types.ObjectId(CID)
-                console.log(Room)
-                Times.forEach(async(time) =>{
-                    t = new Date(time).toISOString();
-                    const CoordinatorSchedule = new CoordSchedule({
-                        coordinatorID:ID,
-                        room:Room,
-                        time: t
-                    });
-                    const happens=await CoordinatorSchedule.save()
-                    if(happens==null)
-                        return false;
-                })
-                return true;
-    
-        },
+        loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
 
-        loginUser: async (_,{loginInput: {email, password}}) => {
+            console.log("contextValue");
+            console.log(contextValue);
 
             if(!STUDENT_EMAIL.test(email)){
 
@@ -433,8 +418,6 @@ const resolvers = {
                 const studentInfo = await UserInfo.findOne({email});
                 const studentAuth = await Auth.findOne({userId:studentInfo.userId});
                 const student = await Users.findOne({_id:studentInfo.userId});
-
-                console.log(studentInfo)
 
                 if(studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))){
 
@@ -561,30 +544,78 @@ const resolvers = {
         // depends if we will have a separate register for coordinator
         createProfessorSchedule: async(_,{ID,privilege,professorScheduleInput:{time}}) => {   
 
+            if(ID === null || privilege === null){
+                throw new ApolloError("Missing Field Data");
+            }else{
+                privilege === "professor" || "coordinator" ? await addDateHelper(time, privilege) : "Privilege Error in Schedule";
 
-            privilege === "professor" ? 
-                await addDateHelper(time, privilege) : 
-                "Privilege Error in Schedule";
-
-           async function addDateHelper(time, privilege){
-                const dates = [];
-    
-               time.forEach((times) =>{
-                    times = new Date(times).toISOString();
-                    dates.push(new Date(times));
-                })
+                async function addDateHelper(time, privilege){
+                    const dates = [];
+                    let UniqueTimes = new Set(time);
+            
+                    UniqueTimes.forEach((times) =>{
+                            times = new Date(times).toISOString();
+                            dates.push(new Date(times));
+                    })
                 
                 if(privilege === "professor"){
-                    const createdDate = (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
-                }else{
-                    const createdDate = (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
-                    return createdDate;
+                    const isScheduled = (await Professors.find({_id:ID, availSchedule:{$in:dates}}).count());
 
+                    if(!isScheduled){
+                        (await Professors.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    const isScheduled = (await Coordinator.find({_id:ID, availSchedule:{$in:dates}}).count());
+                    if(!isScheduled){
+                     (await Coordinator.updateOne({_id:ID},{$push:{availSchedule:{$each: dates}}})).modifiedCount;
+                    }else{
+                        return false;
+                    }
                 }
             }
+        }
+            return true;
+        },
+        createCoordinatorSchedule: async (_,{coordinatorSInput:{CID, Room,Times}})=>{
 
-            return (addDateHelper === null);
+            if(Room === null || Times === null){
+                throw new ApolloError("Please Fill Room/Times");
+            }
+
+            
+            
+            const ID = Mongoose.Types.ObjectId(CID)
+            const UniqueTimes = new Set(Times);
+            UniqueTimes.forEach(async(time) => {
+                let t = new Date(time).toISOString();
+                let duplicateTime = (await CoordSchedule.findOne({time:t}).count());
+                
+                if(duplicateTime){
+                    // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
+                    return false;
+                }else{
+                    try{
+                        const CoordinatorSchedule = new CoordSchedule({
+                            coordinatorID:ID,
+                            room:Room,
+                            groupId: 0,
+                            time: t,
+                            numberOfAttending: 0,
+                            attending:[]
+                        });
+                        
+                        await CoordinatorSchedule.save();
+                    
+                    }catch(e){
+                        throw new ApolloError("Something Went Wrong!");
+                    }
+    
+                }
+            });
+   
+            return true;    
         },
         createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
 
@@ -593,7 +624,7 @@ const resolvers = {
             }
 
             // check for unique
-            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber});
+            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber}).count();
 
             console.log(checkUniqueGroup);
 
@@ -610,7 +641,6 @@ const resolvers = {
                     groupNumber: groupNumber,
                     memberCount: 0
                 });
-                
 
                 // Save user in MongoDB
                 const res = await newGroup.save();
@@ -650,7 +680,7 @@ const resolvers = {
             return professorEdit;
         },
         makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID ,SponCoordFlag}})=>{//adds groupID to appointment largely for testing purposes
-            const test =await CoordSchedule.findOne({groupId:GID})
+            const test = await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time).toISOString()
             const group = mongoose.Types.ObjectId(GID);
             const PA=[];   
