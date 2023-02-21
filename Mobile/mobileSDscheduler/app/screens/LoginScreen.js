@@ -6,7 +6,7 @@ import AppButton from "../components/AppButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
 import Constants from "expo-constants";
-//import apiClient from "../api/client";
+import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
 
@@ -25,21 +25,22 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
-  //   const [groups, setGroups] = useState([]);
+  //API SAUCE
+  // const [groups, setGroups] = useState([]);
 
-  //   useEffect(() => {
-  //     loadGroups();
-  //   }, []);
+  // useEffect(() => {
+  //   loadGroups();
+  // }, []);
 
-  //   const loadGroups = async () => {
-  //     const response = await apiClient.get("getAllGroups");
-  //     setGroups(response.data);
-  //   };
+  // const loadGroups = async () => {
+  //   const response = await apiClient.get("getAllGroups");
+  //   setGroups(response.data);
+  // };
 
-  //   console.log(groups);
+  // console.log(groups);
 
   //-----------------
-
+  //TESTING THINGS
   //   const [groups, setGroups] = useState([]);
 
   //   useEffect(() => {
@@ -54,6 +55,7 @@ function LoginScreen(props) {
 
   //   console.log(groups);
 
+  //APOLLO CLIENT
   const { data, loading, error } = useQuery(GROUPS);
 
   if (error) {
@@ -91,7 +93,7 @@ function LoginScreen(props) {
             touched,
           }) => (
             <>
-              <AppText>{data.getAllGroups[0].groupName}</AppText>
+              <AppText>Hello</AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}
