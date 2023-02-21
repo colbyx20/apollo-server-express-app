@@ -37,30 +37,24 @@ async function startServer(){
     app.use(
         '/graphql',
         cors({
-            origin: ['http://localhost:3000','http://localhost:8080/graphql', 'https://studio.apollogrpahql.com'],
+            origin: ['http://localhost:3000','http://localhost:8080/graphql', 'http://localhost:19006' ,'https://studio.apollogrpahql.com'],
             credentials: true,
         }),
         bodyParser.json(),
         expressMiddleware(server, {
             context: async ({req,res}) => {
                 const token = req.headers.authorization || " ";
-                // console.log(req.cookies);
-                // console.log(token);
-                
-                // if(!token){
+                // const userCookie = req.headers.cookie.split("token=")[1];
+                // console.log("My cookie")
+                // console.log(userCookie);
+                // if(!userCookie){
                 //     return {req,res}
                 // }else{
-                //     const isValidUser = await Auth.findOne({token:token});
+                //     const isValidUser = await Auth.findOne({token:userCookie});
                 //     console.log(isValidUser);
                 //     return isValidUser;
                 // }
-            // res.cookie("token",token,
-            // {
-            //     expires: new Date(Date.now() + 9000000),
-            //     httpOnly: true,
-            //     secure: true,
-            //     sameSite: true
-            // });
+
 
             // const cookies = cookie.parse(req.headers.cookie);
             // console.log("My cookie");

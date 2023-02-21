@@ -14,7 +14,6 @@ import ErrorMessage from "../components/ErrorMessage";
 import { useEffect, useState } from "react";
 
 
-
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .required()
@@ -75,9 +74,8 @@ function LoginScreen(props) {
       }
 
 
-
-  console.log(data.getAllGroups)
-  console.log(data.getAllGroups[0].groupName);
+  // console.log(data.getAllGroups)
+  // console.log(data.getAllGroups[0].groupName);
 
 
   return (
