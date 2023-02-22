@@ -104,7 +104,7 @@ const resolvers = {
                     foreignField:"groupNumber",
                     as:"groupId"
                 }},
-                {$project:{room:1,time:1,attending:1,"groupId.groupName":1, "groupId.groupNumber":1}},
+                {$project:{room:1,time:1,attending:1,numberOfAttending:1,"groupId.groupName":1, "groupId.groupNumber":1, "groupId.projectField":1}},
                 {$unwind:"$groupId"},
                 {$sort: {time:1}}
             ])
