@@ -679,7 +679,7 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         },
-        makeAppointment:async(_,{ID,AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
+        makeAppointment:async(_,{AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
             const bookedTest =await CoordSchedule.findOne({groupId:GID})
             const chrono =new Date(time)
             const appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
@@ -693,13 +693,13 @@ const resolvers = {
                 }
                 if(appointment)
                 {
-                    if(appointment.groupId && bookedTest.groupId != appointment.groupId  )//could be mongoose.Types.ObjectId(GID)
+                    if(appointment.groupId && Mongoose.Types.ObjectId(GID) != appointment.groupId  )//first half needed incase there is no groupId
                     {
-                        throw new ApolloError("Appoinment already booked")
+                        throw new ApolloError("Appoinment already booked by another group")
                     }
                     if((appointment.numberOfAttending + professorsAttending.length )>3)
                     {
-                        throw new ApolloError("To many professors")
+                        throw new ApolloError("o many professors")
                     }
                     
                 }
@@ -717,7 +717,7 @@ const resolvers = {
                 }
                 else{
                     const pro= mongoose.Types.ObjectId(prof);//might make it a try catch
-                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}}).modifiedCount
+                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appointment._id}}).modifiedCount
                     await CoordSchedule.updateOne({coordinatorID:CID, time:chrono},{$push:{attending:pro},$inc:{numberOfAttending:1}})   //add to the attending professor
                     modification=modification +1;
                 }
@@ -765,6 +765,7 @@ const resolvers = {
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
                 })*/
+                //slight issue with returning info from this mutation
                 const changes = await CoordSchedule.find({coordinatorID:CID,time:chrono})
                 return {
                     _id: changes._id,
