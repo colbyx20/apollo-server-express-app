@@ -130,7 +130,7 @@ const resolvers = {
                         privilege: decodedRefreshToken.privilege
                     }, 
                     "UNSAFE_STRING", // stored in a secret file 
-                    {expiresIn: "2m"}
+                    {expiresIn: "2h"}
                 );
                 return newAccessToken;
             }else{
@@ -428,7 +428,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2m"}
+                        {expiresIn: "2h"}
                         );      
                         
                         const refreshToken = jwt.sign(
