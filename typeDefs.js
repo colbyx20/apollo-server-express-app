@@ -183,12 +183,14 @@ scalar DateTime
     type groupData {
         groupName: String
         groupNumber: Int
+        projectField: String
     }
 
     type CoordSchedule2 {
         _id: ID
         room: String
         time: DateTime
+        numberOfAttending: Int
         attending: [String]
         groupId: groupData
     }
