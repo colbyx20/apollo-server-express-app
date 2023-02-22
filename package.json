@@ -35,6 +35,7 @@
     "express-jwt": "^8.4.1",
     "graphql": "^16.6.0",
     "jsonwebtoken": "^9.0.0",
+    "jwt-decoder": "^0.0.0",
     "mongoose": "^6.7.4",
     "nodemailer": "^6.8.0"
   },

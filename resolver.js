@@ -11,6 +11,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 const cookie = require("cookie");
+
+
 const { ObjectId, default: mongoose } = require('mongoose');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
@@ -79,23 +81,73 @@ const resolvers = {
         },
         getAllCoordinatorSchedule: async() =>{
 
-            return await CoordSchedule.find()
+            return await CoordSchedule.aggregate([
+                {$lookup:{
+                    from:"groups",
+                    localField:"groupId",
+                    foreignField:"groupNumber",
+                    as:"groupId"
+                }},
+                {$project:{room:1,time:1,attending:1,"groupId.groupName":1, "groupId.groupNumber":1}},
+                {$unwind:"$groupId"},
+                {$sort: {time:1}}
+            ])
+
         },
-        getCoordinatorSchedule: async(_,{coordinatorID}) =>{
-            const CID = coordinatorID
-            return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
+        getCoordinatorSchedule: async(_,{coordinatorInput:{coordinatorID}}) =>{
+            const CID = Mongoose.Types.ObjectId(coordinatorID)
+            return await CoordSchedule.aggregate([
+                {$match:{coordinatorID:CID}},
+                {$lookup:{
+                    from:"groups",
+                    localField:"groupId",
+                    foreignField:"groupNumber",
+                    as:"groupId"
+                }},
+                {$project:{room:1,time:1,attending:1,"groupId.groupName":1, "groupId.groupNumber":1}},
+                {$unwind:"$groupId"},
+                {$sort: {time:1}}
+            ])
         },
-        getCookie: async(_,__,{req,res}) =>{
-            if(req && req.headers){
-                const cookies = cookie.parse(req.headers.cookie);
-                console.log("Cookie from login")
-                console.log(cookies);
-                return cookies;
+        refreshToken: async (_,{ID, token, privilege}, {req,res}) => {
+            const userId = Mongoose.Types.ObjectId(ID);
+            const isValidUser = await Auth.findOne({userId:userId});
+            const checkPrivilege = await UserInfo.findOne({userId,userId});
+
+            const decodedToken = jwt.verify(token,"UNSAFE_STRING");
+            // console.log(decodedToken);
+            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
+            console.log(1);
+            if(decodedToken.id === decodedRefreshToken.id && decodedToken.privilege === decodedRefreshToken.privilege && decodedToken.privilege == checkPrivilege.privilege){
+                console.log(2);
+                // return a new access token
+                const newAccessToken = jwt.sign(
+                    {
+                        id : decodedRefreshToken.id, 
+                        email: decodedRefreshToken.email, 
+                        firstname: decodedRefreshToken.firstname, 
+                        lastname: decodedRefreshToken.lastname,
+                        privilege: decodedRefreshToken.privilege
+                    }, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {expiresIn: "2m"}
+                );
+                return newAccessToken;
+            }else{
+                return 'REKT KID';
             }
-            return {
-                getCookie: 'cookie?'
-            }
-        }
+        },
+        // getCookie: async(_,__,{req,res}) =>{
+        //     if(req && req.headers){
+        //         const cookies = cookie.parse(req.headers.cookie);
+        //         console.log("Cookie from login")
+        //         console.log(cookies);
+        //         return cookies;
+        //     }
+        //     return {
+        //         getCookie: 'cookie?'
+        //     }
+        // }
     },
     Mutation:{
         registerCoordinator: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
@@ -367,7 +419,7 @@ const resolvers = {
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
                     
                     // create a new token ( when you login you give user a new token )
-                    const token = jwt.sign(
+                    const accessToken = jwt.sign(
                         {
                             id : professors._id, 
                             email, 
@@ -376,13 +428,32 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2h"}
-                        );                
+                        {expiresIn: "2m"}
+                        );      
+                        
+                        const refreshToken = jwt.sign(
+                            {
+                                id : professors._id, 
+                                email, 
+                                firstname: professors.professorFName, 
+                                lastname: professors.professorLName,
+                                privilege: professorsInfo.privilege
+                            }, 
+                            "UNSAFE_STRING", // stored in a secret file 
+                            {expiresIn: "2h"}
+                            );        
                         
                         // attach token to user model that we found if user exists 
-                        await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
+                        await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:refreshToken}})
                         
-                        res.cookie("token",token,{
+                        res.cookie("accessToken",accessToken,{
+                            expires: new Date(Date.now() + 9000000),
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: true
+                        });
+
+                        res.cookie("refreshToken",refreshToken,{
                             expires: new Date(Date.now() + 9000000),
                             httpOnly: true,
                             secure: true,
@@ -394,7 +465,7 @@ const resolvers = {
                             firstname:professors.professorFName,
                             lastname:professors.professorLName,
                             email: professorsInfo.email,
-                            token: token,
+                            token: accessToken,
                             privilege: professorsInfo.privilege
                     }          
                 }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){

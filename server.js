@@ -44,7 +44,19 @@ async function startServer(){
         expressMiddleware(server, {
             context: async ({req,res}) => {
                 const token = req.headers.authorization || " ";
-                // const userCookie = req.headers.cookie.split("token=")[1];
+
+                // if(req.headers.cookie){
+                //     const userCookie = req.headers.cookie.split("token=")[1];
+                //     console.log("My cookie");
+                //     console.log(userCookie);
+                // }
+
+                // if(req.headers.authorization){
+                //     const token = req.headers.authorization.split('Bearer')[1];
+                //     console.log("My token");
+                //     console.log(token);
+                // }
+
                 // console.log("My cookie")
                 // console.log(userCookie);
                 // if(!userCookie){

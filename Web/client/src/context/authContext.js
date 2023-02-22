@@ -1,17 +1,39 @@
 import jwtDecode from 'jwt-decode';
 import React,{useReducer, createContext} from 'react';
+import {Refresh} from '../components/Refresh';
+// import {gql, useQuery} from '@apollo/client';
+
+// const CHECK_AUTH = gql`
+//     query RefreshToken($id: ID!, $token: String, $privilege: String) {
+//     refreshToken(ID: $id, token: $token, privilege: $privilege) {
+//         token
+//     }
+// }
+// `
 
 // initial state when logged out or enter website
 const initialState = {
     user:null
 }
 
+
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
     // check Auth expiration -- if expired, remove token
     if (decodedToken.exp * 1000 < Date.now()){
+        // call api to check if current api data == refresh token in DB.
+        // If so we want to create a new access token.
+
+
+        <Refresh prop={localStorage.getItem("token")} />
+
+        // replace token??
         localStorage.removeItem("token");
+
+
+
+
     }else{
         initialState.user = decodedToken;
     }
