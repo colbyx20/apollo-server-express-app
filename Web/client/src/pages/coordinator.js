@@ -3,14 +3,13 @@ import { AuthContext } from '../context/authContext';
 import CustomSidebar from '../components/Sidebar';
 import { GetGroups } from '../components/GetGroups';
 import { useNavigate } from 'react-router-dom';
-import {Button, TextField, InputAdornment, Input} from "@mui/material";
-import Search from '../components/images/search.svg'
+import {Button} from "@mui/material";
 import '../components/css/coordinator.css';
 import FileUpload from '../components/FileUpload';
 
 // import {GetAvailSchedule} from '../components/GetAvailSchedule';
 
-function Professors(props){
+function Coordinator(props){
 
    // user data lives in here 
     const {user, logout} = useContext(AuthContext);
@@ -40,28 +39,7 @@ function Professors(props){
                     <div className='userInfo'>
                         <p className='coordHeader'>Home Page</p>
                     </div>
-                    <div className='searchWrapper'>
-                        <div className='searchBar'>
-                        
-                            <input className='searchInput'
-                            type="text"
-                            placeholder="Search"
-                            onChange={handleChange}
-                            value={searchInput}
-                            />
-                            
-                        </div>
-                        <div className='searchResults'>
-                            <GetGroups
-                            data={searchInput}/>
-                        </div>
-                    </div>
-                    <div className='importerWrapper'>
-                        <div className='importer'>
-                            <FileUpload/>
-                        </div>
-        
-                    </div>
+                    
                 </div>
                 </>
                 : 
@@ -79,4 +57,4 @@ function Professors(props){
     )
 }
 
-export default Professors
+export default Coordinator

@@ -17,7 +17,7 @@
 }
 
 .userInfo{
-    width: 300px;
+    width: 400px;
     height: 8%;
     min-height: 50px;
 }
@@ -25,6 +25,13 @@
 .coordHeader{
     padding: 0%;
     margin: 0 auto;
+    font-size: 3em;
+    padding-top: 5px;
+}
+
+.semesterHeader{
+    padding: 0%;
+    
     font-size: 3em;
     padding-top: 5px;
 }
@@ -69,7 +76,7 @@
 
 .searchResults{
     width: 93%;
-    min-width: 400px;
+    min-width: 380px;
     height: 80%;
     margin-left: 30px;
     background-color: #D0A300;
@@ -81,17 +88,32 @@
     width: 50%;
     height: 88%;
     float: right;
-    overflow: scroll;
+    overflow: none;
 }
 
 .importer{
     width: 93%;
-    min-width: 400px;
     height: 75%;
-    background-color: #95D000;
+    background-color: #D0A300;
     margin-top: 20px;
     margin-left: 10px;
     margin-bottom: 15px;
     box-shadow: 0 0 15px -1px;
     border-radius: 15px;
+}
+
+.dangerZone{
+    width: 93%;
+    height: 20%;
+    margin-left: 10px;
+    background-color: #D0A300;
+    border-radius: 15px;
+    box-shadow: 0 0 15px -1px;
+    overflow-y: scroll;
+}
+
+.dangerTitle{
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 2%;
 }
