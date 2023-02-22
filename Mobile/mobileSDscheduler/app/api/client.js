@@ -1,7 +1,8 @@
 import { create } from "apisauce";
 
 const headers = {
-  "content-type": "json",
+  //"content-type": "json",
+  //"apollo-require-preflight": true,
   //"content-type": "application/json",
   //Authorization: "<token>",
 };

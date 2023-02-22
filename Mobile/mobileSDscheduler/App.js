@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
 import LoginScreen from "./app/screens/LoginScreen";
+import AccountScreen from "./app/screens/AccountScreen";
 
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
 
@@ -24,8 +25,9 @@ const client = new ApolloClient({
 export default function App() {
   return (
     //<WelcomeScreen></WelcomeScreen>
+    //<LoginScreen></LoginScreen>
     <ApolloProvider client={client}>
-      <LoginScreen></LoginScreen>
+      <AccountScreen></AccountScreen>
     </ApolloProvider>
   );
 }

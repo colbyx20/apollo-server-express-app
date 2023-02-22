@@ -8,10 +8,8 @@
     background-color: #FFC904;
     top: 0;
     left: 0;
-    width: 7%;
-    min-height: 100vh;
-    /* display:ruby-base-container; */
-    overflow: hidden;
+    width: 110px;
+    height: auto;
 }
 
 .coordinatorBar{
@@ -21,25 +19,28 @@
 }
 
 .row{
+    margin: 0%;
+    padding: 0%;
     text-align: center;
     display: inline;
     height: 100%;
 }
 
-.row:hover{
+.coordList :hover{
     cursor: pointer;
-    background-color: blue;
+    background-color: #dfb006;
 }
 
-.commonContainer{
-    display: inline-block;
-    overflow: hidden;
+.coordList{
+    background-color: #FFC904;
 }
 
-.commonItems{
-    height: auto;
-    width: 110px;
-    display: inline-block;
+.coordList #active{
+    text-decoration: underline;
+}
+
+.coordList .row .item{
+    height: 100%;
 }
 
 .ucfLogo{
