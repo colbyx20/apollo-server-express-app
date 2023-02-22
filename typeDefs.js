@@ -17,7 +17,7 @@ scalar DateTime
         image: String
         role: String
     }
-    type Appointment{
+    type Appointment {
         Time: String
         Group: ID
         Attending:[ID]
@@ -63,6 +63,10 @@ scalar DateTime
         password: String
     }
 
+    type Auth {
+        token: String
+    }
+
     type Professors {
         _id:ID
         professorFName: String
@@ -103,11 +107,11 @@ scalar DateTime
         group: String
     }
 
-    input ProfessorRequestInput{
+    input ProfessorRequestInput {
         Request:ID!
     }
 
-    input appointInput{
+    input appointInput {
         firstname: String
         lastname: String
     }
@@ -162,27 +166,42 @@ scalar DateTime
 
     input groupSchedule {
         appointmentTime: [DateTime]
-
     }
 
     type availSchedule {
         _id: DateTime
     }
-    type CoordSchedule{
+    type CoordSchedule {
         _id: ID
         coordinatorID:ID
         room:String
         groupId:ID
         time:DateTime
         attending:[ID]
-    
     }
-    input coordinatorSInput{
+
+    type groupData {
+        groupName: String
+        groupNumber: Int
+        projectField: String
+    }
+
+    type CoordSchedule2 {
+        _id: ID
+        room: String
+        time: DateTime
+        numberOfAttending: Int
+        attending: [String]
+        groupId: groupData
+    }
+
+    input coordinatorSInput {
         CID:ID
         Room:String
         Times:[DateTime]
     }
-    input appointmentEdit{
+
+    input appointmentEdit {
         GID:ID
         professorsAttending:[ID]
         time: DateTime
@@ -194,6 +213,15 @@ scalar DateTime
         ApID:ID
         reason:Boolean
     }
+
+    type Cookie {
+        getCookie: String
+    }
+
+    input coordinatorInput {
+        coordinatorID: ID!
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -203,8 +231,9 @@ scalar DateTime
         getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
-        getAllCoordinatorSchedule:[CoordSchedule]
-        getCoordinatorSchedule(coordinatorID:ID): [CoordSchedule]
+        getAllCoordinatorSchedule:[CoordSchedule2]
+        getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
+        refreshToken(ID:ID!,token:String, privilege:String) : Auth
     }
 
     type Mutation {

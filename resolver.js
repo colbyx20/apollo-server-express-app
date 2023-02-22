@@ -10,6 +10,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
+const cookie = require("cookie");
+
+
 const { ObjectId, default: mongoose } = require('mongoose');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
@@ -78,12 +81,73 @@ const resolvers = {
         },
         getAllCoordinatorSchedule: async() =>{
 
-            return await CoordSchedule.find()
+            return await CoordSchedule.aggregate([
+                {$lookup:{
+                    from:"groups",
+                    localField:"groupId",
+                    foreignField:"groupNumber",
+                    as:"groupId"
+                }},
+                {$project:{room:1,time:1,attending:1,"groupId.groupName":1, "groupId.groupNumber":1}},
+                {$unwind:"$groupId"},
+                {$sort: {time:1}}
+            ])
+
         },
-        getCoordinatorSchedule: async(_,{coordinatorID}) =>{
-            const CID = coordinatorID
-            return await CoordSchedule.find({coordinatorID:CID}).sort({time:1})
-        }
+        getCoordinatorSchedule: async(_,{coordinatorInput:{coordinatorID}}) =>{
+            const CID = Mongoose.Types.ObjectId(coordinatorID)
+            return await CoordSchedule.aggregate([
+                {$match:{coordinatorID:CID}},
+                {$lookup:{
+                    from:"groups",
+                    localField:"groupId",
+                    foreignField:"groupNumber",
+                    as:"groupId"
+                }},
+                {$project:{room:1,time:1,attending:1,numberOfAttending:1,"groupId.groupName":1, "groupId.groupNumber":1, "groupId.projectField":1}},
+                {$unwind:"$groupId"},
+                {$sort: {time:1}}
+            ])
+        },
+        refreshToken: async (_,{ID, token, privilege}, {req,res}) => {
+            const userId = Mongoose.Types.ObjectId(ID);
+            const isValidUser = await Auth.findOne({userId:userId});
+            const checkPrivilege = await UserInfo.findOne({userId,userId});
+
+            const decodedToken = jwt.verify(token,"UNSAFE_STRING");
+            // console.log(decodedToken);
+            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
+            console.log(1);
+            if(decodedToken.id === decodedRefreshToken.id && decodedToken.privilege === decodedRefreshToken.privilege && decodedToken.privilege == checkPrivilege.privilege){
+                console.log(2);
+                // return a new access token
+                const newAccessToken = jwt.sign(
+                    {
+                        id : decodedRefreshToken.id, 
+                        email: decodedRefreshToken.email, 
+                        firstname: decodedRefreshToken.firstname, 
+                        lastname: decodedRefreshToken.lastname,
+                        privilege: decodedRefreshToken.privilege
+                    }, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {expiresIn: "2h"}
+                );
+                return newAccessToken;
+            }else{
+                return 'REKT KID';
+            }
+        },
+        // getCookie: async(_,__,{req,res}) =>{
+        //     if(req && req.headers){
+        //         const cookies = cookie.parse(req.headers.cookie);
+        //         console.log("Cookie from login")
+        //         console.log(cookies);
+        //         return cookies;
+        //     }
+        //     return {
+        //         getCookie: 'cookie?'
+        //     }
+        // }
     },
     Mutation:{
         registerCoordinator: async(_,{registerInput: {firstname,lastname, email, password, confirmpassword}}) =>{
@@ -117,7 +181,7 @@ const resolvers = {
                     {id : newCoordinator._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -187,10 +251,6 @@ const resolvers = {
             
             });
 
-
-
-
-
             if(STUDENT_EMAIL.test(email)){
 
                 console.log(`Student: ${STUDENT_EMAIL.test(email)}`);
@@ -211,7 +271,7 @@ const resolvers = {
                     {id : newStudent._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -283,7 +343,7 @@ const resolvers = {
                     {id : newProfessor._id, email}, 
                     "UNSAFE_STRING", // stored in a secret file 
                     {
-                        expiresIn: "1d"
+                        expiresIn: "2h"
                     }
                 );
                 
@@ -342,25 +402,24 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}}, contextValue ) => {
+        loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
 
-            console.log("contextValue");
-            console.log(contextValue);
+            // const cookies = cookie.parse(req.headers.cookie);
+            // console.log(cookies);
 
             if(!STUDENT_EMAIL.test(email)){
-
                 
                 const professorsInfo = await UserInfo.findOne({email});
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
-              
-
-
+                
+                
+                
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
-
+                    
                     // create a new token ( when you login you give user a new token )
-                    const token = jwt.sign(
+                    const accessToken = jwt.sign(
                         {
                             id : professors._id, 
                             email, 
@@ -369,19 +428,45 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
-                    );
-    
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:token}})
-    
-                    return {
-                        _id: professors._id,
-                        firstname:professors.professorFName,
-                        lastname:professors.professorLName,
-                        email: professorsInfo.email,
-                        token: professorsAuth.token,
-                        privilege: professorsInfo.privilege
+                        {expiresIn: "2h"}
+                        );      
+                        
+                        const refreshToken = jwt.sign(
+                            {
+                                id : professors._id, 
+                                email, 
+                                firstname: professors.professorFName, 
+                                lastname: professors.professorLName,
+                                privilege: professorsInfo.privilege
+                            }, 
+                            "UNSAFE_STRING", // stored in a secret file 
+                            {expiresIn: "2h"}
+                            );        
+                        
+                        // attach token to user model that we found if user exists 
+                        await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:refreshToken}})
+                        
+                        res.cookie("accessToken",accessToken,{
+                            expires: new Date(Date.now() + 9000000),
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: true
+                        });
+
+                        res.cookie("refreshToken",refreshToken,{
+                            expires: new Date(Date.now() + 9000000),
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: true
+                        });
+
+                        return {
+                            _id: professors._id,
+                            firstname:professors.professorFName,
+                            lastname:professors.professorLName,
+                            email: professorsInfo.email,
+                            token: accessToken,
+                            privilege: professorsInfo.privilege
                     }          
                 }else if(coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
                     // create a new token ( when you login you give user a new token )
@@ -394,18 +479,25 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
+                        {expiresIn: "2h"}
                     );
     
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:token}})
-    
+
+                    res.cookie("token",token,{
+                        expires: new Date(Date.now() + 9000000),
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: true
+                    });
+
                     return {
                         _id: coordinator._id,
                         firstname:coordinator.coordinatorFName,
                         lastname:coordinator.coordinatorLName,
                         email: professorsInfo.email,
-                        token: professorsAuth.token,
+                        token: token,
                         privilege: professorsInfo.privilege
                     } 
 
@@ -431,18 +523,25 @@ const resolvers = {
                             privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "1d"}
+                        {expiresIn: "2h"}
                     );
     
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
-    
+
+                    res.cookie("token",token,{
+                        expires: new Date(Date.now() + 9000000),
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: true
+                    });
+
                     return {
                         _id: student._id,
                         firstname:student.userFName,
                         lastname:student.userLName,
                         email: studentInfo.email,
-                        token: studentAuth.token,
+                        token: token,
                         privilege: studentInfo.privilege
                     }          
                 }

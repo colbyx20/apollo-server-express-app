@@ -5,17 +5,23 @@ const web_uri = "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql"
 const local_uri = "http://localhost:8080/graphql"
 
 
+
+
+
+
 const httpLink = createHttpLink({
-    uri: local_uri,
+    uri: "http://localhost:8080/graphql",
+    credentials:'include',
     cache: new InMemoryCache(),
 });
 
 // auth link 
 const authLink = setContext((_,{headers}) => {
+    const token = localStorage.getItem('token');
     return{
         headers:{
             ...headers,
-            authorization:localStorage.getItem("token") || ""
+            authorization:token ? `Bearer ${token}` : "",
         }
     }
 });

@@ -1,4 +1,10 @@
-import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  ImageBackground,
+  Dimensions,
+  View,
+} from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AppButton from "../components/AppButton";
@@ -9,9 +15,13 @@ import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
 import Screen from "../components/Screen";
-import colors from "../config/styles";
+import colors from "../config/colors";
 import ErrorMessage from "../components/ErrorMessage";
 import { useEffect, useState } from "react";
+import GroupItem from "../components/GroupItem";
+import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
+import GroupItemEditAction from "../components/GroupItemEditAction";
+
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -75,6 +85,7 @@ function LoginScreen(props) {
 
   console.log(data.getAllGroups);
   console.log(data.getAllGroups[0].groupName);
+  console.log(data);
 
   return (
     <ImageBackground
@@ -101,7 +112,24 @@ function LoginScreen(props) {
             touched,
           }) => (
             <>
-              <AppText>Hello</AppText>
+              <GroupItem
+                image={require("../assets/TheTab_KGrgb_300ppi.png")}
+                title={data.getAllGroups[0].groupName}
+                subTitle={data.getAllGroups[0].projectField}
+                number={data.getAllGroups[0].groupNumber}
+                onPress={() =>
+                  console.log("Group selected", data.getAllGroups[0])
+                }
+                renderRightActions={() => (
+                  <GroupItemDeleteAction
+                    onPress={() => console.log("deleted")}
+                  />
+                )}
+                renderLeftActions={() => (
+                  <GroupItemEditAction onPress={() => console.log("edited")} />
+                )}
+              />
+              <AppText>{data.getAllGroups[0].groupName}</AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}

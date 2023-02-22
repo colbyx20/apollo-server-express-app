@@ -1,6 +1,5 @@
 import './css/sidebar.css'
-import {Link} from 'react-router-dom';
-import {Box, Typography, Button} from '@mui/material';
+import {Button} from '@mui/material';
 import {AuthContext} from '../context/authContext'; 
 import {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
