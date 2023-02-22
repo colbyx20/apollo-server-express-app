@@ -5,6 +5,7 @@ import LoginScreen from "./app/screens/LoginScreen";
 import AccountScreen from "./app/screens/AccountScreen";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import HomeScreen from "./app/screens/HomeScreen";
 
 // Initialize Apollo Client
 const client = new ApolloClient({
@@ -16,8 +17,9 @@ export default function App() {
   return (
     //<WelcomeScreen></WelcomeScreen>
     //<LoginScreen></LoginScreen>
+    //<AccountScreen></AccountScreen>
     <ApolloProvider client={client}>
-      <AccountScreen></AccountScreen>
+      <HomeScreen></HomeScreen>
     </ApolloProvider>
   );
 }
