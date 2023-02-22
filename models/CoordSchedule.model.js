@@ -1,7 +1,7 @@
 const{model,Schema,mongoose} = require('mongoose');
 
 const coordScheduleSchema = new Schema({
-    coordinatorID:mongoose.ObjectId,
+    coordinatorID: Schema.Types.ObjectId,
     room:{type:String},
     // groupId:{type: mongoose.ObjectId},
     groupId:{type: Number},
