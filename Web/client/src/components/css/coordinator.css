@@ -101,3 +101,19 @@
     box-shadow: 0 0 15px -1px;
     border-radius: 15px;
 }
+
+.dangerZone{
+    width: 93%;
+    height: 20%;
+    margin-left: 10px;
+    background-color: #D0A300;
+    border-radius: 15px;
+    box-shadow: 0 0 15px -1px;
+    overflow-y: scroll;
+}
+
+.dangerTitle{
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 2%;
+}

@@ -41,7 +41,7 @@ function Semester(props){
                        
                            <input className='searchInput'
                            type="text"
-                           placeholder="Search"
+                           placeholder="Search Projects"
                            onChange={handleChange}
                            value={searchInput}
                            />
@@ -55,6 +55,33 @@ function Semester(props){
                    <div className='importerWrapper'>
                        <div className='importer'>
                            <FileUpload/>
+                       </div>
+                       <div className='dangerZone'>
+                            <h2 className='dangerTitle'>Danger Zone</h2>
+                            <Button sx={{
+                                display: 'block',
+                                backgroundColor: 'red',
+                                marginRight: 'auto',
+                                marginLeft: 'auto',
+                                marginBottom: '5px',
+                                width: '50%',
+                                ':hover': {
+                                    bgcolor: '#8B0000', // On hover
+                                    color: 'white',
+                                }
+                            }}variant="contained">Delete Projects</Button>
+                            <Button sx={{
+                                display: 'block',
+                                backgroundColor: 'red',
+                                marginRight: 'auto',
+                                marginLeft: 'auto',
+                                marginBottom: '5px',
+                                width: '50%',
+                                ':hover': {
+                                    bgcolor: '#8B0000', // On hover
+                                    color: 'white',
+                                }
+                            }}variant="contained">Delete All</Button>
                        </div>
        
                    </div>
