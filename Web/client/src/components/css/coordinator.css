@@ -31,7 +31,6 @@
 
 .semesterHeader{
     padding: 0%;
-    
     font-size: 3em;
     padding-top: 5px;
 }
@@ -104,7 +103,7 @@
 
 .dangerZone{
     width: 93%;
-    height: 20%;
+    height: 22%;
     margin-left: 10px;
     background-color: #D0A300;
     border-radius: 15px;
@@ -114,6 +113,5 @@
 
 .dangerTitle{
     text-align: center;
-    margin-top: 3px;
     margin-bottom: 2%;
 }
