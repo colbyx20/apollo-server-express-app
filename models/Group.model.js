@@ -4,7 +4,7 @@ const groupSchema = new Schema({
     coordinatorId: mongoose.ObjectId,
     groupName: {type:String, require:true, unique: true},
     projectField: {type:String, require:true}, // maybe turn this into an ENUM??
-    groupNumber: {type: Number, require: true, unique: true},
+    groupNumber: {type: Number, require: true, unique: true, min:1},
     memberCount:{type: Number}
 })
 

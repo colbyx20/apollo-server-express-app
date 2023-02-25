@@ -10,9 +10,17 @@ import HomeScreen from "./app/screens/HomeScreen";
 // Initialize Apollo Client
 const uri= "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql";
 const local_uri = "http://localhost:8080/graphql"
-const client = new ApolloClient({
+
+
+const httpLink = createHttpLink({
   uri: local_uri,
-  cache: new InMemoryCache(),
+  credentials: 'include',
+  cache: new InMemoryCache()
+});
+
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
 });
 
 export default function App() {
