@@ -79,9 +79,9 @@ const refreshLink = new ApolloLink((operation, forward) => {
 
 
 
- const getRefreshToken = async (id,privilege,token) =>{
+ const getRefreshToken = async (ID,privilege,token) =>{
   console.log('INFO');
-  console.log(id);
+  console.log(ID);
   console.log(privilege);
   console.log(token);
     // "query":`query Query{refreshToken}`,
@@ -91,14 +91,14 @@ const refreshLink = new ApolloLink((operation, forward) => {
     }`
 
     const query = `query Query($privilege: String, $id: ID!, $token: String) {
-      refreshToken(privilege: $privilege, ID: $id, token: $token)
+        refreshToken(privilege: $privilege, ID: $id, token: $token)
       }
     }`
 
     const graphqlQuery = {
       "operationName": "Query",
-      "query":query2,
-      "variables":{}
+      "query":query,
+      "variables":{privilege,ID,token}
     }
 
 
