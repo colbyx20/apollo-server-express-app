@@ -1,7 +1,5 @@
 import jwtDecode from 'jwt-decode';
 import React,{useReducer, createContext} from 'react';
-import {Refresh} from '../components/Refresh';
-const Mongoose = require('mongoose');
 
 // initial state when logged out or enter website
 const initialState = {
@@ -12,11 +10,40 @@ const initialState = {
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
-    // const {id, privilege} = decodedToken
     // check Auth expiration -- if expired, remove token
     if (decodedToken.exp * 1000 < Date.now()){
         // call api to check if current api data == refresh token in DB.
         // If so we want to create a new access token.
+        
+        
+        // const getRefreshToken = async (decodedToken) =>{
+            
+        //     const {id, privilege} = decodedToken
+        //     localStorage.setItem("SomethingHere", id);
+        //     console.log(id);
+        //     console.log(privilege);
+        //     const graphqlQuery = {
+        //     "operationName": "Query",
+        //     "query":`query Query{refreshToken}`,
+        //     "variables":{id, privilege}
+        //     }
+
+        //     const refreshToken = await fetch("http://localhost:8080/graphql",{
+        //     method:"POST",
+        //     headers:{"Content-Type":"application/json",},
+        //     body: JSON.stringify(graphqlQuery),
+        //     })
+
+        //     const res = await refreshToken.json();
+
+        //     localStorage.setItem("SomethingHere", res.data.refreshToken);
+        //     console.log(res.data.refreshToken);
+
+        
+            
+        // }
+
+        // getRefreshToken();
 
 
         localStorage.clear();

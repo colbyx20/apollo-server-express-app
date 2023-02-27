@@ -109,36 +109,40 @@ const resolvers = {
                 {$sort: {time:1}}
             ])
         },
-        refreshToken: async (_,{ID, privilege}, req) => {
-            const userId = Mongoose.Types.ObjectId(ID);
-            const isValidUser = await Auth.findOne({userId:userId});
-            const checkPrivilege = await UserInfo.findOne({userId,userId});
-
-            // const decodedToken = jwt.verify(token,"UNSAFE_STRING");
-            // console.log(decodedToken);
-            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
-            console.log(1);
-            if(ID === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege && privilege == checkPrivilege.privilege){
-                console.log(2);
-                // return a new access token
-                console.log("My new Access Token");
-                const newAccessToken = jwt.sign(
-                    {
-                        id : decodedRefreshToken.id, 
-                        email: decodedRefreshToken.email, 
-                        firstname: decodedRefreshToken.firstname, 
-                        lastname: decodedRefreshToken.lastname,
-                        privilege: decodedRefreshToken.privilege
-                    }, 
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {expiresIn: "2h"}
-                    );
-                    
-                    console.log(newAccessToken);
-                return newAccessToken;
-            }else{
-                return 'REKT KID';
-            }
+        refreshToken2: async() =>{
+            return "Hello";
+        },
+         refreshToken: async (_,{ID, privilege,token}) => {
+           
+         
+             const userId = Mongoose.Types.ObjectId(ID);
+             const isValidUser = await Auth.findOne({userId:userId});
+             const checkPrivilege = await UserInfo.findOne({userId,userId})
+             const decodedToken = jwt.verify(token,"UNSAFE_STRING");
+             // console.log(decodedToken);
+             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
+             console.log(1);
+             if(ID === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege && privilege == checkPrivilege.privilege){
+                 console.log(2);
+                 // return a new access token
+                 console.log("My new Access Token");
+                 const newAccessToken = jwt.sign(
+                     {
+                         id : decodedRefreshToken.id, 
+                         email: decodedRefreshToken.email, 
+                         firstname: decodedRefreshToken.firstname, 
+                         lastname: decodedRefreshToken.lastname,
+                         privilege: decodedRefreshToken.privilege
+                     }, 
+                     "UNSAFE_STRING", // stored in a secret file 
+                     {expiresIn: "2h"}
+                     );
+              
+                    //  console.log(newAccessToken);
+                 return newAccessToken;
+             }else{
+                 return 'REKT KID';
+             }
         },
         // getCookie: async(_,__,{req,res}) =>{
         //     if(req && req.headers){
@@ -432,7 +436,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2h"}
+                        {expiresIn: "10m"}
                         );      
                         
                         const refreshToken = jwt.sign(
@@ -483,7 +487,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2h"}
+                        {expiresIn: "10m"}
                     );
     
                     // attach token to user model that we found if user exists 

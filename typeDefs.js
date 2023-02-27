@@ -228,7 +228,8 @@ scalar DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
         getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
-        refreshToken(ID:ID!, privilege:String) : String
+        refreshToken(ID:ID!, privilege:String, token:String) : String
+        refreshToken2 : String
     }
 
     type Mutation {
