@@ -35,29 +35,29 @@ const validationSchema = Yup.object().shape({
 function LoginScreen(props) {
 
 //axios 
-const [groupData,setGroupData] = useState([]);
-useEffect(() =>{
-  const fetchData = async() =>{
+// const [groupData,setGroupData] = useState([]);
+// useEffect(() =>{
+//   const fetchData = async() =>{
 
-    const headers ={"content-type":"application/json"}
+//     const headers ={"content-type":"application/json"}
 
-    const query = {
-      "operationName": "Query",
-      "query": GROUPS,
-      "variables":{}
-    }
+//     const query = {
+//       "operationName": "Query",
+//       "query": GROUPS,
+//       "variables":{}
+//     }
 
-    const queryResult = await axios.get({
-      url: "localhost:8080/graphql",
-      method:"post",
-      headers: headers,
-      data:query,
-  });
+//     const queryResult = await axios.get({
+//       url: "localhost:8080/graphql",
+//       method:"post",
+//       headers: headers,
+//       data:query,
+//   });
 
-    const result = queryResult.data.data.getAllGroups;
-    setGroupData(result);
-  }
-},[groupData])
+//     const result = queryResult.data.data.getAllGroups;
+//     setGroupData(result);
+//   }
+// },[groupData])
 
 
 
