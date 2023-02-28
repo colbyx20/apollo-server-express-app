@@ -118,8 +118,12 @@ const resolvers = {
             const isValidUser = await Auth.findOne({userId:userId});
             const checkPrivilege = await UserInfo.findOne({userId:userId})
             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
+            console.log(decodedRefreshToken);
+            if (decodedRefreshToken.exp * 1000 < Date.now()){
+                return ""
+            }
 
-            if(isValidUser && id === decodedRefreshToken.id && checkPrivilege.privilege === decodedRefreshToken.privilege){
+            if(isValidUser && id === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege){
               
                 // return a new access token
                 console.log("My new Access Token");
@@ -478,16 +482,28 @@ const resolvers = {
                         {
                             id : coordinator._id, 
                             email, 
-                            firstname: coordinator.professorFName, 
-                            lastname: coordinator.professorLName,
+                            firstname: coordinator.coordinatorFName, 
+                            lastname: coordinator.coordinatorLName,
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "2m"}
                     );
     
+                    const refreshToken = jwt.sign(
+                        {
+                            id : coordinator._id, 
+                            email, 
+                            firstname: coordinator.coordinatorFName, 
+                            lastname: coordinator.coordinatorLName,
+                            privilege: professorsInfo.privilege
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "2h"}
+                        );        
+
                     // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:token}})
+                    await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:refreshToken}})
 
                     // res.cookie("token",token,{
                     //     expires: new Date(Date.now() + 9000000),
@@ -529,9 +545,21 @@ const resolvers = {
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "2m"}
                     );
+
+                    const refreshToken = jwt.sign(
+                        {
+                            id : student._id, 
+                            email, 
+                            firstname: student.userFName, 
+                            lastname: student.userLName,
+                            privilege: studentInfo.privilege
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "2h"}
+                    );
     
                     // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
+                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:refreshToken}})
 
                     // res.cookie("token",token,{
                     //     expires: new Date(Date.now() + 9000000),
