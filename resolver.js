@@ -48,9 +48,9 @@ const resolvers = {
                 {$group:{_id:"$availSchedule",pId:{$push:{_id:"$_id", name:{$concat:["$professorFName", " ", "$professorLName"]}}}}},
                 {$unwind:"$_id"},
                 {$group:{_id:"$_id", pId:{$push:"$pId"}}},
+                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
                 {$addFields:{arrayLength:{$size: '$pId'}}},
                 {$match:{arrayLength:{$gte:3}}},
-                {$project:{_id:1, pId: {$reduce:{input:'$pId', initialValue:[], in:{$concatArrays:['$$value','$$this']}}}}},
                 {$sort:{_id:1}}
             ]);
         },
