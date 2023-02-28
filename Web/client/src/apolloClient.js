@@ -59,8 +59,10 @@ const refreshLink = new ApolloLink((operation, forward) => {
   const accessTokenLocal = localStorage.getItem("token");
   if(accessTokenLocal ){
     const decodedToken = jwtDecode(accessToken)
+    const userId = decodedToken.id.trim();
+    const userPrivilege = decodedToken.privilege.trim();
     console.log(decodedToken);
-    getRefreshToken(decodedToken.id,decodedToken.privilege, decodedToken);
+    getRefreshToken(userId, userPrivilege);
     if(decodedToken.exp * 1000 < Date.now()){
     }
   }
@@ -79,34 +81,28 @@ const refreshLink = new ApolloLink((operation, forward) => {
 
 
 
- const getRefreshToken = async (ID,privilege,token) =>{
-  console.log('INFO');
-  console.log(ID);
-  console.log(privilege);
-  console.log(token);
-    // "query":`query Query{refreshToken}`,
+ const getRefreshToken = async (refreshTokenId,privilege) =>{
 
     const query2 = `query Query {
       refreshToken2
     }`
 
-    const query = `query Query($privilege: String, $id: ID!, $token: String) {
-        refreshToken(privilege: $privilege, ID: $id, token: $token)
-      }
+    const query = `query Query($refreshTokenId: String, $privilege: String) {
+      refreshToken(id: $refreshTokenId, privilege: $privilege)
     }`
 
     const graphqlQuery = {
       "operationName": "Query",
       "query":query,
-      "variables":{privilege,ID,token}
+      "variables":{refreshTokenId,privilege}
     }
 
 
     const refreshToken = await fetch("http://localhost:8080/graphql",{
       method:"POST",
-      headers:{"Content-Type":"application/json",},
+      headers:{"Content-Type": "application/json"},
       body: JSON.stringify(graphqlQuery),
-    })
+    });
 
     const res = await refreshToken.json();
     console.log(res);

@@ -112,37 +112,34 @@ const resolvers = {
         refreshToken2: async() =>{
             return "Hello";
         },
-         refreshToken: async (_,{ID, privilege,token}) => {
+         refreshToken: async (_,{id, privilege}) => {
            
-         
-             const userId = Mongoose.Types.ObjectId(ID);
-             const isValidUser = await Auth.findOne({userId:userId});
-             const checkPrivilege = await UserInfo.findOne({userId,userId})
-             const decodedToken = jwt.verify(token,"UNSAFE_STRING");
-             // console.log(decodedToken);
-             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
-             console.log(1);
-             if(ID === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege && privilege == checkPrivilege.privilege){
-                 console.log(2);
-                 // return a new access token
-                 console.log("My new Access Token");
-                 const newAccessToken = jwt.sign(
-                     {
-                         id : decodedRefreshToken.id, 
-                         email: decodedRefreshToken.email, 
-                         firstname: decodedRefreshToken.firstname, 
-                         lastname: decodedRefreshToken.lastname,
-                         privilege: decodedRefreshToken.privilege
-                     }, 
-                     "UNSAFE_STRING", // stored in a secret file 
-                     {expiresIn: "2h"}
-                     );
+            const userId = Mongoose.Types.ObjectId(id);
+            const isValidUser = await Auth.findOne({userId:userId});
+            const checkPrivilege = await UserInfo.findOne({userId,userId})
+
+            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
+            if(isValidUser.id === decodedRefreshToken.id && checkPrivilege.privilege === decodedRefreshToken.privilege){
               
-                    //  console.log(newAccessToken);
-                 return newAccessToken;
-             }else{
-                 return 'REKT KID';
-             }
+                // return a new access token
+                console.log("My new Access Token");
+                const newAccessToken = jwt.sign(
+                    {
+                        id : decodedRefreshToken.id, 
+                        email: decodedRefreshToken.email, 
+                        firstname: decodedRefreshToken.firstname, 
+                        lastname: decodedRefreshToken.lastname,
+                        privilege: decodedRefreshToken.privilege
+                    }, 
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {expiresIn: "2h"}
+                    );
+            
+                //  console.log(newAccessToken);
+                return newAccessToken;
+            }else{
+                return 'REKT KID';
+            }
         },
         // getCookie: async(_,__,{req,res}) =>{
         //     if(req && req.headers){
