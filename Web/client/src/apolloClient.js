@@ -59,21 +59,26 @@ const refreshLink = new ApolloLink((operation, forward) => {
     const userId = decodedToken.id.trim();
     const userPrivilege = decodedToken.privilege.trim();
  
-    if(decodedToken.exp * 1000 < Date.now()){
-      getRefreshToken(userId, userPrivilege);
+    getRefreshToken(userId, userPrivilege)
+    .then(res => {
+      operation.setContext(({ headers = {}}) => ({
+        headers: {
+          ...headers,
+          authorization: accessTokenLocal ? `Bearer ${res}` : "",
+        },
+      }));
+      return forward(operation);
+    });
+    
+    // breaks the second we use this statement
+    // if(decodedToken.exp * 1000 < Date.now()){
+      
+      // }
     }
-  }
-
-
-
-  // operation.setContext(({ headers = {}}) => ({
-  //   headers: {
-  //     ...headers,
-  //     authorization: accessToken ? `Bearer ${accessToken}` : "",
-  //   },
-  // }));
-
-  return forward(operation);
+    
+    
+    return forward(operation);
+    
 });
 
 
@@ -100,6 +105,8 @@ const refreshLink = new ApolloLink((operation, forward) => {
     const res = await refreshToken.json();
     localStorage.setItem("token",res.data.refreshToken);
     console.log(res);
+
+    return res;
   
  }
 
