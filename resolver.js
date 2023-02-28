@@ -19,8 +19,6 @@ const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.u
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 const resolvers = {
-
-
     Query:{
         getUser: async(_,{ID}) => {
             return await Users.findById(ID);
