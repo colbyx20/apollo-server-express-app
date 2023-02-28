@@ -10,54 +10,17 @@ const initialState = {
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
+    initialState.user = decodedToken;
     // check Auth expiration -- if expired, remove token
-    if (decodedToken.exp * 1000 < Date.now()){
-        // call api to check if current api data == refresh token in DB.
-        // If so we want to create a new access token.
-        
-        
-        // const getRefreshToken = async (decodedToken) =>{
-            
-        //     const {id, privilege} = decodedToken
-        //     localStorage.setItem("SomethingHere", id);
-        //     console.log(id);
-        //     console.log(privilege);
-        //     const graphqlQuery = {
-        //     "operationName": "Query",
-        //     "query":`query Query{refreshToken}`,
-        //     "variables":{id, privilege}
-        //     }
+    // if (decodedToken.exp * 1000 < Date.now()){
 
-        //     const refreshToken = await fetch("http://localhost:8080/graphql",{
-        //     method:"POST",
-        //     headers:{"Content-Type":"application/json",},
-        //     body: JSON.stringify(graphqlQuery),
-        //     })
+    //     localStorage.clear();
+    //     // <Refresh prop={{id, privilege}} />
 
-        //     const res = await refreshToken.json();
+    //     // replace token??
+    //     window.location.href = '/';
 
-        //     localStorage.setItem("SomethingHere", res.data.refreshToken);
-        //     console.log(res.data.refreshToken);
-
-        
-            
-        // }
-
-        // getRefreshToken();
-
-
-        localStorage.clear();
-        // <Refresh prop={{id, privilege}} />
-
-        // replace token??
-        window.location.href = '/';
-
-
-
-
-    }else{
-        initialState.user = decodedToken;
-    }
+    
 }
 
 const AuthContext = createContext({

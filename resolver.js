@@ -117,15 +117,7 @@ const resolvers = {
             const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({userId:userId});
             const checkPrivilege = await UserInfo.findOne({userId:userId})
-            console.log("============================================================")
-            console.log(isValidUser.userId);
-            console.log(checkPrivilege);
-            console.log("============================================================")
-
             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
-
-            console.log(decodedRefreshToken.id);
-
 
             if(isValidUser && id === decodedRefreshToken.id && checkPrivilege.privilege === decodedRefreshToken.privilege){
               
@@ -140,13 +132,12 @@ const resolvers = {
                         privilege: decodedRefreshToken.privilege
                     }, 
                     "UNSAFE_STRING", // stored in a secret file 
-                    {expiresIn: "2h"}
+                    {expiresIn: "10s"}
                     );
             
-                //  console.log(newAccessToken);
                 return newAccessToken;
             }else{
-                return 'REKT KID';
+                return "Unauthorized User"
             }
         },
         // getCookie: async(_,__,{req,res}) =>{
@@ -441,7 +432,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "10m"}
+                        {expiresIn: "10s"}
                         );      
                         
                         const refreshToken = jwt.sign(
@@ -492,7 +483,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "10m"}
+                        {expiresIn: "2m"}
                     );
     
                     // attach token to user model that we found if user exists 
@@ -536,7 +527,7 @@ const resolvers = {
                             privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2h"}
+                        {expiresIn: "2m"}
                     );
     
                     // attach token to user model that we found if user exists 

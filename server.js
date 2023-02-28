@@ -47,47 +47,49 @@ async function startServer(){
         expressMiddleware(server, {
             context: async ({req}) => {
                 const token = req.headers.authorization || " ";
+
+                return token;
                 
-                if(req.headers.authorization){
-                    try{
-                        const decode = jwt.verify(token.replace(/^bearer /i,""),'UNSAFE_STRING')   
-                        // console.log("Access Token");
-                        // console.log(decode);   
+                // if(req.headers.authorization){
+                //     try{
+                //         const decode = jwt.verify(token.replace(/^bearer /i,""),'UNSAFE_STRING')   
+                //         // console.log("Access Token");
+                //         // console.log(decode);   
 
-                        if(decode.exp * 1000 < Date.now()){
-                            // console.log("Out of Date");
-                        }
+                //         if(decode.exp * 1000 < Date.now()){
+                //             // console.log("Out of Date");
+                //         }
 
-                        const isValidUser = await Auth.findOne({userId:decode.id});
-                        // console.log("Refresh token");
-                        // console.log(isValidUser.token);
-                        const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
-                        // console.log(decodedRefreshToken);
-                        // console.log("1");
-                        if(decode.id == decodedRefreshToken.id && decode.privilege == decodedRefreshToken.privilege){
-                            // console.log("2");
-                            // we want to send a new access token.
-                            const newAccessToken = jwt.sign(
-                                {
-                                    id : decodedRefreshToken.id, 
-                                    email: decodedRefreshToken.email, 
-                                    firstname: decodedRefreshToken.firstname, 
-                                    lastname: decodedRefreshToken.lastname,
-                                    privilege: decodedRefreshToken.privilege
-                                }, 
-                                "UNSAFE_STRING", // stored in a secret file 
-                                {expiresIn: "2h"}
-                                );
+                //         const isValidUser = await Auth.findOne({userId:decode.id});
+                //         // console.log("Refresh token");
+                //         // console.log(isValidUser.token);
+                //         const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
+                //         // console.log(decodedRefreshToken);
+                //         // console.log("1");
+                //         if(decode.id == decodedRefreshToken.id && decode.privilege == decodedRefreshToken.privilege){
+                //             // console.log("2");
+                //             // we want to send a new access token.
+                //             const newAccessToken = jwt.sign(
+                //                 {
+                //                     id : decodedRefreshToken.id, 
+                //                     email: decodedRefreshToken.email, 
+                //                     firstname: decodedRefreshToken.firstname, 
+                //                     lastname: decodedRefreshToken.lastname,
+                //                     privilege: decodedRefreshToken.privilege
+                //                 }, 
+                //                 "UNSAFE_STRING", // stored in a secret file 
+                //                 {expiresIn: "2h"}
+                //                 );
 
-                            // console.log("My new access token");
-                            // console.log(newAccessToken);
+                //             // console.log("My new access token");
+                //             // console.log(newAccessToken);
 
-                            return newAccessToken
-                        }                        
-                    }catch(e){
-                        throw new AuthenticationError("User Not Authentication");
-                    }
-                }
+                //             return newAccessToken
+                    //     }                        
+                    // }catch(e){
+                    //     throw new AuthenticationError("User Not Authentication");
+                    // }
+                //}
 
                 // console.log("My cookie")
                 // console.log(userCookie);
@@ -105,7 +107,6 @@ async function startServer(){
             // console.log(cookies);
 
             // return {req,res}
-            return req
 
             },
             listen:{port:8080},

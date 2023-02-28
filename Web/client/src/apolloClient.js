@@ -49,21 +49,18 @@ const authLink = new ApolloLink((operation, forward) => {
 
 const refreshLink = new ApolloLink((operation, forward) => {
 
-  // console.log(operation.getContext());
-  const prevHeader = operation.getContext().headers.authorization;
-  // console.log(prevHeader);
-
-  const accessToken = prevHeader.split('Bearer')[1];
-  console.log(accessToken);
-
+  
+  // const prevHeader = operation.getContext().headers.authorization;
+  // const accessToken = prevHeader.split('Bearer')[1];
   const accessTokenLocal = localStorage.getItem("token");
+
   if(accessTokenLocal ){
-    const decodedToken = jwtDecode(accessToken)
+    const decodedToken = jwtDecode(accessTokenLocal)
     const userId = decodedToken.id.trim();
     const userPrivilege = decodedToken.privilege.trim();
-    console.log(decodedToken);
-    getRefreshToken(userId, userPrivilege);
+ 
     if(decodedToken.exp * 1000 < Date.now()){
+      getRefreshToken(userId, userPrivilege);
     }
   }
 
@@ -83,10 +80,6 @@ const refreshLink = new ApolloLink((operation, forward) => {
 
  const getRefreshToken = async (refreshTokenId,privilege) =>{
 
-    const query2 = `query Query {
-      refreshToken2
-    }`
-
     const query = `query Query($refreshTokenId: String, $privilege: String) {
       refreshToken(id: $refreshTokenId, privilege: $privilege)
     }`
@@ -105,15 +98,8 @@ const refreshLink = new ApolloLink((operation, forward) => {
     });
 
     const res = await refreshToken.json();
+    localStorage.setItem("token",res.data.refreshToken);
     console.log(res);
-
-    // if(!localStorage.getItem("token")){
-    //   return;
-    // }else{
-    //   localStorage.setItem("SomethingHere", res.data.refreshToken2);
-    //   console.log(res.data.refreshToken2);
-
-    // }
   
  }
 
