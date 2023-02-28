@@ -51,21 +51,21 @@ async function startServer(){
                 if(req.headers.authorization){
                     try{
                         const decode = jwt.verify(token.replace(/^bearer /i,""),'UNSAFE_STRING')   
-                        console.log("Access Token");
-                        console.log(decode);   
+                        // console.log("Access Token");
+                        // console.log(decode);   
 
                         if(decode.exp * 1000 < Date.now()){
-                            console.log("Out of Date");
+                            // console.log("Out of Date");
                         }
 
                         const isValidUser = await Auth.findOne({userId:decode.id});
-                        console.log("Refresh token");
-                        console.log(isValidUser.token);
+                        // console.log("Refresh token");
+                        // console.log(isValidUser.token);
                         const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
-                        console.log(decodedRefreshToken);
-                        console.log("1");
+                        // console.log(decodedRefreshToken);
+                        // console.log("1");
                         if(decode.id == decodedRefreshToken.id && decode.privilege == decodedRefreshToken.privilege){
-                            console.log("2");
+                            // console.log("2");
                             // we want to send a new access token.
                             const newAccessToken = jwt.sign(
                                 {
@@ -79,8 +79,8 @@ async function startServer(){
                                 {expiresIn: "2h"}
                                 );
 
-                            console.log("My new access token");
-                            console.log(newAccessToken);
+                            // console.log("My new access token");
+                            // console.log(newAccessToken);
 
                             return newAccessToken
                         }                        

@@ -116,10 +116,18 @@ const resolvers = {
            
             const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({userId:userId});
-            const checkPrivilege = await UserInfo.findOne({userId,userId})
+            const checkPrivilege = await UserInfo.findOne({userId:userId})
+            console.log("============================================================")
+            console.log(isValidUser.userId);
+            console.log(checkPrivilege);
+            console.log("============================================================")
 
             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
-            if(isValidUser.id === decodedRefreshToken.id && checkPrivilege.privilege === decodedRefreshToken.privilege){
+
+            console.log(decodedRefreshToken.id);
+
+
+            if(isValidUser && id === decodedRefreshToken.id && checkPrivilege.privilege === decodedRefreshToken.privilege){
               
                 // return a new access token
                 console.log("My new Access Token");
