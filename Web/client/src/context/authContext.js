@@ -10,17 +10,7 @@ const initialState = {
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
-    initialState.user = decodedToken;
-    // check Auth expiration -- if expired, remove token
-    // if (decodedToken.exp * 1000 < Date.now()){
-
-    //     localStorage.clear();
-    //     // <Refresh prop={{id, privilege}} />
-
-    //     // replace token??
-    //     window.location.href = '/';
-
-    
+    initialState.user = decodedToken;    
 }
 
 const AuthContext = createContext({

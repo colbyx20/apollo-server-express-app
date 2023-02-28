@@ -62,13 +62,9 @@ const refreshLink = new ApolloLink((operation, forward) => {
           }));
           return forward(operation);
         });
-      
       }
     }
-    
-    
     return forward(operation);
-    
 });
 
 
@@ -84,8 +80,7 @@ const refreshLink = new ApolloLink((operation, forward) => {
       "query":query,
       "variables":{refreshTokenId,privilege}
     }
-
-
+    
     const refreshToken = await fetch("http://localhost:8080/graphql",{
       method:"POST",
       headers:{"Content-Type": "application/json"},

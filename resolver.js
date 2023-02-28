@@ -118,7 +118,7 @@ const resolvers = {
             const isValidUser = await Auth.findOne({userId:userId});
             const checkPrivilege = await UserInfo.findOne({userId:userId})
             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
-            console.log(decodedRefreshToken);
+
             if (decodedRefreshToken.exp * 1000 < Date.now()){
                 return ""
             }
