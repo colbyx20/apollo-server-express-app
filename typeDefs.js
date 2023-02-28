@@ -206,7 +206,12 @@ scalar DateTime
         professorsAttending:[ID]
         time: DateTime
         CID:ID
-        SponCoordFlag:Boolean
+
+    }
+    input cancelation{
+        CancelerID:ID
+        ApID:ID
+        reason:Boolean
     }
 
     type Cookie {
@@ -238,7 +243,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
-        makeAppointment(ID:ID!,AppointmentEdit:appointmentEdit):CoordSchedule
+        makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
@@ -248,7 +253,7 @@ scalar DateTime
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
-
+        cancelAppointment(cancelation:cancelation):CoordSchedule
     }
 `
 
