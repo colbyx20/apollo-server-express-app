@@ -12,18 +12,6 @@ const httpLink = createHttpLink({
     cache: new InMemoryCache(),
 });
 
-
-// auth link 
-// const authLink = setContext((_,{headers}) => {
-//     const token = localStorage.getItem('token');
-//     return{
-//         headers:{
-//             ...headers,
-//             authorization:token ? `Bearer ${token}` : "",
-//         }
-//     }
-// });
-
 const authLink = new ApolloLink((operation, forward) => {
 
   const accessToken = localStorage.getItem("token");
@@ -39,7 +27,6 @@ const authLink = new ApolloLink((operation, forward) => {
 
 const refreshLink = new ApolloLink((operation, forward) => {
 
-  
   // const prevHeader = operation.getContext().headers.authorization;
   // const accessToken = prevHeader.split('Bearer')[1];
   const accessTokenLocal = localStorage.getItem("token");
@@ -67,8 +54,6 @@ const refreshLink = new ApolloLink((operation, forward) => {
     return forward(operation);
 });
 
-
-
  const getRefreshToken = async (refreshTokenId,privilege) =>{
 
     const query = `query Query($refreshTokenId: String, $privilege: String) {
@@ -80,7 +65,7 @@ const refreshLink = new ApolloLink((operation, forward) => {
       "query":query,
       "variables":{refreshTokenId,privilege}
     }
-    
+
     const refreshToken = await fetch("http://localhost:8080/graphql",{
       method:"POST",
       headers:{"Content-Type": "application/json"},
@@ -95,22 +80,15 @@ const refreshLink = new ApolloLink((operation, forward) => {
     }
     
     const newAccessToken = jwtDecode(res.data.refreshToken)
-    console.log("New Access Token");
-    console.log(newAccessToken);
+
     localStorage.setItem("firstname", newAccessToken.firstname)
     localStorage.setItem("lastname", newAccessToken.lastname)
     localStorage.setItem("token",res.data.refreshToken);
 
-    console.log(res);
-
     return res;
-  
  }
 
-
-
 const client = new ApolloClient({
-    // link:authLink.concat(httpLink),
     link:from([authLink,refreshLink,httpLink]),
     cache: new InMemoryCache()
 });

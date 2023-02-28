@@ -6,7 +6,6 @@ const initialState = {
     user:null
 }
 
-
 // if a token lives in local storage, get that token
 if(localStorage.getItem("token")){
     const decodedToken = jwtDecode(localStorage.getItem("token"));
@@ -35,7 +34,6 @@ function authReducer(state,action){
             return state;
     }
 }
-
 
 function AuthProvider(props){
     const[state, dispatch] = useReducer(authReducer, initialState);
