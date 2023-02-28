@@ -26,17 +26,7 @@ const httpLink = createHttpLink({
 
 const authLink = new ApolloLink((operation, forward) => {
 
-  console.log(operation.getContext());
-
   const accessToken = localStorage.getItem("token");
-
-  // const decodedToken = jwtDecode(accessToken)
-
-  // if(decodedToken.exp * 1000 < Date.now()){
-  //   // getRefreshToken();
-  // }
-
-
   operation.setContext(({ headers = {}}) => ({
     headers: {
       ...headers,
