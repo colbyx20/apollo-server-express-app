@@ -11,6 +11,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
 const cookie = require("cookie");
+const Fs = require('fs');
+const CsvReadableStream = require('csv-reader');
 
 
 const { ObjectId, default: mongoose } = require('mongoose');
@@ -82,7 +84,6 @@ const resolvers = {
                 {$unwind:"$groupId"},
                 {$sort: {time:1}}
             ])
-
         },
         getCoordinatorSchedule: async(_,{coordinatorInput:{coordinatorID}}) =>{
             const CID = Mongoose.Types.ObjectId(coordinatorID)
@@ -106,11 +107,11 @@ const resolvers = {
            
             const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({userId:userId});
-            const checkPrivilege = await UserInfo.findOne({userId:userId})
+            // const checkPrivilege = await UserInfo.findOne({userId:userId})
             const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
 
             if (decodedRefreshToken.exp * 1000 < Date.now()){
-                return ""
+                return "";
             }
 
             if(isValidUser && id === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege){
@@ -399,7 +400,7 @@ const resolvers = {
             }
     
         },
-        loginUser: async (_,{loginInput: {email, password}},{req,res} ) => {
+        loginUser: async (_,{loginInput: {email, password}}) => {
 
             // const cookies = cookie.parse(req.headers.cookie);
             // console.log(cookies);
@@ -738,42 +739,45 @@ const resolvers = {
    
             return true;    
         },
-        createGroup: async (_,{groupInfo:{coordinatorId,groupName,projectField, groupNumber}}) =>{
+        createGroup: async (_,{CID}) =>{
 
-            if(coordinatorId === "" || groupName === "" || projectField === "" || groupNumber == ""){
+            if(CID === ""){
                 throw new ApolloError("Please fill all Fields!");
             }
-
-            // check for unique
-            const checkUniqueGroup = await Group.findOne({groupNumber:groupNumber}).count();
-
-            console.log(checkUniqueGroup);
-
-            // if group doesn't exist, make one
-            if(!checkUniqueGroup){
             
-                const ID = Mongoose.Types.ObjectId(coordinatorId);
-                
-                // create a new group Document
-                const newGroup = new Group({
-                    coordinatorId: ID,
-                    groupName: groupName,
-                    projectField: projectField,
-                    groupNumber: groupNumber,
-                    memberCount: 0
-                });
+            let inputStream = Fs.createReadStream('./csv/group.csv','utf8');
 
-                // Save user in MongoDB
-                const res = await newGroup.save();
+            inputStream
+            .pipe(new CsvReadableStream({parseNumbers: true, parseBooleans: true, trim: true }))
+            .on('data', async function(row){
                 
-                // return res
-                return{
-                    id:res.id,
-                    ...res._doc
+                const checkUniqueGroup = await Group.findOne({coordinatorId:CID,groupNumber:parseInt(row[0])}).count();
+                // if group doesn't exist, make one
+                if(!checkUniqueGroup){
+                
+                    const ID = Mongoose.Types.ObjectId(CID);
+                    console.log(row[0], row[1])
+                    // create a new group Document
+                    const newGroup = new Group({
+                        coordinatorId: ID,
+                        groupName: row[1],
+                        projectField: "",
+                        groupNumber: parseInt(row[0]),
+                        memberCount: 0
+                    });
+
+                    // Save user in MongoDB
+                    const res = await newGroup.save();
+                    
+                    // return res
+                    return true;
                 }
-            }else{
-                throw new ApolloError("Group Already Exists!!");
-            }
+            })
+            .on('end',function(){
+                console.log("Success");
+            })
+
+            return false
         },
         deleteUser: async(_,{ID}) => {
             const wasDeletedUser = (await Users.deleteOne({_id:ID})).deletedCount;
