@@ -208,7 +208,7 @@ scalar DateTime
         CID:ID
 
     }
-    input cancelation{
+    input cancelation {
         CancelerID:ID
         ApID:ID
         reason:Boolean
@@ -250,7 +250,7 @@ scalar DateTime
         loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createGroup(groupInfo: groupInfo): Group
+        createGroup(CID:ID!): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
