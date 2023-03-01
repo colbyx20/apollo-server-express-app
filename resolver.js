@@ -25,8 +25,9 @@ const resolvers = {
         getUser: async(_,{ID}) => {
             return await Users.findById(ID);
         },
-        getAllUsers: async () => {
-            return await Users.find();
+        getAllUsers: async (_,{CID}) => {
+            const coordinatorId = Mongoose.Types.ObjectId(CID)
+            return await Users.find({coordinatorID:coordinatorId});
         },   
         getProfessor: async(_,{ID}) => {
             return await Professors.findById(ID);
@@ -95,13 +96,13 @@ const resolvers = {
                     foreignField:"groupNumber",
                     as:"groupId"
                 }},
-                {$project:{room:1,time:1,attending:1,numberOfAttending:1,"groupId.groupName":1, "groupId.groupNumber":1, "groupId.projectField":1}},
+                {$project:{
+                        room:1,time:1,attending:1,numberOfAttending:1,
+                        "groupId.groupName":1, "groupId.groupNumber":1, "groupId.projectField":1
+                    }},
                 {$unwind:"$groupId"},
                 {$sort: {time:1}}
             ])
-        },
-        refreshToken2: async() =>{
-            return "Hello";
         },
          refreshToken: async (_,{id, privilege}) => {
            
@@ -165,7 +166,6 @@ const resolvers = {
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
 
-
             var encryptedPassword = await bcrypt.hash(password,10);
         
                 // Build out mongoose model 
@@ -217,6 +217,101 @@ const resolvers = {
                     confirm: authCoordinator.confirm,
                     token: authCoordinator.token
                 }
+        },
+        createStudentAccounts: async (_,{CID}) =>{
+            
+            let inputStream = Fs.createReadStream('./csv/useForStudentAccGeneration.csv','utf8');
+            inputStream
+            .pipe(new CsvReadableStream({parseNumbers: true, parseBooleans: true, trim: true }))
+            .on('data', async function(row){
+                
+                const email = row[0].toLowerCase()+'.'+row[1].toLowerCase()+'@knights.ucf.edu';       
+                // const checkUniqueGroup = await Group.findOne({coordinatorId:CID,groupNumber:parseInt(row[0])}).count();
+                const checkUniqueStudent = await UserInfo.findOne({email:email}).count();
+                const password = "password";
+
+                // if group doesn't exist, make one
+                if(!checkUniqueStudent){
+                
+                    const ID = Mongoose.Types.ObjectId(CID);
+                    const encryptedPassword = await bcrypt.hash(password,10);
+                    
+                    // Build out mongoose model 
+                    const newStudent = new Users({
+                        userFName:row[0].toLowerCase(),
+                        userLName:row[1].toLowerCase(),
+                        role: "",
+                        groupNumber:row[2],
+                        coordinatorId: ID
+                    });
+                    
+                    // Save user in MongoDB
+                    const res = await newStudent.save();
+                    
+                    // create JWT (attach to user model)
+                    const token = jwt.sign(
+                        {id : newStudent._id, email, privilege:"student"}, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {
+                            expiresIn: "2h"
+                        }
+                    );
+                    
+                    // create professors auth information in separate collection called Auth
+                    const authStudent = new Auth({
+                        userId: res._id,
+                        password: encryptedPassword,
+                        confirm: true,
+                        token: token
+                    })
+                    
+                    
+                    // save new professor profile
+                    await authStudent.save();
+                    
+                    // create model for professors information 
+                    const studentInfo = new UserInfo({
+                        userId:res._id,
+                        email: email,
+                        privilege: "student",
+                        image:'',
+                    })
+                    
+                    await studentInfo.save();
+                    
+                    return true;
+                }
+            })
+            .on('end',function(){
+                console.log("Success");
+            })
+            return false
+
+
+            // transport.sendMail({
+            //     from: "group13confirmation@gmail.com",
+            //     to: email,
+            //     subject: "mySDSchedule - Please Confirm Your Account",
+            //     html: `<h1>Email Confirmation</h1>
+            //     <h2>Hello ${firstname}</h2>
+            //     <p>Thank you for Registering!</p>
+            //     <p>To activate your account please click on the link below.</p>
+                
+            //     <p>Please Check you Junk/Spam folder</p>
+            //     </div>`,
+            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+            // })
+    
+            // return{
+            //     firstname: res.userFName,
+            //     lastname: res.userLName,
+            //     email: studentInfo.email,
+            //     privilege: studentInfo.privilege,
+            //     password: authStudent.password,
+            //     confirm: authStudent.confirm,
+            //     token: authStudent.token
+            // }
+            
 
 
         },
@@ -246,7 +341,6 @@ const resolvers = {
                     user: process.env.EMAIL_USERNAME, 
                     pass: process.env.EMAIL_PASSWORD 
                 }, 
-            
             });
 
             if(STUDENT_EMAIL.test(email)){
@@ -412,9 +506,6 @@ const resolvers = {
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
 
-                
-                
-                
                 if(professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))){
                     
                     // create a new token ( when you login you give user a new token )
@@ -776,7 +867,6 @@ const resolvers = {
             .on('end',function(){
                 console.log("Success");
             })
-
             return false
         },
         deleteUser: async(_,{ID}) => {

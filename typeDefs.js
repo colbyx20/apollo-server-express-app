@@ -41,15 +41,8 @@ scalar DateTime
         _id:ID
         userFName: String
         userLName: String
-        email: String
-        password: String
-        confirmpassword: String
-        group: String
-        privilege: Int
-        confirm: Int
+        groupNumber:Int
         role: String
-        token: String
-        image: String
     }
 
     type UserLogin {
@@ -226,7 +219,7 @@ scalar DateTime
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
-        getAllUsers : [Users]
+        getAllUsers(ID:ID!) : [Users]
         getAllGroups :[Group]
         getAdmins : Admin
         availSchedule: DateTime
@@ -234,7 +227,6 @@ scalar DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
         getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
-        refreshToken2 : String
     }
 
     type Mutation {
@@ -254,6 +246,7 @@ scalar DateTime
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
+        createStudentAccounts(CID:ID!): Boolean
     }
 `
 
