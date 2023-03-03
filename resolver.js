@@ -509,10 +509,15 @@ const resolvers = {
 
             if (!STUDENT_EMAIL.test(email)) {
 
-                const professorsInfo = await UserInfo.findOne({ email });
-                const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId });
-                const professors = await Professors.findOne({ _id: professorsInfo.userId });
-                const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId });
+                // const professorsInfo = await UserInfo.findOne({ email });
+                // const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId });
+                // const professors = await Professors.findOne({ _id: professorsInfo.userId });
+                // const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId });
+
+                const professorsInfo = await UserInfo.findOne({ email }).select('userId privilege email');
+                const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId }).select('coordinatorFName coordinatorLName');
+                const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId }).select('confirm password');
+                const professors = await Professors.findOne({ _id: professorsInfo.userId }).select('professorFName professorLName');
 
                 if (professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))) {
 
@@ -568,7 +573,7 @@ const resolvers = {
                     }
                 } else if (coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))) {
                     // create a new token ( when you login you give user a new token )
-                    const token = jwt.sign(
+                    const accessToken = jwt.sign(
                         {
                             id: coordinator._id,
                             email,
@@ -607,7 +612,7 @@ const resolvers = {
                         firstname: coordinator.coordinatorFName,
                         lastname: coordinator.coordinatorLName,
                         email: professorsInfo.email,
-                        token: token,
+                        token: accessToken,
                         privilege: professorsInfo.privilege
                     }
 
@@ -617,14 +622,14 @@ const resolvers = {
             } else if (STUDENT_EMAIL.test(email)) {
 
                 // 3 small queries are faster than joining all 3 then searching
-                const studentInfo = await UserInfo.findOne({ email });
-                const studentAuth = await Auth.findOne({ userId: studentInfo.userId });
-                const student = await Users.findOne({ _id: studentInfo.userId });
+                const studentInfo = await UserInfo.findOne({ email }).select('userId privilege email');;
+                const studentAuth = await Auth.findOne({ userId: studentInfo.userId }).select('confirm password');;
+                const student = await Users.findOne({ _id: studentInfo.userId }).select('userFName userLName');
 
                 if (studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))) {
 
                     // create a new token ( when you login you give user a new token )
-                    const token = jwt.sign(
+                    const accessToken = jwt.sign(
                         {
                             id: student._id,
                             email,
@@ -663,7 +668,7 @@ const resolvers = {
                         firstname: student.userFName,
                         lastname: student.userLName,
                         email: studentInfo.email,
-                        token: token,
+                        token: accessToken,
                         privilege: studentInfo.privilege
                     }
                 }
