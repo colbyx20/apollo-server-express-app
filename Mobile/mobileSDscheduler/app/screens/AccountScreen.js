@@ -15,7 +15,7 @@ function AccountScreen(props) {
         style={styles.pfp}
         source={require("../assets/TheTab_KGrgb_300ppi.png")}
       />
-      <AppText style={styles.text}>Hello</AppText>
+      <AppText style={styles.text}>Hello Professor Leinecker</AppText>
       <AppTextInput
         autoCapitalize="none"
         autoCorrect={false}
