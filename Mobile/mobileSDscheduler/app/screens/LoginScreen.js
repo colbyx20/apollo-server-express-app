@@ -103,24 +103,6 @@ function LoginScreen(props) {
             touched,
           }) => (
             <>
-              <GroupItem
-                image={require("../assets/TheTab_KGrgb_300ppi.png")}
-                title={data.getAllGroups[0].groupName}
-                subTitle={data.getAllGroups[0].projectField}
-                number={data.getAllGroups[0].groupNumber}
-                onPress={() =>
-                  console.log("Group selected", data.getAllGroups[0])
-                }
-                renderRightActions={() => (
-                  <GroupItemDeleteAction
-                    onPress={() => console.log("deleted")}
-                  />
-                )}
-                renderLeftActions={() => (
-                  <GroupItemEditAction onPress={() => console.log("edited")} />
-                )}
-              />
-              <AppText>{data.getAllGroups[0].groupName}</AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}
