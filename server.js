@@ -10,8 +10,11 @@ const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
 const cookie = require("cookie");
 const Auth = require('./models/Auth.model');
+const Users = require('./models/Users.model');
 const Mongoose = require('mongoose');
 const path = require('path');
+const jwt = require("jsonwebtoken");
+
 require('dotenv').config();
 
 
@@ -42,38 +45,10 @@ async function startServer(){
         }),
         bodyParser.json(),
         expressMiddleware(server, {
-            context: async ({req,res}) => {
+            context: async ({req}) => {
                 const token = req.headers.authorization || " ";
 
-                // if(req.headers.cookie){
-                //     const userCookie = req.headers.cookie.split("token=")[1];
-                //     console.log("My cookie");
-                //     console.log(userCookie);
-                // }
-
-                // if(req.headers.authorization){
-                //     const token = req.headers.authorization.split('Bearer')[1];
-                //     console.log("My token");
-                //     console.log(token);
-                // }
-
-                // console.log("My cookie")
-                // console.log(userCookie);
-                // if(!userCookie){
-                //     return {req,res}
-                // }else{
-                //     const isValidUser = await Auth.findOne({token:userCookie});
-                //     console.log(isValidUser);
-                //     return isValidUser;
-                // }
-
-
-            // const cookies = cookie.parse(req.headers.cookie);
-            // console.log("My cookie");
-            // console.log(cookies);
-
-            return {req,res}
-
+                return token;
             },
             listen:{port:8080},
         }

@@ -8,10 +8,10 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 function GroupItemDeleteAction({ onPress }) {
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={onPress}>
+      <TouchableWithoutFeedback onPress={onPress} style={styles.button}>
         <MaterialCommunityIcons
           name="trash-can"
-          size={35}
+          size={40}
           color={colors.grayLight}
         />
       </TouchableWithoutFeedback>
@@ -26,6 +26,12 @@ const styles = StyleSheet.create({
     width: 80,
     justifyContent: "center",
     alignItems: "center",
+  },
+  button: {
+    width: 80,
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

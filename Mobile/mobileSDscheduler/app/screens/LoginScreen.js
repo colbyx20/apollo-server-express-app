@@ -33,6 +33,38 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
+
+//axios 
+// const [groupData,setGroupData] = useState([]);
+// useEffect(() =>{
+//   const fetchData = async() =>{
+
+//     const headers ={"content-type":"application/json"}
+
+//     const query = {
+//       "operationName": "Query",
+//       "query": GROUPS,
+//       "variables":{}
+//     }
+
+//     const queryResult = await axios.get({
+//       url: "localhost:8080/graphql",
+//       method:"post",
+//       headers: headers,
+//       data:query,
+//   });
+
+//     const result = queryResult.data.data.getAllGroups;
+//     setGroupData(result);
+//   }
+// },[groupData])
+
+
+
+
+
+
+
   //API SAUCE
   // const [groups, setGroups] = useState([]);
 
@@ -112,24 +144,6 @@ function LoginScreen(props) {
             touched,
           }) => (
             <>
-              <GroupItem
-                image={require("../assets/TheTab_KGrgb_300ppi.png")}
-                title={data.getAllGroups[0].groupName}
-                subTitle={data.getAllGroups[0].projectField}
-                number={data.getAllGroups[0].groupNumber}
-                onPress={() =>
-                  console.log("Group selected", data.getAllGroups[0])
-                }
-                renderRightActions={() => (
-                  <GroupItemDeleteAction
-                    onPress={() => console.log("deleted")}
-                  />
-                )}
-                renderLeftActions={() => (
-                  <GroupItemEditAction onPress={() => console.log("edited")} />
-                )}
-              />
-              <AppText>{data.getAllGroups[0].groupName}</AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}

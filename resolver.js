@@ -109,18 +109,24 @@ const resolvers = {
                 {$sort: {time:1}}
             ])
         },
-        refreshToken: async (_,{ID, token, privilege}, {req,res}) => {
-            const userId = Mongoose.Types.ObjectId(ID);
+        refreshToken2: async() =>{
+            return "Hello";
+        },
+         refreshToken: async (_,{id, privilege}) => {
+           
+            const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({userId:userId});
-            const checkPrivilege = await UserInfo.findOne({userId,userId});
+            const checkPrivilege = await UserInfo.findOne({userId:userId})
+            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");  
 
-            const decodedToken = jwt.verify(token,"UNSAFE_STRING");
-            // console.log(decodedToken);
-            const decodedRefreshToken = jwt.verify(isValidUser.token,"UNSAFE_STRING");
-            console.log(1);
-            if(decodedToken.id === decodedRefreshToken.id && decodedToken.privilege === decodedRefreshToken.privilege && decodedToken.privilege == checkPrivilege.privilege){
-                console.log(2);
+            if (decodedRefreshToken.exp * 1000 < Date.now()){
+                return ""
+            }
+
+            if(isValidUser && id === decodedRefreshToken.id && privilege === decodedRefreshToken.privilege){
+              
                 // return a new access token
+                console.log("My new Access Token");
                 const newAccessToken = jwt.sign(
                     {
                         id : decodedRefreshToken.id, 
@@ -130,11 +136,12 @@ const resolvers = {
                         privilege: decodedRefreshToken.privilege
                     }, 
                     "UNSAFE_STRING", // stored in a secret file 
-                    {expiresIn: "2h"}
-                );
+                    {expiresIn: "1m"}
+                    );
+            
                 return newAccessToken;
             }else{
-                return 'REKT KID';
+                return "Unauthorized User"
             }
         },
         // getCookie: async(_,__,{req,res}) =>{
@@ -413,6 +420,7 @@ const resolvers = {
                 const professorsAuth = await Auth.findOne({userId:professorsInfo.userId});
                 const professors = await Professors.findOne({_id:professorsInfo.userId});
                 const coordinator = await Coordinator.findOne({_id:professorsInfo.userId});
+
                 
                 
                 
@@ -428,7 +436,7 @@ const resolvers = {
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
-                        {expiresIn: "2h"}
+                        {expiresIn: "1m"}
                         );      
                         
                         const refreshToken = jwt.sign(
@@ -446,19 +454,19 @@ const resolvers = {
                         // attach token to user model that we found if user exists 
                         await Auth.findOneAndUpdate({userId:professors._id}, {$set:{token:refreshToken}})
                         
-                        res.cookie("accessToken",accessToken,{
-                            expires: new Date(Date.now() + 9000000),
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: true
-                        });
+                        // res.cookie("accessToken",accessToken,{
+                        //     expires: new Date(Date.now() + 9000000),
+                        //     httpOnly: true,
+                        //     secure: true,
+                        //     sameSite: true
+                        // });
 
-                        res.cookie("refreshToken",refreshToken,{
-                            expires: new Date(Date.now() + 9000000),
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: true
-                        });
+                        // res.cookie("refreshToken",refreshToken,{
+                        //     expires: new Date(Date.now() + 9000000),
+                        //     httpOnly: true,
+                        //     secure: true,
+                        //     sameSite: true
+                        // });
 
                         return {
                             _id: professors._id,
@@ -474,23 +482,35 @@ const resolvers = {
                         {
                             id : coordinator._id, 
                             email, 
-                            firstname: coordinator.professorFName, 
-                            lastname: coordinator.professorLName,
+                            firstname: coordinator.coordinatorFName, 
+                            lastname: coordinator.coordinatorLName,
+                            privilege: professorsInfo.privilege
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1m"}
+                    );
+    
+                    const refreshToken = jwt.sign(
+                        {
+                            id : coordinator._id, 
+                            email, 
+                            firstname: coordinator.coordinatorFName, 
+                            lastname: coordinator.coordinatorLName,
                             privilege: professorsInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "2h"}
-                    );
-    
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:token}})
+                        );        
 
-                    res.cookie("token",token,{
-                        expires: new Date(Date.now() + 9000000),
-                        httpOnly: true,
-                        secure: true,
-                        sameSite: true
-                    });
+                    // attach token to user model that we found if user exists 
+                    await Auth.findOneAndUpdate({userId:coordinator._id}, {$set:{token:refreshToken}})
+
+                    // res.cookie("token",token,{
+                    //     expires: new Date(Date.now() + 9000000),
+                    //     httpOnly: true,
+                    //     secure: true,
+                    //     sameSite: true
+                    // });
 
                     return {
                         _id: coordinator._id,
@@ -523,18 +543,30 @@ const resolvers = {
                             privilege: studentInfo.privilege
                         }, 
                         "UNSAFE_STRING", // stored in a secret file 
+                        {expiresIn: "1m"}
+                    );
+
+                    const refreshToken = jwt.sign(
+                        {
+                            id : student._id, 
+                            email, 
+                            firstname: student.userFName, 
+                            lastname: student.userLName,
+                            privilege: studentInfo.privilege
+                        }, 
+                        "UNSAFE_STRING", // stored in a secret file 
                         {expiresIn: "2h"}
                     );
     
                     // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:token}})
+                    await Auth.findOneAndUpdate({userId:student._id}, {$set:{token:refreshToken}})
 
-                    res.cookie("token",token,{
-                        expires: new Date(Date.now() + 9000000),
-                        httpOnly: true,
-                        secure: true,
-                        sameSite: true
-                    });
+                    // res.cookie("token",token,{
+                    //     expires: new Date(Date.now() + 9000000),
+                    //     httpOnly: true,
+                    //     secure: true,
+                    //     sameSite: true
+                    // });
 
                     return {
                         _id: student._id,
