@@ -702,7 +702,6 @@ const resolvers = {
                     // email is not valid 
                     throw new ApolloError("Email IS Not Valid");
                 }
-
             } else if (PROFESSOR_EMAIL.test(email)) {
                 try {
                     // check if email is valid 
