@@ -79,7 +79,8 @@ function Account(props){
                                 
                                 <div className='userData'>
                                 <h2 className='themeTitle'>Information</h2>
-                                    
+                                <p>Name: {user.firstname} {user.lastname}</p>
+                                <p>Email: {user.email}</p>
                                 </div>
                                 
                             </div>

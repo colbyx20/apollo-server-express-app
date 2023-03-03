@@ -1,11 +1,11 @@
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 // When register is created, we needto call AuthProvider function
 import { AuthContext } from '../context/authContext'; 
 import {useForm} from "../utility/hooks";
 import {useLazyQuery, useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
-import { useNavigate } from 'react-router-dom';
-import {TextField, Button, Container, Stack, Alert, withTheme} from "@mui/material";
+import {TextField, Button, Container, Stack, Alert, Checkbox, FormControlLabel, withTheme} from "@mui/material";
+import { blue } from '@mui/material/colors';
 import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
 import Slider from '../components/Slider'
@@ -26,6 +26,31 @@ const LOGIN_USER = gql`
 function Login(props){
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
+    const [checked, setChecked] = useState(false);
+    const [log, setLog] = useState(() => {
+        // getting stored value
+        const saved = window.localStorage.getItem('...')
+        const initialValue = JSON.parse(saved);
+        console.log("Checkbox when log is loaded: ", log)
+        return initialValue || "";
+    });
+
+    // Get checkbox state
+    useEffect(() =>{
+        const data = window.localStorage.getItem('checkbox')
+        if (data !== null) setChecked(JSON.parse(data))
+        if (data === false) window.localStorage.removeItem('...')
+    }, [])
+
+    // Save checkbox state
+    useEffect(() => {
+        window.localStorage.setItem('checkbox', JSON.stringify(checked))
+    }, [checked])
+
+
+    const handleChange = (event) => {
+        setChecked(event.target.checked);
+    };
 
     const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 
@@ -42,8 +67,11 @@ function Login(props){
     const [loginUser]  = useMutation(LOGIN_USER,{
         update(proxy,{data:{loginUser: userData}}){
             context.login(userData)
+            if(checked == true)
+                window.localStorage.setItem('...', JSON.stringify(userData.email));
+
             localStorage.setItem("firstname",userData.firstname);
-            localStorage.setItem("lastname",userData.lastname)
+            localStorage.setItem("lastname",userData.lastname);
             localStorage.setItem("token",userData.token);
             
             if(STUDENT_EMAIL.test(userData.email)){
@@ -60,6 +88,7 @@ function Login(props){
         },
         variables:{loginInput:values}
     });
+
     
     return(
         
@@ -95,6 +124,7 @@ function Login(props){
                             InputLabelProps={{className: 'mylabel'}}
                             label = "Email" 
                             name = "email"
+                            defaultValue={log}
                             onChange={onChange}
                         />
                         <TextField sx={{
@@ -128,8 +158,20 @@ function Login(props){
                         marginBottom: '5%',
                         width: '100%',
                     }}variant="contained" onClick={onSubmit}>Login</Button>
-
-                    <span><a href='/'>Forgot password?</a></span>
+                    <FormControlLabel control={
+                    <Checkbox
+                    id='rememberCheck'
+                    checked={checked}
+                    onChange={handleChange}
+                    sx={{
+                        color: 'white',
+                        '&.Mui-checked': {
+                          color: blue[500],
+                        },
+                    }}
+                    />}label="Remember Email"/>
+                    <br/>
+                    <span><a href='/'>  Forgot password?</a></span>
                     
 
                 </Container>
