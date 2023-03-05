@@ -1,3 +1,8 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
 .calendarPage {
   width: 100%;
   height: auto;

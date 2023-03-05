@@ -60,9 +60,9 @@ export default function Calendar( { lightMode } ) {
 
   const theme = createTheme(getDesignTokens(lightMode))
   return (
-    <div>
+    <>
       <div className='calendarPage'>
-          <CustomSidebar className="sidebar" />
+          <CustomSidebar />
           <div className='calendarWrapper'>
             <div className='userInfo'>
               <p className='calendarHeader'>Calendar</p>
@@ -72,6 +72,6 @@ export default function Calendar( { lightMode } ) {
             </ThemeProvider>
           </div>
       </div>
-    </div>
+    </>
   );
 }
