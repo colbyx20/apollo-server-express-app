@@ -31,7 +31,6 @@ function Login(props){
         // getting stored value
         const saved = window.localStorage.getItem('...')
         const initialValue = JSON.parse(saved);
-        console.log("Checkbox when log is loaded: ", log)
         return initialValue || "";
     });
 
@@ -39,7 +38,6 @@ function Login(props){
     useEffect(() =>{
         const data = window.localStorage.getItem('checkbox')
         if (data !== null) setChecked(JSON.parse(data))
-        if (data === false) window.localStorage.removeItem('...')
     }, [])
 
     // Save checkbox state

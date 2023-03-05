@@ -1,7 +1,6 @@
 *{
     margin: 0;
     padding: 0;
-    box-sizing: border-box; 
 }
 
 .studentPage{
@@ -10,4 +9,23 @@
     display: flex;
 }
 
+.studentHeader{
+    padding: 0%;
+    margin: 0 auto;
+    font-size: 3em;
+    padding-top: 5px;
+    display: inline;
+}
+
+.displayGroup{
+    width: 50%;
+    height: 92%;
+    float: left;
+}
+
+.otherStuff{
+    width: 50%;
+    height: 92%;
+    float: right;
+}
 

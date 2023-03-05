@@ -31,11 +31,18 @@ function Student(props){
             {user !== null?
                 <>
                 <CustomSidebar/>
-                <div className="userInfo">
-                    <p style={{textAlign:"left", margin:0}}>{user.email}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.firstname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.lastname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{year}</p>
+                <div className='studentPage'>
+                    <div className="userInfo">
+                        <p className='studentHeader'>Home Page</p>
+                    </div>
+                    <div className='displayGroup'>
+                        <div className='groupTitle'>
+                            AHHH
+                        </div>
+                    </div>
+                    <div className='otherStuff'>
+                        
+                    </div>
                 </div>
                 </>
                 : 
