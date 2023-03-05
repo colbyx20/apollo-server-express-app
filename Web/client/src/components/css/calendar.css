@@ -1,0 +1,113 @@
+.calendarPage {
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+.userInfo {
+  width: 300px;
+  height: 8%;
+  min-height: 50px;
+}
+
+.calendarWrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.calendarHeader {
+  padding: 0%;
+  margin: 0 auto;
+  font-size: 3em;
+  padding-top: 5px;
+}
+
+/* .MuiCalendarPicker-root {
+  border: 1px solid black;
+  box-shadow: inset 1px 1px 2px black;
+} */
+  
+/* .PrivatePickersSlideTransition-root {
+    background-color: green;
+} */
+  
+/* .MuiCalendarPicker-root button{
+  border: 1px solid black;
+  /*   color: gold; */
+/* } */
+  
+.calendarMundo {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.leftSideDisplay {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.staticCalendar {
+  width: 50%;
+  margin-top: 10px;
+  margin-left: 5%;
+  box-shadow: 0 0 15px black;
+  border-radius: 15px;
+}
+
+.statusDisplayWrapper {
+  width: 50%;
+  margin-top: 10px;
+  margin-left: 5%;
+  box-shadow: 0 0 15px black;
+  border-radius: 15px;
+}
+
+.appointments {
+  width: 80%;
+}
+
+.sidebar {
+  height: 100%;
+  position: absolute;
+}
+
+.MuiPickerStaticWrapper-content {
+  border-radius: 15px;
+}
+
+.MuiDayPicker-weekContainer > .MuiPickersDay-dayWithMargin:not(.Mui-disabled):not(.MuiPickersDay-dayOutsideMonth):not(.Mui-selected) {
+  background-color: white;
+  /* background-color: #fdff66; */
+}
+
+.MuiDayPicker-weekContainer > .MuiPickersDay-dayOutsideMonth:not(.Mui-disabled) {
+  color: black;
+  opacity: 0.4;
+  background-color: gray;
+}
+
+.MuiDayPicker-weekContainer > .Mui-disabled  {
+  background-color: gray;
+}
+
+.availTimesHeader {
+  /* color: white; */
+  margin-bottom: 10px;
+}
+
+.timeslot {
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 5px;
+  padding-left: 10px;
+  box-shadow: 0 0 5px black;
+}
+
+.MuiPickersArrowSwitcher-root > .MuiButtonBase-root {
+  background-color: white;
+}
+
+.profNames {
+  text-align: left;
+}

@@ -6,6 +6,7 @@ import Student from './pages/student';
 import Loginpath from './pages/login';
 // import Professors from "./pages/professors";
 import Coordinator from "./pages/coordinator"
+import Calendar from "./pages/calendar";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/student" element={<Student />} />
         {/* <Route path="/professor" element={<Professors />} /> */}
+        <Route path="/calendar" element={<Calendar lightMode={true} />} />
         <Route path="/coordinator" element={<Coordinator />} />
       </Routes>
       
