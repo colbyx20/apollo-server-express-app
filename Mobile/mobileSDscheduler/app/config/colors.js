@@ -1,17 +1,18 @@
 export default {
-    //redundant, but might be useful for later changes
-    primaryLight: "#FFF",
-    secondaryLight: "#000",
+  //redundant, but might be useful for later changes
+  primaryLight: "#FFF",
+  secondaryLight: "#000",
 
-    primaryDark: "#000",
-    secondaryDark: "#FFF",
+  //primaryDark: "#000", //might be TOO dark
+  primaryDark: "#121212",
+  secondaryDark: "#FFF",
 
-    gold: "#FFC904",
+  gold: "#FFC904",
 
-    red: "#FC5C65",
-    green: "#4ECDC4",
+  red: "#FC5C65",
+  green: "#4ECDC4",
 
-    grayLight: "#f8f4f4",
-    grayMedium: "#696969",
-    grayDark: "#0c0c0c",
+  grayLight: "#f8f4f4",
+  grayMedium: "#696969",
+  grayDark: "#0c0c0c",
 };

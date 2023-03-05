@@ -4,11 +4,112 @@
 }
 
 .uploadWrapper{
-    background-color: aliceblue;
-    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    height: 95%;
+    overflow: none;
+    overflow-y: auto;
 }
 
-.uploadedFiles{
-    height: 90%;
-    background-color: black;
+.uploadTitle{
+    padding-top: 5px;
+    padding-bottom: 10px;
 }
+
+.uploadedForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #000;
+    width: 80%;
+    height: 90%;
+    background-color: bisque;
+    cursor: pointer;
+}
+
+.uploadInput{
+    justify-content: center;
+    margin: auto;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.uploadIcon{
+    position: absolute;
+    align-items:center;
+    justify-content: center;
+    height: 10%;
+    width: auto;
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
+}
+
+.uploadText{
+    margin-bottom: 55px;
+    color: #000;
+}
+
+.uploadImg{
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    height: 25%;
+    width: auto;
+}
+
+.currentFile{
+    justify-content: center;
+    text-align: center;
+    width: 60%;
+    min-height: 65px;
+    max-height: 90px;
+    margin-top: 25px;
+    background-color: #231F20;
+    border-radius: 15px;
+    overflow: visible;
+}
+
+.currentName{
+    color: white;
+    font-size: 1.2em;
+    padding-top: 5px;
+}
+
+.confirmButton{
+    margin-top: 5px;
+    display: inline;
+    width: 30px;
+    height: auto;
+    background-color:  rgb(68, 68, 231);
+    border-radius: 5px;
+    border-style: none;
+}
+
+.confirmButton:hover{
+    cursor: pointer;
+}
+
+.deleteButton{
+    margin-top: 5px;
+    display: inline;
+    width: 30px;
+    height: auto;
+    background-color: rgb(226, 26, 26);
+    border-style: none;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.deleteButton:hover{
+    cursor: pointer;
+}
+
+.currentIcons{
+    filter: invert(100%) sepia(5%) saturate(7474%) hue-rotate(192deg) brightness(110%) contrast(101%);
+    display: inline;
+    height: 100%;
+    width: auto;
+}
+

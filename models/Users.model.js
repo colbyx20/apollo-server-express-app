@@ -4,8 +4,9 @@ const UsersSchema = new mongoose.Schema({
 
     userFName:{type: String},
     userLName:{type: String},
-    groupNumber: {type: Number,require: false},
-    role:{type: String},
+    groupNumber: {type: Number,require: false, min:1},
+    role:{type: String,
+        enum:['Leader','Front-end','Back-end'] },
     coordinatorId: {type: mongoose.ObjectId},
 })
 

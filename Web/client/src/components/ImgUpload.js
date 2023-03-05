@@ -1,10 +1,9 @@
 import React, { useState, useRef} from 'react';
-import './css/fileupload.css';
 import Upload from './images/upload.svg'
 import Check from './images/check.svg'
 import Trash from './images/trash.svg'
 
-function FileUpload(){
+function ImgUpload(){
     const ref = useRef();
 
     const[image, setImage] = useState(null);
@@ -18,16 +17,16 @@ function FileUpload(){
 
     return(
             <div className='uploadWrapper'>
-                <h2 className='uploadTitle'>Upload Design Projects File</h2>
+                <h2 className='uploadTitle'>Upload Profile Picture</h2>
                 <form className='uploadedForm'
                 onClick={() => document.querySelector(".uploadInput").click()}>
-                    <input className='uploadInput' accept='.csv, .xls, xlsx' type='file' ref={ref}
+                    <input className='uploadInput' accept='.png, .jpeg, .jpg' type='file' ref={ref}
                     onChange={({ target: {files}}) =>{
                         files[0] && setFileName(files[0].name)
                         if(files){
                             setImage(URL.createObjectURL(files[0]));
                         }
-                    }}/>
+                    }}/>  
                     
                     {image ?
                     <img className='uploadImg' src={image}/>
@@ -46,4 +45,4 @@ function FileUpload(){
     )
 }
 
-export default FileUpload
+export default ImgUpload

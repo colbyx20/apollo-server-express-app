@@ -1,18 +1,26 @@
-import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  ImageBackground,
+  Dimensions,
+  View,
+} from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AppButton from "../components/AppButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
 import Constants from "expo-constants";
-//import apiClient from "../api/client";
+import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
 import Screen from "../components/Screen";
-import colors from "../config/styles";
+import colors from "../config/colors";
 import ErrorMessage from "../components/ErrorMessage";
 import { useEffect, useState } from "react";
-
+import GroupItem from "../components/GroupItem";
+import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
+import GroupItemEditAction from "../components/GroupItemEditAction";
 
 
 const validationSchema = Yup.object().shape({
@@ -25,60 +33,91 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
-  //   const [groups, setGroups] = useState([]);
 
-  //   useEffect(() => {
-  //     loadGroups();
-  //   }, []);
+//axios 
+// const [groupData,setGroupData] = useState([]);
+// useEffect(() =>{
+//   const fetchData = async() =>{
 
-  //   const loadGroups = async () => {
-  //     const response = await apiClient.get("getAllGroups");
-  //     setGroups(response.data);
-  //   };
+//     const headers ={"content-type":"application/json"}
 
-  //   console.log(groups);
+//     const query = {
+//       "operationName": "Query",
+//       "query": GROUPS,
+//       "variables":{}
+//     }
+
+//     const queryResult = await axios.get({
+//       url: "localhost:8080/graphql",
+//       method:"post",
+//       headers: headers,
+//       data:query,
+//   });
+
+//     const result = queryResult.data.data.getAllGroups;
+//     setGroupData(result);
+//   }
+// },[groupData])
+
+
+
+
+
+
+
+  //API SAUCE
+  // const [groups, setGroups] = useState([]);
+
+  // useEffect(() => {
+  //   loadGroups();
+  // }, []);
+
+  // const loadGroups = async () => {
+  //   const response = await apiClient.get("getAllGroups");
+  //   setGroups(response.data);
+  // };
+
+  // console.log(groups);
 
   //-----------------
+  // const [errors, setError] = useState([]);
+  //TESTING THINGS
+  //   const [groups, setGroups] = useState([]);
 
-    // const [groups, setGroups] = useState([]);
-    // const [errors, setError] = useState([]);
+  // useEffect(() => {
+  //   loadGroups();
+  // }, [groups]);
 
-    // useEffect(() => {
-    //   loadGroups();
-    // }, [groups]);
+  // const loadGroups = async () => {
+  //   //const response = await useQuery(GROUPS);
+  //   const { data, loading, error} = await useQuery(GROUPS);
 
-    // const loadGroups = async () => {
-    //   //const response = await useQuery(GROUPS);
-    //   const { data, loading, error} = await useQuery(GROUPS);
+  //   if (error) {
+  //     return <AppText>Error: {error.message}</AppText>; //while loading return this
+  //   }
 
-    //   if (error) {
-    //     return <AppText>Error: {error.message}</AppText>; //while loading return this
-    //   }
-    
-    //   if (loading) {
-    //     return <AppText>Fetching data...</AppText>; //while loading return this
-    //   }
-    //   setGroups(data);
-    //   setError(error);
-    // };
+  //   if (loading) {
+  //     return <AppText>Fetching data...</AppText>; //while loading return this
+  //   }
+  //   setGroups(data);
+  //   setError(error);
+  // };
 
-    // console.log(groups);
+  // console.log(groups);
 
-   const { data, loading, error } = useQuery(GROUPS);
+  const { data, loading, error } = useQuery(GROUPS);
 
-      if (error) {
-        return <AppText>Error: {error.message}</AppText>; //while loading return this
-      }
-    
-      if (loading) {
-        return <AppText>Fetching data...</AppText>; //while loading return this
-      }
+  if (error) {
+    return <AppText>Error: {error.message}</AppText>; //while loading return this
+  }
 
+  if (loading) {
+    return <AppText>Fetching data...</AppText>; //while loading return this
+  }
 
-
-  console.log(data.getAllGroups)
+  console.log(data.getAllGroups);
   console.log(data.getAllGroups[0].groupName);
-
+  console.log(data);
 
   return (
     <ImageBackground
@@ -105,7 +144,6 @@ function LoginScreen(props) {
             touched,
           }) => (
             <>
-              <AppText>{data.getAllGroups[0].groupName}</AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}
