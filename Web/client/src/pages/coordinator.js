@@ -3,6 +3,7 @@ import { AuthContext } from '../context/authContext';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import {Button} from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import '../components/css/coordinator.css';
 
 function Coordinator(props){
@@ -11,11 +12,20 @@ function Coordinator(props){
     const {user, logout} = useContext(AuthContext);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
-
+    const [registerProf, setRegisterProf] = useState("Add to Clipboard");
+    const [registerCoord, setRegisterCoord] = useState("Add to Clipboard");
 
     const onLogout = () => {
         logout();
         navigate('/');
+    }
+
+    const onRegister =() => {
+        setRegisterProf("Copied");
+    }
+
+    const onRegisterCoord =() => {
+        setRegisterCoord("Copied");
     }
 
     return (
@@ -28,7 +38,36 @@ function Coordinator(props){
                         <div className='userInfo'>
                             <p className='coordHeader'>Home Page</p>
                         </div>
-                        
+                        <div className='coordContainer'>
+                            <div className='linkContainer'>
+                                <p className='linkTitle'><strong>Register Professor</strong></p>
+                                <Button 
+                                sx={{
+                                    marginLeft: '20%',
+                                    marginBottom: '7px',
+                                    width: '55%',
+                                }}variant="contained"
+                                endIcon={<ContentCopyIcon />}
+                                onClick={()=>{
+                                    onRegister()
+                                }}>{registerProf}</Button>
+                                
+                            </div>
+                            <div className='linkContainer'>
+                                <p className='linkTitle'><strong>Register Coordinator</strong></p>
+                                <Button 
+                                sx={{
+                                    marginLeft: '20%',
+                                    marginBottom: '7px',
+                                    width: '55%',
+                                }}variant="contained"
+                                endIcon={<ContentCopyIcon />}
+                                onClick={()=>{
+                                    onRegisterCoord()
+                                }}>{registerCoord}</Button>
+                                
+                            </div>
+                        </div>
                     </div>
                     </>
                     : 
