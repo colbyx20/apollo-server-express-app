@@ -14,7 +14,7 @@
     width: 100%;
     height: 100vh;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .userInfo{
@@ -32,26 +32,27 @@
 
 .coordContainer{   
     margin-top: 10px; 
-    margin-left: 2%;
-    width: 98%;
-    height: 90.5%;
+    width: 95%;
+    height: 100px;
 }
 
-.linkContainer{
-    width: 35%;
-    height: 13%;
+.leftLinkContainer{
+    margin-left: 5%;
+    width: 45%;
+    height: 100%;
     background-color: #D0A300;
     border-radius: 5px;
     overflow-y: auto;
+    float: left;
 }
 
-.linkBox{
-    margin: 0 auto;
-    width: 80%;
-    height: 21px;
-    background-color: white;
+.rightLinkContainer{
+    width: 45%;
+    height: 100%;
+    background-color: #D0A300;
     border-radius: 5px;
-    overflow: hidden;
+    overflow-y: auto;
+    float: right;
 }
 
 .linkTitle{
@@ -67,6 +68,82 @@
     padding-left: 5px;
     text-align: left;
     color: #000;
+}
+
+.notificationContainer{
+    width: 100%;
+    height: 55%;
+    align-items: center;
+    justify-content: center;
+    overflow: none;
+}
+
+.notificationBox{
+    margin: 10px auto;
+    width: 90.5%;
+    height: 100%;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow: none;
+}
+
+.notificationTitle{
+    color: #000;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.appointmentContainer{
+    margin: 0 auto;
+    width: 90%;
+    height: 85%;
+    margin-bottom: 5px;
+    background-color: bisque;
+}
+
+.appointmentObject{
+    margin: 0 auto;
+    padding-top: 15%;
+    text-align: center;
+    width: 500px;
+    
+}
+
+.emailContainer{
+    width: 50%;
+    height: 20%;
+    margin: 0 auto;
+    margin-top: 10px;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.emailTitle{
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.emailClause{
+    color: rgb(41, 40, 40);
+    margin-bottom: 0px;
+}
+
+.emailSubmit{
+    margin-top: 20px;
+    width: 100%;
+    height: 50%;
+    display: block;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .semesterHeader{

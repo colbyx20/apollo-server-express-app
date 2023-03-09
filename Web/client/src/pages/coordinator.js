@@ -2,8 +2,9 @@ import {useContext, useState} from 'react';
 import { AuthContext } from '../context/authContext'; 
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
-import {Button} from "@mui/material";
+import {Button, TextField} from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import '../components/css/coordinator.css';
 
 function Coordinator(props){
@@ -21,10 +22,12 @@ function Coordinator(props){
     }
 
     const onRegister =() => {
+        navigator.clipboard.writeText("http://localhost:3000/register");
         setRegisterProf("Copied");
     }
 
     const onRegisterCoord =() => {
+        navigator.clipboard.writeText("http://localhost:3000/registerCoordinator");
         setRegisterCoord("Copied");
     }
 
@@ -39,13 +42,13 @@ function Coordinator(props){
                             <p className='coordHeader'>Home Page</p>
                         </div>
                         <div className='coordContainer'>
-                            <div className='linkContainer'>
-                                <p className='linkTitle'><strong>Register Professor</strong></p>
+                            <div className='leftLinkContainer'>
+                                <p className='linkTitle'><strong>Professor Register Link</strong></p>
                                 <Button 
                                 sx={{
                                     marginLeft: '20%',
                                     marginBottom: '7px',
-                                    width: '55%',
+                                    width: '60%',
                                 }}variant="contained"
                                 endIcon={<ContentCopyIcon />}
                                 onClick={()=>{
@@ -53,13 +56,13 @@ function Coordinator(props){
                                 }}>{registerProf}</Button>
                                 
                             </div>
-                            <div className='linkContainer'>
-                                <p className='linkTitle'><strong>Register Coordinator</strong></p>
+                            <div className='rightLinkContainer'>
+                                <p className='linkTitle'><strong>Coordinator Register Link</strong></p>
                                 <Button 
                                 sx={{
                                     marginLeft: '20%',
                                     marginBottom: '7px',
-                                    width: '55%',
+                                    width: '60%',
                                 }}variant="contained"
                                 endIcon={<ContentCopyIcon />}
                                 onClick={()=>{
@@ -67,6 +70,27 @@ function Coordinator(props){
                                 }}>{registerCoord}</Button>
                                 
                             </div>
+                        </div>
+                        <div className='notificationContainer'>
+                                <div className='notificationBox'>
+                                    <p className='notificationTitle'>Upcoming Events<NotificationsNoneIcon/> </p>
+                                    <div className='appointmentContainer'>
+                                        <div className='appointmentObject'>No current appointments</div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div className='emailContainer'>
+                                <p className='emailTitle'>Email Notifications</p>
+                                <p className='emailClause'>Want to be emailed about upcoming appointments?</p>
+                                <div className='emailSubmit'>
+                                    <TextField size="small" 
+                                    sx={{width:'50%', backgroundColor: 'white', borderRadius: '5px'}}></TextField>
+                                    <br/>
+                                    <Button
+                                    variant='contained'
+                                    sx={{marginTop: '5px', width:'50%'}}
+                                    >Submit</Button>
+                                </div>
                         </div>
                     </div>
                     </>
