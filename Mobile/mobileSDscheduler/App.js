@@ -9,9 +9,19 @@ import CalendarScreen from "./app/screens/CalendarScreen";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 // Initialize Apollo Client
+const uri= "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql";
+const local_uri = "http://localhost:8080/graphql"
+
+
+const httpLink = createHttpLink({
+  uri: local_uri,
+  credentials: 'include',
+  cache: new InMemoryCache()
+});
+
 const client = new ApolloClient({
-  uri: "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql",
-  cache: new InMemoryCache(),
+  link: httpLink,
+  cache: new InMemoryCache()
 });
 
 export default function App() {
@@ -22,7 +32,7 @@ export default function App() {
     //<HomeScreen></HomeScreen>
     //<CalendarScreen></CalendarScreen>
     <ApolloProvider client={client}>
-      <LoginScreen></LoginScreen>
+      <CalendarScreen></CalendarScreen>
     </ApolloProvider>
   );
 }
