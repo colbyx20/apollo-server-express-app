@@ -50,7 +50,6 @@ function CalendarScreen(props) {
             { name: "any js object" },
           ],
         }}
-        //hideArrows={false}
         // Callback that gets called when items for a certain month should be loaded (month became visible)
         loadItemsForMonth={(month) => {
           console.log("trigger items loading");
