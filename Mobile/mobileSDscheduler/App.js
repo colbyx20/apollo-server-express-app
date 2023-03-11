@@ -32,7 +32,7 @@ export default function App() {
     //<HomeScreen></HomeScreen>
     //<CalendarScreen></CalendarScreen>
     <ApolloProvider client={client}>
-      <LoginScreen></LoginScreen>
+      <CalendarScreen></CalendarScreen>
     </ApolloProvider>
   );
 }
