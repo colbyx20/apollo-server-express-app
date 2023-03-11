@@ -8,8 +8,6 @@ import Loginpath from './pages/login';
 import Coordinator from "./pages/coordinator"
 import Calendar from "./pages/calendar";
 
-import Semester from "./pages/semester";
-import Account from "./pages/account";
 
 function App() {
   return (
@@ -23,8 +21,6 @@ function App() {
         {/* <Route path="/professor" element={<Professors />} /> */}
         <Route path="/calendar" element={<Calendar lightMode={false} />} />
         <Route path="/coordinator" element={<Coordinator />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/semester" element={<Semester />} />
       </Routes>
       
     </div>

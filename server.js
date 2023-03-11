@@ -8,18 +8,11 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolver");
-const cookie = require("cookie");
-const Auth = require('./models/Auth.model');
-const Users = require('./models/Users.model');
-const Mongoose = require('mongoose');
 const path = require('path');
-const jwt = require("jsonwebtoken");
-
 require('dotenv').config();
 
 
 async function startServer(){
-
     const app = express();
 
     const httpServer = http.createServer(app);
@@ -27,33 +20,18 @@ async function startServer(){
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        introspection: true,
         plugins:[ApolloServerPluginDrainHttpServer({httpServer})]
     });
-
 
     await server.start();
 
     app.set('view engine', 'ejs');
-    
 
     app.use(
         '/graphql',
-        cors({
-            origin: ['http://localhost:3000','http://localhost:8080/graphql', 'http://localhost:19006' ,'https://studio.apollogrpahql.com'],
-            credentials: true,
-        }),
+        cors(),
         bodyParser.json(),
-        expressMiddleware(server, {
-            context: async ({req}) => {
-                const token = req.headers.authorization || " ";
-
-                return token;
-            },
-            listen:{port:8080},
-        }
-        ),
-        
+        expressMiddleware(server),
     );
 
     // app.use(express.static(path.join(__dirname, "Web/client", "build")));

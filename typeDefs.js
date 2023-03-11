@@ -17,7 +17,7 @@ scalar DateTime
         image: String
         role: String
     }
-    type Appointment {
+    type Appointment{
         Time: String
         Group: ID
         Attending:[ID]
@@ -63,10 +63,6 @@ scalar DateTime
         password: String
     }
 
-    type Auth {
-        token: String
-    }
-
     type Professors {
         _id:ID
         professorFName: String
@@ -107,11 +103,11 @@ scalar DateTime
         group: String
     }
 
-    input ProfessorRequestInput {
+    input ProfessorRequestInput{
         Request:ID!
     }
 
-    input appointInput {
+    input appointInput{
         firstname: String
         lastname: String
     }
@@ -166,62 +162,33 @@ scalar DateTime
 
     input groupSchedule {
         appointmentTime: [DateTime]
+
     }
 
     type availSchedule {
         _id: DateTime
     }
-    type CoordSchedule {
+    type CoordSchedule{
         _id: ID
         coordinatorID:ID
         room:String
         groupId:ID
         time:DateTime
         attending:[ID]
+    
     }
-
-    type groupData {
-        groupName: String
-        groupNumber: Int
-        projectField: String
-    }
-
-    type CoordSchedule2 {
-        _id: ID
-        room: String
-        time: DateTime
-        numberOfAttending: Int
-        attending: [String]
-        groupId: groupData
-    }
-
-    input coordinatorSInput {
+    input coordinatorSInput{
         CID:ID
         Room:String
         Times:[DateTime]
     }
-
-    input appointmentEdit {
+    input appointmentEdit{
         GID:ID
         professorsAttending:[ID]
         time: DateTime
         CID:ID
-
+        SponCoordFlag:Boolean
     }
-    input cancelation{
-        CancelerID:ID
-        ApID:ID
-        reason:Boolean
-    }
-
-    type Cookie {
-        getCookie: String
-    }
-
-    input coordinatorInput {
-        coordinatorID: ID!
-    }
-
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
@@ -231,10 +198,8 @@ scalar DateTime
         getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
-        getAllCoordinatorSchedule:[CoordSchedule2]
-        getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
-        refreshToken(id : String, privilege:String) : String
-        refreshToken2 : String
+        getAllCoordinatorSchedule:[CoordSchedule]
+        getCoordinatorSchedule(coordinatorID:ID): [CoordSchedule]
     }
 
     type Mutation {
@@ -243,7 +208,7 @@ scalar DateTime
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
-        makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
+        makeAppointment(ID:ID!,AppointmentEdit:appointmentEdit):CoordSchedule
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
@@ -253,7 +218,7 @@ scalar DateTime
         createGroup(groupInfo: groupInfo): Group
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
-        cancelAppointment(cancelation:cancelation):CoordSchedule
+
     }
 `
 
