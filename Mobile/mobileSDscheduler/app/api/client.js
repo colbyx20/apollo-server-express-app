@@ -15,10 +15,8 @@ const graphqlQuery = {
   variables: {},
 };
 
-const local_uri = "http://localhost:8080/graphql"
-const web_uri = "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql"
 const apiClient = create({
-  baseURL: local_uri,
+  baseURL: "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql",
   //method: "GET",
   headers: headers,
   data: graphqlQuery,
