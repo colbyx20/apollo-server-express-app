@@ -15,3 +15,34 @@
     overflow: none;
 }
 
+.studentHeader{
+    padding: 0%;
+    margin: 0 auto;
+    font-size: 3em;
+    padding-top: 5px;
+}
+
+.studentGroupContainer{
+    margin-top: 15px;
+    width: 100%;
+    height: 60%;
+    overflow: none;
+}
+
+.displayGroup{
+    margin-left: 10%;
+    width: 80%;
+    height: 60%;
+    border-radius: 5px;
+    background-color: #D0A300;
+}
+
+.displayNotification{
+    margin: 0 auto;
+    margin-top: 18px;
+    width: 65%;
+    height: 35%;
+    border-radius: 5px;
+    background-color: #D0A300;
+}
+
