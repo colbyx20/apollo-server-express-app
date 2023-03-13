@@ -26,7 +26,7 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(ID)
             return await Users.findById({ _id: coordinatorId });
         },
-        getAllUsers: async (_) => {
+        getAllUsers: async () => {
             return await Users.find();
         },
         getProfessor: async (_, { ID }) => {
