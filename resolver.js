@@ -23,11 +23,11 @@ const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 const resolvers = {
     Query: {
         getUser: async (_, { ID }) => {
-            return await Users.findById(ID);
+            const coordinatorId = Mongoose.Types.ObjectId(CID)
+            return await Users.findById({ _id: coordinatorId });
         },
         getAllUsers: async (_, { CID }) => {
-            const coordinatorId = Mongoose.Types.ObjectId(CID)
-            return await Users.find({ coordinatorID: coordinatorId });
+            return await Users.find();
         },
         getProfessor: async (_, { ID }) => {
             return await Professors.findById(ID);
