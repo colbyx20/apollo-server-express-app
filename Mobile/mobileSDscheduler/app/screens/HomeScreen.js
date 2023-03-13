@@ -36,12 +36,16 @@ function HomeScreen(props) {
             title={item.groupName}
             subTitle={item.projectField}
             number={item.groupNumber}
-            onPress={() => console.log("Group selected", data.getAllGroups[0])}
-            renderRightActions={() => (
-              <GroupItemDeleteAction onPress={() => console.log("deleted")} />
+            onPress={() => console.log("Group selected", item)}
+            renderRightActions={(itemObject) => (
+              <GroupItemDeleteAction
+                onPress={(itemOBject) => console.log("deleted", item)}
+              />
             )}
-            renderLeftActions={() => (
-              <GroupItemEditAction onPress={() => console.log("edited")} />
+            renderLeftActions={(itemObject) => (
+              <GroupItemEditAction
+                onPress={(itemObject) => console.log("edited", item)}
+              />
             )}
             style={styles.item}
           />

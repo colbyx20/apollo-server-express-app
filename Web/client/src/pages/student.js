@@ -27,27 +27,28 @@ function Student(props){
     }
 
     return (
-        <div className='studentPage'>
-            {user !== null?
-                <>
-                <CustomSidebar/>
-                <div className="userInfo">
-                    <p style={{textAlign:"left", margin:0}}>{user.email}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.firstname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.lastname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{year}</p>
-                </div>
-                </>
-                : 
-                <>
-                    <div className='noUser'>
-                        <h3>No Page Found</h3>
-                        <Button style={{color:'white'}}onClick={onLogout}>Redirect to Login</Button>
+        <>
+            <div className='studentPage'>
+                {user !== null?
+                    <>
+                    <CustomSidebar/>
+                    <div className='studentWrapper'>
+                        <div className='userInfo'>
+                            <p className='studentHeader'>Home Page</p>
+                        </div>
                     </div>
-                </>
-            }
-        </div>
-
+                    </>
+                    : 
+                    <>
+                        <div className='noUser'>
+                            <h3>No Page Found</h3>
+                            <Button style={{color:'white'}}onClick={onLogout}>Redirect to Login</Button>
+                        </div>
+                    </>
+                }
+            </div>
+        </>
+            
     )
 }
 

@@ -4,6 +4,7 @@ import {AuthContext} from '../context/authContext';
 import {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {datasidebar} from './datasidebar';
+import {studentsidebar} from './studentsidebar';
 import Logo from './images/ucfLogo.png'
 
 
@@ -39,7 +40,22 @@ function Sidebar(props){
             <h3 className='ucfText'>UCF</h3>
             {user.privilege === 'student'?
                 <>
-                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Logout</Button>
+                    <div className='coordinatorBar'>
+                        <ul className='coordList'>
+                            {studentsidebar.map((val, key) => {
+                                return( 
+                                <li key={key} className='row'
+                                id = {window.location.pathname == val.link ? "active" : ""}
+                                onClick={() => {
+                                    ButtonRouting(val.link);
+                                    window.location.pathname = val.link;
+                                }}>
+                                    <div className='item'>{val.icon}{val.title}</div> 
+                                </li>)
+                            })}
+                        </ul>
+                    </div>
+                    {/* <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Logout</Button> */}
                 </>
                 : user.privilege === 'professor'?
                 <>
