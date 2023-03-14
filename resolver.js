@@ -99,11 +99,11 @@ const resolvers = {
                     $lookup: {
                         from: "groups",
                         localField: "groupId",
-                        foreignField: "groupNumber",
+                        foreignField: "_id",
                         as: "groupId"
                     }
                 },
-                { $project: { room: 1, time: 1, attending: 1, attending1: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
+                { $project: { room: 1, time: 1, attending: 1, attending2: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
                 { $unwind: "$groupId" },
                 { $sort: { time: 1 } }
             ])
@@ -1161,7 +1161,7 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
 
             try {
-                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
+                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending2: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
                 const date = new Date(coordinatorInfo.time);
 
                 const matchProfessors = await Professors.aggregate([
@@ -1170,6 +1170,8 @@ const resolvers = {
                     { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                 ])
 
+                console.log(matchProfessors);
+
                 if (matchProfessors.length >= 3) {
                     const professorInfo = matchProfessors.map((professor) => ({
                         _id: professor._id,
@@ -1177,7 +1179,7 @@ const resolvers = {
                     }));
 
                     await Promise.all([
-                        CoordSchedule.updateOne({ coordinatorID: coordinatorId }, { $push: { attending2: { $each: professorInfo } } }),
+                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $push: { attending2: { $each: professorInfo } } }),
                         Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                     ]);
 
