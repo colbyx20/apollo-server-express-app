@@ -173,11 +173,11 @@ scalar DateTime
     }
     type CoordSchedule {
         _id: ID
-        coordinatorID:ID
-        room:String
-        groupId:ID
-        time:DateTime
-        attending:[ID]
+        coordinatorID: ID
+        room: String
+        groupId: ID
+        time: DateTime
+        attending: [ID]
     }
 
     type groupData {

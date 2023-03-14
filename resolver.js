@@ -682,9 +682,6 @@ const resolvers = {
             if(Room === null || Times === null){
                 throw new ApolloError("Please Fill Room/Times");
             }
-
-            
-            
             const ID = Mongoose.Types.ObjectId(CID)
             const UniqueTimes = new Set(Times);
             UniqueTimes.forEach(async(time) => {
@@ -783,10 +780,10 @@ const resolvers = {
             const chrono =new Date(time)
             const appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
             const PE=[];
-            console.log(appointment.groupId)
             if(bookedTest)
             {
-                if(bookedTest.professorsAttending.length==3)
+
+                if(bookedTest.attending.length==3)
                 { 
                     throw new ApolloError( "group already has an appointment and has all profs");
                 }
@@ -796,6 +793,7 @@ const resolvers = {
                     {
                         throw new ApolloError("Appoinment already booked by another group")
                     }
+                    console.log(here)
                     if((appointment.numberOfAttending + professorsAttending.length )>3)
                     {
                         throw new ApolloError("o many professors")
@@ -825,58 +823,39 @@ const resolvers = {
             {
                 throw new ApolloError("professor(s)"+PE+"unavailable")
             }
-            if (modification>0 )//if make was successful
+            const changes = await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
+            if ( changes.numberOfAttending==3)//if make was successful
             {
 
                 //send out notifications
                 // set up email 
-                /*let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
                 //Professor Notification and availability removal
 
                 for(prof of professorsAttending){
-                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}})
                     const notify= await UserInfo.find({userId:prof})
                     // send email to user. 
                     transport.sendMail({
                         from: "SDSNotifier@gmail.com",
                         to: notify.email,
                         subject: "A Senior Design final Review has been schedule",
-                        html: `<h1>Demo Notin appointment at ${time}</h2>
+                        html: `<h1>Demo Notin appointment at ${changes.time} in room ${changes.room}</h2>
                         <p>If you need to cancel please get on the app or visit our website to do so  </p>
                         </div>`,
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
                 }
-                //Student Notification
-                const GN=await Group.find({_id:GID})
-                const members= await Users.find({groupNumber:GN.groupNumber})
-                members.forEach(async(member)=>{// this for each will be left alone for now
-                    const notify=UserInfo.find({userId:member._id})
-                    // send email to user. 
-                    transport.sendMail({
-                        from: "SDSNotifier@gmail.com",
-                        to: notify.email,
-                        subject: "A Senior Design final Review has been schedule",
-                        html: `<h1>Demo Notin appointment at ${time}</h2>
-                        <p>If you need to cancel please get on the app or visit our website to do so  </p>
-                        </div>`,
-                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                    })
-                })*/
                 //slight issue with returning info from this mutation
-                const changes = await CoordSchedule.find({coordinatorID:CID,time:chrono})
-                return {
-                    _id: changes._id,
-                    coordinatorID:changes.coordinatorID,
-                    room:changes.room,
-                    groupId:changes.groupId,
-                    time:changes.time,
-                    attending:changes.attending
-                };
+
             }
-            else{// might branch out if more then one
-                throw new ApolloError("Unknown error")
+            return {
+                _id: changes._id,
+                coordinatorID:changes.coordinatorID,
+                room:changes.room,
+                groupId:changes.groupId,
+                time:changes.time,
+                attending:changes.attending
             }
         },
         //profAppointmentNotify
@@ -890,17 +869,26 @@ const resolvers = {
             const canceler= await UserInfo.find({userId:CancelerID});//find out whose canceling
             const appointment= await CoordSchedule.find({_id:ApID});//find the information on the appoinment being canceled
             //alternative call with time and CID instead
+            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
-            //Student i.e. User
-            if(canceler.privilege=='student')//np longer need
-            {}
             //Professor on a side note for professors the reason flag should be false
-            else if(canceler.privilege=='professor')
+            if(canceler.privilege=='professor')
             {
                 time= new Date(appointment.time);
-                await Professors.updateOne({_id:canceler._id},{$pull:{appointments:appoinment._id}});
-                const group = await Group.find({_id:appointment.groupId})
-                await CoordSchedule.updateOne({_id:ApID}, {$pull:{attending:prof._id}})//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                const who =await Professors.updateOne({_id:canceler._id},{$pull:{appointments:appointment._id}});
+                const group = await Group.findOne({_id:appointment.groupId});
+                await CoordSchedule.updateOne({_id:ApID}, {$pull:{attending:CancelerID},$dec:{numberOfAttending:1}})//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                const lead= await Users.findOne({coordinatorId:appointment.coordinatorID,groupNumber:group.groupNumber, role:"Leader"});
+                const notify = await await UserInfo.find({userId:lead._id});
+                transport.sendMail({
+                    from: "SDSNotifier@gmail.com",
+                    to: notify.email,
+                    subject: "A Senior Design final Review has been schedule",
+                    html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
+                    <p>Please reschedule a new proffessor</p>
+                    </div>`,
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
                 return {
                     Group:group._id,
                     Time:time,
@@ -910,7 +898,7 @@ const resolvers = {
             //coordinator
             else if(canceler.privilege=='coordinator')
             {
-
+                
             }           
 
            async function emailer(email, time, room){
