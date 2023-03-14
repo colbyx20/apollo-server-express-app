@@ -179,12 +179,17 @@ scalar DateTime
         projectField: String
     }
 
+    type profData {
+        _id:ID!
+        fullName: String
+    }
     type CoordSchedule2 {
         _id: ID
         room: String
         time: DateTime
         numberOfAttending: Int
         attending: [String]
+        attending2: [profData]
         groupId: groupData
     }
 
