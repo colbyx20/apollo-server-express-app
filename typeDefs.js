@@ -224,6 +224,7 @@ scalar DateTime
         getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
+        availScheduleProfessor: DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
         getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
@@ -236,6 +237,7 @@ scalar DateTime
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
+        groupSelectAppointmentTime(CID:ID!, GID:ID!, time: DateTime): Boolean
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
