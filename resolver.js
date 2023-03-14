@@ -64,6 +64,7 @@ const resolvers = {
             const dateConversion = new Date(date).toISOString();
             const viewDate = new Date(dateConversion);
 
+
             return Professors.aggregate([
                 { $group: { _id: "$availSchedule", pId: { $push: { _id: "$_id", name: { $concat: ["$professorFName", " ", "$professorLName"] } } } } },
                 { $unwind: "$_id" },
