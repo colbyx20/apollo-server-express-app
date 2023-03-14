@@ -1155,39 +1155,38 @@ const resolvers = {
             }
             return
         },
-        // RandomlySelectProfessorsToAGroup: async () => {
-        //     // define an async function to find 3 matching professors
-        //     async function findMatchingProfessors(date, time) {
-        //         // find professors with a matching avail time
-        //         const matchingProfessors = await Professors.aggregate([
-        //             { $match: { availableTimes: { $elemMatch: { date, time } } } },
-        //             { $sample: { size: 3 } },
-        //             { $project: { fullName: { $concat: ['$firstName', ' ', '$lastName'] } } }
-        //         ]);
+        RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
 
-        //         return matchingProfessors;
-        //     }
+            const coordinatorId = Mongoose.Types.ObjectId(CID)
 
-        //     async function addGroupToSchedule(coordinatorId, dateTime, groupId, roomNumber) {
-        //         // find 3 matching professors
-        //         const matchingProfessors = await findMatchingProfessors(dateTime.date, dateTime.time);
+            try {
+                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending: { $size: 0 } });
+                const date = new Date(coordinatorInfo.time);
 
-        //         // create a new coordinator Schedule document
-        //         const coordinatorSchedule = new CoordinatorSchedule({
-        //             coordinatorId,
-        //             dateTime,
-        //             groupId,
-        //             roomNumber,
-        //             attendingProessors: matchingProfessors
-        //         });
-        //         // save
-        //         await coordinatorSchedule.save();
+                const matchProfessors = await Professors.aggregate([
+                    { $match: { availSchedule: date } },
+                    { $sample: { size: 3 } },
+                    { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
+                ])
 
-        //         return coordinatorSchedule;
-        //     }
-        // },
-    }
+                if (matchProfessors.length >= 3) {
+                    const professorIds = matchProfessors.map((professor) => professor._id);
+
+                    await Promise.all([
+                        CoordSchedule.updateOne({ coordinatorID: coordinatorId }, { $push: { attending: { $each: professorIds } } }),
+                        Professors.updateMany({ _id: { $in: professorIds } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
+                    ]);
+
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                throw new ApolloError("err");
+            }
+        },
+    },
 }
+
 
 module.exports = resolvers;
 
