@@ -13,7 +13,8 @@
 .coordWrapper{
     width: 100%;
     height: 100vh;
-    overflow: none;
+    flex-direction: column;
+    overflow-x: hidden;
 }
 
 .userInfo{
@@ -29,9 +30,124 @@
     padding-top: 5px;
 }
 
+.coordContainer{   
+    margin-top: 10px; 
+    width: 95%;
+    height: 100px;
+}
+
+.leftLinkContainer{
+    margin-left: 5%;
+    width: 45%;
+    height: 100%;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow-y: auto;
+    float: left;
+}
+
+.rightLinkContainer{
+    width: 45%;
+    height: 100%;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow-y: auto;
+    float: right;
+}
+
+.linkTitle{
+    overflow-y: scroll;
+    margin-bottom: 15px;
+    padding-top: 5px;
+    font-size: 1.2em;
+    color: #000;
+}
+
+.link{
+    overflow: hidden;
+    padding-left: 5px;
+    text-align: left;
+    color: #000;
+}
+
+.notificationContainer{
+    width: 100%;
+    height: 55%;
+    align-items: center;
+    justify-content: center;
+    overflow: none;
+}
+
+.notificationBox{
+    margin: 10px auto;
+    width: 90.5%;
+    height: 100%;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow: none;
+}
+
+.notificationTitle{
+    color: #000;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.appointmentContainer{
+    margin: 0 auto;
+    width: 90%;
+    height: 85%;
+    margin-bottom: 5px;
+    background-color: bisque;
+}
+
+.appointmentObject{
+    margin: 0 auto;
+    padding-top: 15%;
+    text-align: center;
+    width: 500px;
+    
+}
+
+.emailContainer{
+    width: 50%;
+    height: 20%;
+    margin: 0 auto;
+    margin-top: 10px;
+    background-color: #D0A300;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.emailTitle{
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.emailClause{
+    color: rgb(41, 40, 40);
+    margin-bottom: 0px;
+}
+
+.emailSubmit{
+    margin-top: 20px;
+    width: 100%;
+    height: 50%;
+    display: block;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .semesterHeader{
     padding: 0%;
-    
     font-size: 3em;
     padding-top: 5px;
 }
@@ -104,7 +220,7 @@
 
 .dangerZone{
     width: 93%;
-    height: 20%;
+    height: 22%;
     margin-left: 10px;
     background-color: #D0A300;
     border-radius: 15px;
@@ -114,6 +230,5 @@
 
 .dangerTitle{
     text-align: center;
-    margin-top: 3px;
     margin-bottom: 2%;
 }

@@ -9,6 +9,7 @@ module.exports = (context) => {
         if(token){
             try{
                 const user = jwt.verify(token,'UNSAFE_STRING'); // verify token with JWT safe string
+                localStorage.setItem("token",token);
                 return user;
             }catch(err){
                 throw new AuthenticationError('Invalid/Expired token');
