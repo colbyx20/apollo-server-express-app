@@ -103,7 +103,7 @@ const resolvers = {
                         as: "groupId"
                     }
                 },
-                { $project: { room: 1, time: 1, attending: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
+                { $project: { room: 1, time: 1, attending: 1, attending1: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
                 { $unwind: "$groupId" },
                 { $sort: { time: 1 } }
             ])
@@ -122,7 +122,7 @@ const resolvers = {
                 },
                 {
                     $project: {
-                        room: 1, time: 1, attending: 1, numberOfAttending: 1,
+                        room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
@@ -846,7 +846,8 @@ const resolvers = {
                             groupId: { type: mongoose.Schema.Types.ObjectId, default: null },
                             time: t,
                             numberOfAttending: 0, // nessecity debatable
-                            attending: []
+                            attending: [],
+                            attending2: []
                         });
 
                         await CoordinatorSchedule.save();
@@ -1160,7 +1161,7 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
 
             try {
-                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending: { $size: 0 } });
+                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
                 const date = new Date(coordinatorInfo.time);
 
                 const matchProfessors = await Professors.aggregate([
@@ -1170,11 +1171,14 @@ const resolvers = {
                 ])
 
                 if (matchProfessors.length >= 3) {
-                    const professorIds = matchProfessors.map((professor) => professor._id);
+                    const professorInfo = matchProfessors.map((professor) => ({
+                        _id: professor._id,
+                        fullName: professor.fullName
+                    }));
 
                     await Promise.all([
-                        CoordSchedule.updateOne({ coordinatorID: coordinatorId }, { $push: { attending: { $each: professorIds } } }),
-                        Professors.updateMany({ _id: { $in: professorIds } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
+                        CoordSchedule.updateOne({ coordinatorID: coordinatorId }, { $push: { attending2: { $each: professorInfo } } }),
+                        Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                     ]);
 
                     return true;
