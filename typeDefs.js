@@ -238,6 +238,7 @@ scalar DateTime
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
         groupSelectAppointmentTime(CID:ID!, GID:ID!, time: DateTime): Boolean
+        RandomlySelectProfessorsToAGroup(CID:ID!) : Boolean
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
