@@ -1,6 +1,4 @@
 import { gql, useQuery } from '@apollo/client';
-// import './css/getgroups.css';
-
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,25 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-
-// const GET_SCHEDULE = gql`
-//     query GetAllCoordinatorSchedule {
-//         getAllCoordinatorSchedule {
-//             _id
-//             time
-//             room
-//             numberOfAttending
-//             groupId {
-//                 groupName
-//                 groupNumber
-//             }
-//             attending2 {
-//                 fullName
-//             }
-//         }
-//     }
-// `
+import './css/getgroups.css';
 
 const GET_SCHEDULE = gql`
     query GetCoordinatorSchedule($cid: String) {
@@ -50,7 +30,6 @@ const GET_SCHEDULE = gql`
 export const GetCoordinatorSchedule = (props) => {
 
     const CID = localStorage.getItem('_id');
-    console.log(CID);
 
     const { loading, error, data } = useQuery(GET_SCHEDULE, {
         variables: { cid: CID }
@@ -63,7 +42,6 @@ export const GetCoordinatorSchedule = (props) => {
     const { getCoordinatorSchedule } = data;
 
     return (
-
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead >

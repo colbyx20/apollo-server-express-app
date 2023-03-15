@@ -48,7 +48,7 @@ export const GetGroups = (props) => {
                                 <div className='groupContainer'>
                                     {group.groupName} <br />
                                     Group Number: {group.groupNumber} <br />
-                                    Field: {group.projectField}
+                                    {/* Field: {group.projectField} */}
                                 </div>
                             </td>
                             <td id='rowName'>
