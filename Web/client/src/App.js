@@ -25,7 +25,7 @@ function App() {
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/student" element={<Student />} />
-          {/* <Route path="/professor" element={<Professors />} /> */}
+          <Route path="/professor" element={<Professors />} />
           <Route path="/calendar" element={<Calendar lightMode={false} />} />
           <Route path="/coordinator" element={<Coordinator />} />
           <Route path="/account" element={<Account />} />
