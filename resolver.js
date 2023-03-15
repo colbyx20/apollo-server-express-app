@@ -108,10 +108,10 @@ const resolvers = {
                 { $sort: { time: 1 } }
             ])
         },
-        getCoordinatorSchedule: async (_, { coordinatorInput: { coordinatorID } }) => {
-            const CID = Mongoose.Types.ObjectId(coordinatorID)
+        getCoordinatorSchedule: async (_, { CID }) => {
+            const coordCID = Mongoose.Types.ObjectId(CID)
             return await CoordSchedule.aggregate([
-                { $match: { coordinatorID: CID } },
+                { $match: { coordinatorID: coordCID } },
                 {
                     $lookup: {
                         from: "groups",

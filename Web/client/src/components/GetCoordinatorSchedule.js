@@ -11,9 +11,27 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 
+// const GET_SCHEDULE = gql`
+//     query GetAllCoordinatorSchedule {
+//         getAllCoordinatorSchedule {
+//             _id
+//             time
+//             room
+//             numberOfAttending
+//             groupId {
+//                 groupName
+//                 groupNumber
+//             }
+//             attending2 {
+//                 fullName
+//             }
+//         }
+//     }
+// `
+
 const GET_SCHEDULE = gql`
-    query GetAllCoordinatorSchedule {
-        getAllCoordinatorSchedule {
+    query GetCoordinatorSchedule($cid: String) {
+        getCoordinatorSchedule(CID: $cid) {
             _id
             time
             room
@@ -29,23 +47,22 @@ const GET_SCHEDULE = gql`
     }
 `
 
-// const getFilteredData = (query, items) => {
-//     if (!query) {
-//         return items;
-//     }
-//     return items.filter(group => group._id.toString().toLowerCase().includes(query.toLowerCase()) || group._id.toString().includes(query))
-// }
-
 export const GetCoordinatorSchedule = (props) => {
 
-    const { loading, error, data } = useQuery(GET_SCHEDULE);
+    const CID = localStorage.getItem('_id');
+    console.log(CID);
+
+    const { loading, error, data } = useQuery(GET_SCHEDULE, {
+        variables: { cid: CID }
+    });
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
     const search = props.data;
-    const { getAllCoordinatorSchedule } = data;
-    console.log(getAllCoordinatorSchedule)
+    const { getCoordinatorSchedule } = data;
+    console.log("FETCH!!");
+    console.log(getCoordinatorSchedule)
     // const filterItems = getFilteredData(search, getAllCoordinatorSchedule);
 
 
@@ -63,7 +80,7 @@ export const GetCoordinatorSchedule = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {getAllCoordinatorSchedule.map((coordinator) => {
+                    {getCoordinatorSchedule.map((coordinator) => {
                         return (<TableRow
                             key={coordinator._id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
@@ -83,17 +100,3 @@ export const GetCoordinatorSchedule = (props) => {
         </TableContainer>
     )
 }
-        // return (
-        //     <tr key={coordinator._id}>
-        //         <td id='rowNumber'>
-        //             <div >
-        //                 Time: {coordinator.time} <br />
-        //                 Room: {coordinator.room} <br />
-        //                 Group: {coordinator.groupId.groupName} <br />
-        //                 Attending: {coordinator.attending2.map((e) => {
-        //                     return <tr key={e._id}>{e.fullName}</tr>
-        //                 })}<br />
-        //             </div>
-        //         </td>
-        //     </tr>
-        // )

@@ -217,7 +217,7 @@ scalar DateTime
     }
 
     input coordinatorInput {
-        coordinatorID: ID!
+        coordinatorID: String!
     }
 
     type Query {
@@ -231,7 +231,7 @@ scalar DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
-        getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
+        getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
     }
 
