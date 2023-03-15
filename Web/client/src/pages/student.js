@@ -61,8 +61,8 @@ function Student(props){
                                 variant='contained'
                                 sx={{marginTop: '5px', width:'50%'}}
                                 >Submit</Button>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     </>
                     : 

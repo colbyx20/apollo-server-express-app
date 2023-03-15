@@ -1,0 +1,26 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.professorWrapper{
+    width: 100%;
+    height: 100vh;
+    overflow: none;
+}
+
+.professorContainer{
+    margin-top: 15px;
+    width: 100%;
+    height: 55%;
+    overflow: none;
+}
+
+.displayProfNotification{
+    margin: 0 auto;
+    margin-top: 18px;
+    width: 85%;
+    height: 100%;
+    border-radius: 5px;
+    background-color: #D0A300;
+}
