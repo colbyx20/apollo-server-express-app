@@ -75,11 +75,9 @@ function Login(props) {
             localStorage.setItem("token", userData.token);
 
             if (STUDENT_EMAIL.test(userData.email)) {
-                // go to student page 
                 window.location.href = '/student';
                 //navigate('/student');
             } else if (!STUDENT_EMAIL.test(userData.email)) {
-                // go to professor page 
                 if (userData.privilege === "coordinator") {
                     window.location.href = '/coordinator';
                 } else {
