@@ -1,4 +1,4 @@
-import {Routes, Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { createContext, useContext, useState } from "react";
 import Homepage from './pages/homepage';
 import Register from './pages/register';
@@ -17,6 +17,18 @@ function App() {
   const [theme, setTheme] = useState('light')
   return (
     <div>
+      {/* <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Loginpath />} />
+        <Route path="/homepage" element={<Homepage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/student" element={<Student />} />
+        <Route path="/professor" element={<Professors />} />
+        <Route path="/calendar" element={<Calendar lightMode={false} />} />
+        <Route path="/coordinator" element={<Coordinator />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/semester" element={<Semester />} />
+      </Routes> */}
 
       <ThemeContext.Provider value={theme} >
         <Routes>
