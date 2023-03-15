@@ -36,7 +36,6 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async () => {
-
             return await Group.aggregate([
                 {
                     $lookup:
@@ -145,7 +144,6 @@ const resolvers = {
 
             const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({ userId: userId });
-            // const checkPrivilege = await UserInfo.findOne({userId:userId})
             const decodedRefreshToken = jwt.verify(isValidUser.token, "UNSAFE_STRING");
 
             if (decodedRefreshToken.exp * 1000 < Date.now()) {
@@ -173,17 +171,6 @@ const resolvers = {
                 return "Unauthorized User"
             }
         },
-        // getCookie: async(_,__,{req,res}) =>{
-        //     if(req && req.headers){
-        //         const cookies = cookie.parse(req.headers.cookie);
-        //         console.log("Cookie from login")
-        //         console.log(cookies);
-        //         return cookies;
-        //     }
-        //     return {
-        //         getCookie: 'cookie?'
-        //     }
-        // }
     },
     Mutation: {
         registerCoordinator: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
@@ -323,34 +310,6 @@ const resolvers = {
                     console.log("Success");
                 })
             return false
-
-
-            // transport.sendMail({
-            //     from: "group13confirmation@gmail.com",
-            //     to: email,
-            //     subject: "mySDSchedule - Please Confirm Your Account",
-            //     html: `<h1>Email Confirmation</h1>
-            //     <h2>Hello ${firstname}</h2>
-            //     <p>Thank you for Registering!</p>
-            //     <p>To activate your account please click on the link below.</p>
-
-            //     <p>Please Check you Junk/Spam folder</p>
-            //     </div>`,
-            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-            // })
-
-            // return{
-            //     firstname: res.userFName,
-            //     lastname: res.userLName,
-            //     email: studentInfo.email,
-            //     privilege: studentInfo.privilege,
-            //     password: authStudent.password,
-            //     confirm: authStudent.confirm,
-            //     token: authStudent.token
-            // }
-
-
-
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
 
@@ -532,16 +491,7 @@ const resolvers = {
 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
-
-            // const cookies = cookie.parse(req.headers.cookie);
-            // console.log(cookies);
-
             if (!STUDENT_EMAIL.test(email)) {
-
-                // const professorsInfo = await UserInfo.findOne({ email });
-                // const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId });
-                // const professors = await Professors.findOne({ _id: professorsInfo.userId });
-                // const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId });
 
                 const professorsInfo = await UserInfo.findOne({ email }).select('userId privilege email');
                 const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId }).select('coordinatorFName coordinatorLName');
@@ -685,20 +635,15 @@ const resolvers = {
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({ userId: student._id }, { $set: { token: refreshToken } })
 
-                    // res.cookie("token",token,{
-                    //     expires: new Date(Date.now() + 9000000),
-                    //     httpOnly: true,
-                    //     secure: true,
-                    //     sameSite: true
-                    // });
-
                     return {
                         _id: student._id,
                         firstname: student.userFName,
                         lastname: student.userLName,
                         email: studentInfo.email,
                         token: accessToken,
-                        privilege: studentInfo.privilege
+                        privilege: studentInfo.privilege,
+                        // firstLogin: true,
+                        // isCoordinatorSponsor: false,
                     }
                 }
             }
@@ -837,8 +782,6 @@ const resolvers = {
             if (Room === null || Times === null) {
                 throw new ApolloError("Please Fill Room/Times");
             }
-
-
 
             const ID = Mongoose.Types.ObjectId(CID)
             const UniqueTimes = new Set(Times);
@@ -1050,78 +993,6 @@ const resolvers = {
                 throw new ApolloError("Unknown error")
             }
         },
-
-        /*
-            makeAppointment: async (_, { AppointmentEdit: { GID, professorsAttending, time, CID } }) => {
-    const bookedTest = await CoordSchedule.findOne({ groupId: GID });
-    const chrono = new Date(time);
-    const appointment = await CoordSchedule.findOne({ coordinatorID: CID, time: chrono });
-    const PE = [];
-    console.log(appointment.groupId);
-    
-    if (bookedTest) {
-    if (bookedTest.professorsAttending.length == 3) {
-      throw new ApolloError("group already has an appointment and has all profs");
-    }
-    if (appointment) {
-      if (appointment.groupId && Mongoose.Types.ObjectId(GID) != appointment.groupId) {
-        throw new ApolloError("Appointment already booked by another group");
-      }
-      if ((appointment.numberOfAttending + professorsAttending.length) > 3) {
-        throw new ApolloError("Too many professors");
-      }
-    }
-    }
-    
-    const CoordScheduleEdit = await CoordSchedule.updateOne({ coordinatorID: CID, time: chrono }, { $set: { groupId: mongoose.Types.ObjectId(GID) } });
-    var modification = CoordScheduleEdit.modifiedCount;
-     
-    const professorAvailabilityTests = professorsAttending.map(async (prof) => {
-    const availTest = await Professors.findOne({ _id: prof, availSchedule: { $in: [chrono] } });
-    if (!availTest) {
-      const who = await Professors.find({ _id: prof });
-      PE.push(who.professorLName);
-      return null;
-    } else {
-      const pro = mongoose.Types.ObjectId(prof);
-      await Promise.all([
-        Professors.updateOne({ _id: prof }, { $pull: { availSchedule: chrono }, $push: { appointments: appointment._id } }),
-        CoordSchedule.updateOne({ coordinatorID: CID, time: chrono }, { $push: { attending: pro }, $inc: { numberOfAttending: 1 } })
-      ]);
-      modification += 1;
-      return pro;
-    }
-    });
-    
-    const professorAvailabilityResults = await Promise.all(professorAvailabilityTests);
-    const invalidProfessors = professorAvailabilityResults.filter((result) => result === null);
-     
-    if (invalidProfessors.length > 0) {
-    throw new ApolloError(`Professor(s) ${invalidProfessors.join(", ")} unavailable`);
-    }
-     
-    if (modification > 0) {
-    //send out notifications 
-    // ...
-     
-    const changes = await CoordSchedule.find({ coordinatorID: CID, time: chrono });
-    return {
-      _id: changes._id,
-      coordinatorID: changes.coordinatorID,
-      room: changes.room,
-      groupId: changes.groupId,
-      time: changes.time,
-      attending: changes.attending
-    };
-    } else {
-    throw new ApolloError("Unknown error");
-    }
-    }
-        
-        */
-
-
-        //profAppointmentNotify
         roomChange: async (_, { CID, newRoom }) => {
             const roomEdit = (await CoordSchedule.updateMany({ coordinatorID: CID }, {
                 room: newRoom
@@ -1166,6 +1037,14 @@ const resolvers = {
                 })
             }
             return
+        },
+        setRole: async (_, { CID, role }) => {
+            try {
+                await Users.findOneAndUpdate({ _id: CID }, { $set: { role: role } });
+                return true;
+            } catch (e) {
+                return new ApolloError("Error on Set / Update Role")
+            }
         },
         RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
 

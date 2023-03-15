@@ -4,19 +4,6 @@ const typeDefs = gql`
 
 scalar DateTime
 
-    type Admin {
-        _id:ID!
-        firstname: String 
-        lastname: String 
-        email: String 
-        password: String 
-        confirmpassword: String 
-        privilege: String 
-        confirm: Int 
-        token: String 
-        image: String
-        role: String
-    }
     type Appointment {
         Time: String
         Group: ID
@@ -231,7 +218,6 @@ scalar DateTime
         getAllProfessors : [Professors]
         getAllUsers : [Users]
         getAllGroups :[Group]
-        getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
@@ -261,6 +247,7 @@ scalar DateTime
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
         createStudentAccounts(CID:ID!): Boolean
+        setRole(CID:String!, role:String!):Boolean
     }
 `
 
