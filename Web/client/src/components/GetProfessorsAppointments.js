@@ -32,7 +32,7 @@ export const GetProfessorsAppointments = (props) => {
             schedule.map((s) => {
                 return <tbody>
                     <tr
-                        style={{ color: "white" }}
+                        style={{ color: "black" }}
                         key={s._id}>
                         <td>{s.time}</td>
                         <td>{s.room}</td>

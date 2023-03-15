@@ -44,7 +44,7 @@ function Professors(props) {
                                 <div className='displayProfNotification'>
                                     <p className='notificationTitle'>Upcoming Meetings <NotificationsNoneIcon /></p>
                                     <div className='appointmentContainer'>
-                                        <div className='appointmentObject'>No current appointments</div>
+                                        <div className='appointmentObject'><GetProfessorsAppointments /></div>
                                     </div>
                                 </div>
                             </div>
@@ -65,28 +65,6 @@ function Professors(props) {
                         </div>
 
 
-                    </>
-                    :
-                    <>
-                        <div className='noUser'>
-                            <h3>No Page Found</h3>
-                            <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
-                        </div>
-                    </>
-                }
-            </div>
-            <div className='studentPage'>
-                {user !== null ?
-                    <>
-                        <CustomSidebar />
-                        <div className="userInfo">
-                            <p style={{ textAlign: "left", margin: 0 }}>{user.email}</p>
-                            <p style={{ textAlign: "left", margin: 0 }}>{user.firstname}</p>
-                            <p style={{ textAlign: "left", margin: 0 }}>{user.lastname}</p>
-                            <p style={{ textAlign: "left", margin: 0 }}>{year}</p>
-                            <p></p>
-                        </div>
-                        <div><GetProfessorsAppointments /></div>
                     </>
                     :
                     <>
