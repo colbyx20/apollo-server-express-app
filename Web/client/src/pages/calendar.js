@@ -1,4 +1,5 @@
 import CalendarComp from '../components/Calendar'
+import ProfCal from '../components/ProfCalendar'
 import CustomSidebar from '../components/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -64,11 +65,11 @@ export default function Calendar( { lightMode } ) {
       <div className='calendarPage'>
           <CustomSidebar />
           <div className='calendarWrapper'>
-            <div className='userInfo'>
+            {/* <div className='userInfo'>
               <p className='calendarHeader'>Calendar</p>
-            </div>
+            </div> */}
             <ThemeProvider theme={theme}>
-                <CalendarComp className="calendarComponent" />
+                <ProfCal className="calendarComponent" />
             </ThemeProvider>
           </div>
       </div>
