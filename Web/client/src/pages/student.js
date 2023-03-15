@@ -5,9 +5,11 @@ import { AuthContext } from '../context/authContext';
 import {useForm} from "../utility/hooks";
 import {useMutation} from "@apollo/react-hooks";
 import {gql} from 'graphql-tag';
+import {TextField} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import {Button} from "@mui/material";
 import CustomSidebar from '../components/Sidebar';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import "../components/css/student.css";
 
 
@@ -25,6 +27,7 @@ function Student(props){
         logout();
         navigate('/');
     }
+    console.log(user)
 
     return (
         <>
@@ -35,6 +38,30 @@ function Student(props){
                     <div className='studentWrapper'>
                         <div className='userInfo'>
                             <p className='studentHeader'>Home Page</p>
+                        </div>
+
+                        <div className='studentGroupContainer'>
+                            <div className='displayGroup'>
+                                <p className='notificationTitle'>Design Group</p>
+                            </div>
+                            <div className='displayNotification'>
+                                <p className='notificationTitle'>Design Meeting <NotificationsNoneIcon/></p>
+                            </div>
+
+                        </div>
+
+                        <div className='emailContainer'>
+                            <p className='emailTitle'>Email Notifications</p>
+                            <p className='emailClause'>Want to be emailed about upcoming appointments?</p>
+                            <div className='emailSubmit'>
+                                <TextField size="small" 
+                                sx={{width:'50%', backgroundColor: 'white', borderRadius: '5px'}}></TextField>
+                                <br/>
+                                <Button
+                                variant='contained'
+                                sx={{marginTop: '5px', width:'50%'}}
+                                >Submit</Button>
+                            </div>
                         </div>
                     </div>
                     </>

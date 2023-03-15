@@ -24,11 +24,11 @@ const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 const resolvers = {
     Query: {
         getUser: async (_, { ID }) => {
-            return await Users.findById(ID);
+            const coordinatorId = Mongoose.Types.ObjectId(ID)
+            return await Users.findById({ _id: coordinatorId });
         },
-        getAllUsers: async (_, { CID }) => {
-            const coordinatorId = Mongoose.Types.ObjectId(CID)
-            return await Users.find({ coordinatorID: coordinatorId });
+        getAllUsers: async () => {
+            return await Users.find();
         },
         getProfessor: async (_, { ID }) => {
             return await Professors.findById(ID);
@@ -37,7 +37,6 @@ const resolvers = {
             return await Professors.find();
         },
         getAllGroups: async () => {
-
             return await Group.aggregate([
                 {
                     $lookup:
@@ -48,6 +47,17 @@ const resolvers = {
                         as: "members"
                     }
                 }]);
+        },
+        getProfessorsAppointments: async (_, { profId }) => {
+            const PID = Mongoose.Types.ObjectId(profId)
+            return CoordSchedule.aggregate([
+                { $match: { "attending2._id": PID } },
+                { $project: { groupId: 1, time: 1, room: 1 } },
+                { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupId" } },
+                { $unwind: "$groupId" },
+                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room" }] } } },
+                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: 1, room: 1 } }
+            ])
         },
         availSchedule: async () => {
             return Professors.aggregate([
@@ -65,6 +75,7 @@ const resolvers = {
             const dateConversion = new Date(date).toISOString();
             const viewDate = new Date(dateConversion);
 
+
             return Professors.aggregate([
                 { $group: { _id: "$availSchedule", pId: { $push: { _id: "$_id", name: { $concat: ["$professorFName", " ", "$professorLName"] } } } } },
                 { $unwind: "$_id" },
@@ -75,6 +86,23 @@ const resolvers = {
                 { $sort: { _id: 1 } }
             ]);
         },
+        availScheduleProfessor: async () => {
+            return Professors.aggregate([
+                { $unwind: "$availSchedule" },
+                {
+                    $group: {
+                        _id: "$availSchedule",
+                        professors: {
+                            $push: {
+                                professorId: "$_id",
+                                firstName: "$professorsFName",
+                                lastName: "$professorLName",
+                            }
+                        },
+                    }
+                },
+            ])
+        },
         getAllCoordinatorSchedule: async () => {
 
             return await CoordSchedule.aggregate([
@@ -82,42 +110,41 @@ const resolvers = {
                     $lookup: {
                         from: "groups",
                         localField: "groupId",
-                        foreignField: "groupNumber",
+                        foreignField: "_id",
                         as: "groupId"
                     }
                 },
-                { $project: { room: 1, time: 1, attending: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
+                { $project: { room: 1, time: 1, attending: 1, attending2: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
                 { $unwind: "$groupId" },
                 { $sort: { time: 1 } }
             ])
         },
-        getCoordinatorSchedule: async (_, { coordinatorInput: { coordinatorID } }) => {
-            const CID = Mongoose.Types.ObjectId(coordinatorID)
+        getCoordinatorSchedule: async (_, { CID }) => {
+            const coordCID = Mongoose.Types.ObjectId(CID)
             return await CoordSchedule.aggregate([
-                { $match: { coordinatorID: CID } },
+                { $match: { coordinatorID: coordCID } },
                 {
                     $lookup: {
                         from: "groups",
                         localField: "groupId",
-                        foreignField: "groupNumber",
+                        foreignField: "_id",
                         as: "groupId"
                     }
                 },
                 {
                     $project: {
-                        room: 1, time: 1, attending: 1, numberOfAttending: 1,
+                        room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
                 { $unwind: "$groupId" },
-                { $sort: { time: 1 } }
+                { $sort: { time: -1 } }
             ])
         },
         refreshToken: async (_, { id, privilege }) => {
 
             const userId = Mongoose.Types.ObjectId(id);
             const isValidUser = await Auth.findOne({ userId: userId });
-            // const checkPrivilege = await UserInfo.findOne({userId:userId})
             const decodedRefreshToken = jwt.verify(isValidUser.token, "UNSAFE_STRING");
 
             if (decodedRefreshToken.exp * 1000 < Date.now()) {
@@ -145,17 +172,6 @@ const resolvers = {
                 return "Unauthorized User"
             }
         },
-        // getCookie: async(_,__,{req,res}) =>{
-        //     if(req && req.headers){
-        //         const cookies = cookie.parse(req.headers.cookie);
-        //         console.log("Cookie from login")
-        //         console.log(cookies);
-        //         return cookies;
-        //     }
-        //     return {
-        //         getCookie: 'cookie?'
-        //     }
-        // }
     },
     Mutation: {
         registerCoordinator: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
@@ -295,34 +311,6 @@ const resolvers = {
                     console.log("Success");
                 })
             return false
-
-
-            // transport.sendMail({
-            //     from: "group13confirmation@gmail.com",
-            //     to: email,
-            //     subject: "mySDSchedule - Please Confirm Your Account",
-            //     html: `<h1>Email Confirmation</h1>
-            //     <h2>Hello ${firstname}</h2>
-            //     <p>Thank you for Registering!</p>
-            //     <p>To activate your account please click on the link below.</p>
-
-            //     <p>Please Check you Junk/Spam folder</p>
-            //     </div>`,
-            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-            // })
-
-            // return{
-            //     firstname: res.userFName,
-            //     lastname: res.userLName,
-            //     email: studentInfo.email,
-            //     privilege: studentInfo.privilege,
-            //     password: authStudent.password,
-            //     confirm: authStudent.confirm,
-            //     token: authStudent.token
-            // }
-
-
-
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
 
@@ -504,16 +492,7 @@ const resolvers = {
 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
-
-            // const cookies = cookie.parse(req.headers.cookie);
-            // console.log(cookies);
-
             if (!STUDENT_EMAIL.test(email)) {
-
-                // const professorsInfo = await UserInfo.findOne({ email });
-                // const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId });
-                // const professors = await Professors.findOne({ _id: professorsInfo.userId });
-                // const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId });
 
                 const professorsInfo = await UserInfo.findOne({ email }).select('userId privilege email');
                 const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId }).select('coordinatorFName coordinatorLName');
@@ -657,20 +636,15 @@ const resolvers = {
                     // attach token to user model that we found if user exists 
                     await Auth.findOneAndUpdate({ userId: student._id }, { $set: { token: refreshToken } })
 
-                    // res.cookie("token",token,{
-                    //     expires: new Date(Date.now() + 9000000),
-                    //     httpOnly: true,
-                    //     secure: true,
-                    //     sameSite: true
-                    // });
-
                     return {
                         _id: student._id,
                         firstname: student.userFName,
                         lastname: student.userLName,
                         email: studentInfo.email,
                         token: accessToken,
-                        privilege: studentInfo.privilege
+                        privilege: studentInfo.privilege,
+                        // firstLogin: true,
+                        // isCoordinatorSponsor: false,
                     }
                 }
             }
@@ -823,10 +797,11 @@ const resolvers = {
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID: ID,
                             room: Room,
-                            //groupId: 0, wholey unessary due to the nature of $set
+                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null },
                             time: t,
                             numberOfAttending: 0, // nessecity debatable
-                            attending: []
+                            attending: [],
+                            attending2: []
                         });
 
                         await CoordinatorSchedule.save();
@@ -904,44 +879,61 @@ const resolvers = {
             })).modifiedCount;
             return professorEdit;
         },
-        makeAppointment:async(_,{AppointmentEdit:{ GID,professorsAttending, time,CID }})=>{//adds groupID to appointment largely for testing purposes
-            const bookedTest =await CoordSchedule.findOne({groupId:GID})
-            const chrono =new Date(time)
-            var appointment= await CoordSchedule.findOne({coordinatorID:CID,time:chrono})
-            const PE=[];
-            if(bookedTest)//GRoup has an appointment
-            {  
-                if(bookedTest.attending.length==3)//Already has three profs
-                { 
-                    throw new ApolloError( "group already has an appointment and has all profs");
+        groupSelectAppointmentTime: async (_, { CID, GID, time }) => {
+            // convert CID and GID into ObjectID Types
+            const coordinatorId = Mongoose.Types.ObjectId(CID)
+            const groupId = Mongoose.Types.ObjectId(GID)
+            const selectedTime = new Date(time).toISOString();
+
+            try {
+                const isAvailable = await CoordSchedule.findOne({ userId: CID, time: selectedTime });
+                if (isAvailable && isAvailable.groupId == null) {
+                    await CoordSchedule.updateOne({ coordinatorID: coordinatorId }, { $set: { groupId: groupId } });
+                    return true;
+                }
+            } catch (e) {
+                throw new ApolloError("Timeslot not Available");
+            }
+
+            return false;
+        },
+        makeAppointment: async (_, { AppointmentEdit: { GID, professorsAttending, time, CID } }) => {//adds groupID to appointment largely for testing purposes
+            const bookedTest = await CoordSchedule.findOne({ groupId: GID })
+            const chrono = new Date(time)
+            const appointment = await CoordSchedule.findOne({ coordinatorID: CID, time: chrono })
+            const PE = [];
+            console.log(appointment.groupId)
+            if (bookedTest) {
+                if (bookedTest.professorsAttending.length == 3) {
+                    throw new ApolloError("group already has an appointment and has all profs");
                 }
             }
             if (appointment) //if appointment exists
-            {            
+            {
                 if (GID)//sent a GID
                 {
                     console.log(appointment)
-                
+
                     if (appointment.groupId && Mongoose.Types.ObjectId(GID) != appointment.groupId)//sees if the appoinment has a group and if this is that group
                     {
-                            throw new ApolloError("Appoinment already booked by another group")
+                        throw new ApolloError("Appoinment already booked by another group")
                     }
-                    else if(professorsAttending)//not null 
+                    else if (professorsAttending)//not null 
                     {
                         if ((appointment.attending.length + professorsAttending.length) > 3) // regulates the number pushed
                         {
-                                throw new ApolloError("to many professors")
+                            throw new ApolloError("to many professors")
                         }
                     }
                 }
-                else{
+                else {
                     throw new ApolloError("invalid GroupID")
                 }
             }
-            else{
+            else {
                 throw new ApolloError("that Appointment does not exist")
             }
-            
+
             //claim appointment for the group
             const CoordScheduleEdit = await CoordSchedule.updateOne({ coordinatorID: CID, time: chrono }, { $set: { groupId: mongoose.Types.ObjectId(GID) } })
             var modification = CoordScheduleEdit.modifiedCount
@@ -963,17 +955,18 @@ const resolvers = {
             if (PE.length != 0) {
                 throw new ApolloError("professor(s)" + PE + "unavailable")
             }
-            appointment = await CoordSchedule.findOne({coordinatorID:CID,time:chrono})// no verification needed as this is an update 
-            if ( appointment.numberOfAttending==3)//if make was successful
+            appointment = await CoordSchedule.findOne({ coordinatorID: CID, time: chrono })// no verification needed as this is an update 
+            if (appointment.numberOfAttending == 3)//if make was successful
             {
 
                 //send out notifications
                 // set up email 
-                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-
+                /*let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+        
                 //Professor Notification and availability removal
-
-                for(prof of appointment.attending){
+        
+                for(prof of professorsAttending){
+                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}})
                     const notify= await UserInfo.find({userId:prof})
                     // send email to user. 
                     transport.sendMail({
@@ -987,16 +980,8 @@ const resolvers = {
                     })
 
                 }
+            }*/
             }
-    
-            return {
-                _id: appointment._id,
-                coordinatorID: appointment.coordinatorID,
-                room: appointment.room,
-                groupId: appointment.groupId,
-                time: appointment.time,
-                attending: appointment.attending
-            };
         },
         roomChange: async (_, { CID, newRoom }) => {
             const roomEdit = (await CoordSchedule.updateMany({ coordinatorID: CID }, {
@@ -1011,21 +996,21 @@ const resolvers = {
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
             //Professor on a side note for professors the reason flag should be false
-            if(canceler.privilege=='professor')//note for proffs this isnt a deletion
+            if (canceler.privilege == 'professor')//note for proffs this isnt a deletion
             {
-                time= new Date(appointment.time);
-                const who =await Professors.updateOne({_id:canceler._id},{$pull:{appointments:appointment._id}});
-                const group = await Group.findOne({_id:appointment.groupId});
-                await CoordSchedule.updateOne({_id:ApID}, {$pull:{attending:CancelerID},$dec:{numberOfAttending:1}})//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
-                const lead= await Users.findOne({coordinatorId:appointment.coordinatorID,groupNumber:group.groupNumber, role:"Leader"});
-                const notify = await UserInfo.find({userId:lead._id});
+                time = new Date(appointment.time);
+                const who = await Professors.updateOne({ _id: canceler._id }, { $pull: { appointments: appointment._id } });
+                const group = await Group.findOne({ _id: appointment.groupId });
+                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $dec: { numberOfAttending: 1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
+                const notify = await UserInfo.find({ userId: lead._id });
                 transport.sendMail({
                     from: "SDSNotifier@gmail.com",
                     to: notify.email,
                     subject: "A Senior Design final Review has been schedule",
                     html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
-                    <p>Please reschedule a new proffessor</p>
-                    </div>`,
+            <p>Please reschedule a new proffessor</p>
+            </div>`,
                     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                 })
                 return {
@@ -1035,81 +1020,122 @@ const resolvers = {
                 }
             }
             //coordinator
-            else if(canceler.privilege=='coordinator')
-            {
+            else if (canceler.privilege == 'coordinator') {
                 var effected
-                if(reason == "Group")// cancel on groups behalf
+                if (reason == "Group")// cancel on groups behalf
                 {
-                    if(appointment.attending.length>0)//Group had professors
+                    if (appointment.attending.length > 0)//Group had professors
                     {
-                        for( prof of appointment.attending)//send email and update
+                        for (prof of appointment.attending)//send email and update
                         {
-                            effected= await UserInfo.findOne({userId:prof});
+                            effected = await UserInfo.findOne({ userId: prof });
                             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
                                 to: effected.email,
                                 subject: "A Senior Design final Review has been canceled",
                                 html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
-                                <p>If you need to cancel please get on the app or visit our website to do so  </p>
-                                </div>`,
+                        <p>If you need to cancel please get on the app or visit our website to do so  </p>
+                        </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
-                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id }})//return there  availability
+                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
                         }
                     }
-                    await CoordSchedule.updateOne({_id:ApID},{
-                        $unset:{groupId:""},
-                        $set:{attending:[]},
-                        $set:{numberOfAttending:0}
+                    await CoordSchedule.updateOne({ _id: ApID }, {
+                        $unset: { groupId: "" },
+                        $set: { attending: [] },
+                        $set: { numberOfAttending: 0 }
                     })
                 }
-                else if (reason=="Personal")//cancel for personalreasons
+                else if (reason == "Personal")//cancel for personalreasons
                 {
-                    if(appointment.groupId)//Group already claimed it
+                    if (appointment.groupId)//Group already claimed it
                     {
-                        const group = await Group.findOne({_id:appointment.groupId});
-                        const lead= await Users.findOne({coordinatorId:appointment.coordinatorID,groupNumber:group.groupNumber, role:"Leader"});
-                        const notify = await UserInfo.find({userId:lead._id});
+                        const group = await Group.findOne({ _id: appointment.groupId });
+                        const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
+                        const notify = await UserInfo.find({ userId: lead._id });
                         transport.sendMail({
                             from: "SDSNotifier@gmail.com",
                             to: notify.email,
                             subject: "A Senior Design final Review has been schedule",
                             html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
-                            <p>Please reschedule a new proffessor</p>
-                            </div>`,
+                    <p>Please reschedule a new proffessor</p>
+                    </div>`,
                             //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                        })                      
-                    }                
-                    if(appointment.attending.length>0)//Group had professors
+                        })
+                    }
+                    if (appointment.attending.length > 0)//Group had professors
                     {
-                        for( prof of appointment.attending)//send email and update
+                        for (prof of appointment.attending)//send email and update
                         {
-                            effected= await UserInfo.findOne({userId:prof});
+                            effected = await UserInfo.findOne({ userId: prof });
                             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
                                 to: effected.email,
                                 subject: "A Senior Design final Review has been canceled",
                                 html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
-                                <p>If you need to cancel please get on the app or visit our website to do so  </p>
-                                </div>`,
+                        <p>If you need to cancel please get on the app or visit our website to do so  </p>
+                        </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
-                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id }})//return there  availability
+                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
                         }
                     }
-                    await CoordSchedule.deleteOne({_id:ApID})//delete Appointment
+                    await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
                 }
             }
+            return
         },
-        updateProfilePic:async(_, { ID, ppURL }) => {
-            await userInfo.updateOne({_id:ID}, {$set:{image:ppURL}});//change ppInfo
+        setRole: async (_, { CID, role }) => {
+            try {
+                await Users.findOneAndUpdate({ _id: CID }, { $set: { role: role } });
+                return true;
+            } catch (e) {
+                return new ApolloError("Error on Set / Update Role")
+            }
+        },
+        RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
+
+            const coordinatorId = Mongoose.Types.ObjectId(CID)
+
+            try {
+                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending2: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
+                const date = new Date(coordinatorInfo.time);
+
+                const matchProfessors = await Professors.aggregate([
+                    { $match: { availSchedule: date } },
+                    { $sample: { size: 3 } },
+                    { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
+                ])
+
+                if (matchProfessors.length >= 3) {
+                    const professorInfo = matchProfessors.map((professor) => ({
+                        _id: professor._id,
+                        fullName: professor.fullName
+                    }));
+
+                    await Promise.all([
+                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $push: { attending2: { $each: professorInfo } } }),
+                        Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
+                    ]);
+
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                throw new ApolloError("err");
+            }
+        },
+        updateProfilePic: async (_, { ID, ppURL }) => {
+            await userInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
             const here = await userInfo.findById(ID);
             return here.image
         }
     }
 }
+
 
 module.exports = resolvers;
 

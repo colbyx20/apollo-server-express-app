@@ -5,6 +5,7 @@ import {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {datasidebar} from './datasidebar';
 import {studentsidebar} from './studentsidebar';
+import { professorsidebar } from './professorsidebar';
 import Logo from './images/ucfLogo.png'
 
 
@@ -55,11 +56,25 @@ function Sidebar(props){
                             })}
                         </ul>
                     </div>
-                    {/* <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Logout</Button> */}
+                   
                 </>
                 : user.privilege === 'professor'?
                 <>
-                    <Button style={{textDecoration:"none", color:"white"}} onClick={onLogout}>Prof Logout</Button>
+                    <div className='coordinatorBar'>
+                        <ul className='coordList'>
+                            {professorsidebar.map((val, key) => {
+                                return( 
+                                <li key={key} className='row'
+                                id = {window.location.pathname == val.link ? "active" : ""}
+                                onClick={() => {
+                                    ButtonRouting(val.link);
+                                    window.location.pathname = val.link;
+                                }}>
+                                    <div className='item'>{val.icon}{val.title}</div> 
+                                </li>)
+                            })}
+                        </ul>
+                    </div>
                 </>
                 :
                 <>
