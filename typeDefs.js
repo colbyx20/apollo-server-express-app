@@ -158,11 +158,11 @@ scalar DateTime
     }
     type CoordSchedule {
         _id: ID
-        coordinatorID:ID
-        room:String
-        groupId:ID
-        time:DateTime
-        attending:[ID]
+        coordinatorID: ID
+        room: String
+        groupId: ID
+        time: DateTime
+        attending: [ID]
     }
 
     type groupData {
@@ -202,7 +202,7 @@ scalar DateTime
     input cancelation {
         CancelerID:ID
         ApID:ID
-        reason:Boolean
+        reason:String
     }
 
     type Cookie {
@@ -249,6 +249,7 @@ scalar DateTime
         cancelAppointment(cancelation:cancelation):CoordSchedule
         createStudentAccounts(CID:ID!): Boolean
         setRole(CID:String!, role:String!):Boolean
+        updateProfilePic(ID:ID!, ppURL:String!):String
     }
 `
 
