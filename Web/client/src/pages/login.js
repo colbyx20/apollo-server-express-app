@@ -71,6 +71,7 @@ function Login(props) {
             localStorage.setItem("_id", userData._id);
             localStorage.setItem("firstname", userData.firstname);
             localStorage.setItem("lastname", userData.lastname);
+            localStorage.setItem("privilege", userData.privilege);
             localStorage.setItem("token", userData.token);
 
             if (STUDENT_EMAIL.test(userData.email)) {
