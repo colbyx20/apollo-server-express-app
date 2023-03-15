@@ -51,6 +51,7 @@ function Login(props){
     };
 
     const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
+    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
     function loginUserCallback(){
@@ -75,10 +76,14 @@ function Login(props){
             if(STUDENT_EMAIL.test(userData.email)){
                 // go to student page 
                  window.location.href = '/student';
-                //navigate('/student');
-            }else if(!STUDENT_EMAIL.test(userData.email)){
+            }else if(PROFESSOR_EMAIL.test(userData.email)){
                 // go to professor page 
-                window.location.href = '/coordinator';
+                if(userData.privilege === "coordinator")
+                    window.location.href = '/coordinator';
+                else
+                    window.location.href = '/professor';
+            }else{
+                window.location.href = '/professor';
             }
         },
         onError({graphQLErrors}){

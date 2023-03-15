@@ -5,10 +5,9 @@ import Register from './pages/register';
 import Login from './pages/login';
 import Student from './pages/student';
 import Loginpath from './pages/login';
-// import Professors from "./pages/professors";
+import Professors from "./pages/professors";
 import Coordinator from "./pages/coordinator"
 import Calendar from "./pages/calendar";
-
 import Semester from "./pages/semester";
 import Account from "./pages/account";
 
@@ -18,6 +17,7 @@ function App() {
   const [theme, setTheme] = useState('light')
   return (
     <div>
+
       <ThemeContext.Provider value={theme} >
         <Routes>
           <Route path="/" element={<Login />} />
@@ -25,7 +25,7 @@ function App() {
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/student" element={<Student />} />
-          {/* <Route path="/professor" element={<Professors />} /> */}
+          <Route path="/professor" element={<Professors />} />
           <Route path="/calendar" element={<Calendar lightMode={false} />} />
           <Route path="/coordinator" element={<Coordinator />} />
           <Route path="/account" element={<Account />} />

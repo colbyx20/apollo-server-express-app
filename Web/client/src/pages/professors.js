@@ -3,12 +3,10 @@ import { AuthContext } from '../context/authContext';
 import CustomSidebar from '../components/Sidebar';
 import { GetGroups } from '../components/GetGroups';
 import { useNavigate } from 'react-router-dom';
-import {Button} from "@mui/material";
+import {Button, TextField} from "@mui/material";
 import {gql, useQuery} from '@apollo/client';
-
-
-
-// import {GetAvailSchedule} from '../components/GetAvailSchedule';
+import '../components/css/professor.css';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 
 
@@ -24,7 +22,6 @@ function Professors(props){
     const onLogout = () => {
         logout();
         window.location.href = '/';
-        // navigate('/');
     }
 
     return (
@@ -33,13 +30,36 @@ function Professors(props){
             {user !== null?
                 <>
                 <CustomSidebar/>
-                <div className="userInfo">
-                    <p style={{textAlign:"left", margin:0}}>{user.email}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.firstname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{user.lastname}</p>
-                    <p style={{textAlign:"left", margin:0}}>{year}</p>
-                    <p><GetGroups /></p>
+                <div className='professorWrapper'>
+                    <div className="userInfo">
+                        <p className='studentHeader'>Home Page</p>
+                    </div>
+
+                    <div className='professorContainer'>
+                        <div className='displayProfNotification'>
+                            <p className='notificationTitle'>Upcoming Meetings <NotificationsNoneIcon/></p>
+                            <div className='appointmentContainer'>
+                                <div className='appointmentObject'>No current appointments</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='emailContainer'>
+                        <p className='emailTitle'>Email Notifications</p>
+                        <p className='emailClause'>Want to be emailed about upcoming appointments?</p>
+                        <div className='emailSubmit'>
+                            <TextField size="small" 
+                            sx={{width:'50%', backgroundColor: 'white', borderRadius: '5px'}}></TextField>
+                            <br/>
+                            <Button
+                            variant='contained'
+                            sx={{marginTop: '5px', width:'50%'}}
+                            >Submit</Button>
+                        </div>
+                    </div>
                 </div>
+                
+                
                 </>
                 : 
                 <>
@@ -50,13 +70,6 @@ function Professors(props){
                 </>
             }
         </div>
-        {/* <div style = {{display:"flex"}}>
-            <CustomSidebar />
-            <div>
-                <GetGroups />
-            </div>
-        </div> */}
-
         </>
 
     )
