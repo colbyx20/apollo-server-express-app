@@ -1170,8 +1170,6 @@ const resolvers = {
                     { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                 ])
 
-                console.log(matchProfessors);
-
                 if (matchProfessors.length >= 3) {
                     const professorInfo = matchProfessors.map((professor) => ({
                         _id: professor._id,
