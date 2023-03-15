@@ -204,7 +204,7 @@ scalar DateTime
     input cancelation {
         CancelerID:ID
         ApID:ID
-        reason:Boolean
+        reason:String
     }
 
     type Cookie {
@@ -247,6 +247,7 @@ scalar DateTime
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
         createStudentAccounts(CID:ID!): Boolean
+        updateProfilePic(ID:ID!, ppURL:String!):String
     }
 `
 
