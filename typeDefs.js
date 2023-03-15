@@ -41,15 +41,8 @@ scalar DateTime
         _id:ID
         userFName: String
         userLName: String
-        email: String
-        password: String
-        confirmpassword: String
-        group: String
-        privilege: Int
-        confirm: Int
+        groupNumber:Int
         role: String
-        token: String
-        image: String
     }
 
     type UserLogin {
@@ -173,11 +166,11 @@ scalar DateTime
     }
     type CoordSchedule {
         _id: ID
-        coordinatorID:ID
-        room:String
-        groupId:ID
-        time:DateTime
-        attending:[ID]
+        coordinatorID: ID
+        room: String
+        groupId: ID
+        time: DateTime
+        attending: [ID]
     }
 
     type groupData {
@@ -208,10 +201,10 @@ scalar DateTime
         CID:ID
 
     }
-    input cancelation{
+    input cancelation {
         CancelerID:ID
         ApID:ID
-        reason:Boolean
+        reason:String
     }
 
     type Cookie {
@@ -226,7 +219,7 @@ scalar DateTime
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
-        getAllUsers : [Users]
+        getAllUsers(ID:ID!) : [Users]
         getAllGroups :[Group]
         getAdmins : Admin
         availSchedule: DateTime
@@ -234,7 +227,6 @@ scalar DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
         getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
-        refreshToken2 : String
     }
 
     type Mutation {
@@ -250,10 +242,12 @@ scalar DateTime
         loginUser(loginInput: loginInput): UserLogin
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createGroup(groupInfo: groupInfo): Group
+        createGroup(CID:ID!): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
+        createStudentAccounts(CID:ID!): Boolean
+        updateProfilePic(ID:ID!, ppURL:String!):String
     }
 `
 

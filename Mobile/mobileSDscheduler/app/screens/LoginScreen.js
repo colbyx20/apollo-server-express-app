@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
+
 import AppButton from "../components/AppButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
@@ -14,6 +15,7 @@ import Constants from "expo-constants";
 import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
+
 import Screen from "../components/Screen";
 import colors from "../config/colors";
 import ErrorMessage from "../components/ErrorMessage";
@@ -22,49 +24,16 @@ import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 
-
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .required()
     .email()
     .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
     .label("Email"),
-  password: Yup.string().required().min(4).label("Password"),
+  password: Yup.string().required().min(7).label("Password"),
 });
 
 function LoginScreen(props) {
-
-//axios 
-// const [groupData,setGroupData] = useState([]);
-// useEffect(() =>{
-//   const fetchData = async() =>{
-
-//     const headers ={"content-type":"application/json"}
-
-//     const query = {
-//       "operationName": "Query",
-//       "query": GROUPS,
-//       "variables":{}
-//     }
-
-//     const queryResult = await axios.get({
-//       url: "localhost:8080/graphql",
-//       method:"post",
-//       headers: headers,
-//       data:query,
-//   });
-
-//     const result = queryResult.data.data.getAllGroups;
-//     setGroupData(result);
-//   }
-// },[groupData])
-
-
-
-
-
-
-
   //API SAUCE
   // const [groups, setGroups] = useState([]);
 
@@ -80,31 +49,22 @@ function LoginScreen(props) {
   // console.log(groups);
 
   //-----------------
-  // const [errors, setError] = useState([]);
   //TESTING THINGS
   //   const [groups, setGroups] = useState([]);
 
-  // useEffect(() => {
-  //   loadGroups();
-  // }, [groups]);
+  //   useEffect(() => {
+  //     loadGroups();
+  //   }, []);
 
-  // const loadGroups = async () => {
-  //   //const response = await useQuery(GROUPS);
-  //   const { data, loading, error} = await useQuery(GROUPS);
+  //   const loadGroups = async () => {
+  //     //const response = await useQuery(GROUPS);
+  //     const { data, loading } = await useQuery(GROUPS);
+  //     setGroups(data);
+  //   };
 
-  //   if (error) {
-  //     return <AppText>Error: {error.message}</AppText>; //while loading return this
-  //   }
+  //   console.log(groups);
 
-  //   if (loading) {
-  //     return <AppText>Fetching data...</AppText>; //while loading return this
-  //   }
-  //   setGroups(data);
-  //   setError(error);
-  // };
-
-  // console.log(groups);
-
+  //APOLLO CLIENT
   const { data, loading, error } = useQuery(GROUPS);
 
   if (error) {
@@ -115,7 +75,6 @@ function LoginScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  console.log(data.getAllGroups);
   console.log(data.getAllGroups[0].groupName);
   console.log(data);
 
