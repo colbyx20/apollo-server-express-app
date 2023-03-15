@@ -61,10 +61,6 @@ export const GetCoordinatorSchedule = (props) => {
 
     const search = props.data;
     const { getCoordinatorSchedule } = data;
-    console.log("FETCH!!");
-    console.log(getCoordinatorSchedule)
-    // const filterItems = getFilteredData(search, getAllCoordinatorSchedule);
-
 
     return (
 
