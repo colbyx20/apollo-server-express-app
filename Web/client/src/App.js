@@ -17,7 +17,7 @@ function App() {
   const [theme, setTheme] = useState('light')
   return (
     <div>
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Loginpath />} />
         <Route path="/homepage" element={<Homepage />} />
@@ -28,7 +28,7 @@ function App() {
         <Route path="/coordinator" element={<Coordinator />} />
         <Route path="/account" element={<Account />} />
         <Route path="/semester" element={<Semester />} />
-      </Routes>
+      </Routes> */}
 
       <ThemeContext.Provider value={theme} >
         <Routes>
