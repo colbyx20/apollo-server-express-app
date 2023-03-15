@@ -65,11 +65,15 @@ scalar DateTime
         professorFName: String
         professorLName: String
         availSchedule: [DateTime]
-        email: String
-        password: String
-        privilege: String
-        confirm: Boolean
-        token: String
+        appointments: [userAppointments]
+    }
+
+    type userAppointments {
+        _id:ID
+        time: DateTime
+        room: String
+        groupName: String
+        groupNumber: Int
     }
 
     type Appointments {
@@ -206,6 +210,7 @@ scalar DateTime
         CID:ID
 
     }
+
     input cancelation {
         CancelerID:ID
         ApID:ID
@@ -233,6 +238,7 @@ scalar DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
+        getProfessorsAppointments (profId: String ) : [userAppointments]
     }
 
     type Mutation {

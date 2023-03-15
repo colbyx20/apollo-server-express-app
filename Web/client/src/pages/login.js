@@ -80,7 +80,11 @@ function Login(props) {
                 //navigate('/student');
             } else if (!STUDENT_EMAIL.test(userData.email)) {
                 // go to professor page 
-                window.location.href = '/coordinator';
+                if (userData.privilege === "coordinator") {
+                    window.location.href = '/coordinator';
+                } else {
+                    window.location.href = '/professor';
+                }
             }
         },
         onError({ graphQLErrors }) {

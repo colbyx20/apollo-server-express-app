@@ -48,6 +48,17 @@ const resolvers = {
                     }
                 }]);
         },
+        getProfessorsAppointments: async (_, { profId }) => {
+            const PID = Mongoose.Types.ObjectId(profId)
+            return CoordSchedule.aggregate([
+                { $match: { "attending2._id": PID } },
+                { $project: { groupId: 1, time: 1, room: 1 } },
+                { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupId" } },
+                { $unwind: "$groupId" },
+                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room" }] } } },
+                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: 1, room: 1 } }
+            ])
+        },
         availSchedule: async () => {
             return Professors.aggregate([
                 { $group: { _id: "$availSchedule", pId: { $push: { _id: "$_id", name: { $concat: ["$professorFName", " ", "$professorLName"] } } } } },
