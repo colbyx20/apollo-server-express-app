@@ -19,6 +19,7 @@ const LOGIN_USER = gql`
             email
             token 
             privilege
+            image
         }
     }
 `
@@ -74,7 +75,7 @@ function Login(props) {
             localStorage.setItem("lastname", userData.lastname);
             localStorage.setItem("privilege", userData.privilege);
             localStorage.setItem("token", userData.token);
-
+            localStorage.setItem("image",userData.image)
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
             } else if (userData.privilege === 'coordinator') {
