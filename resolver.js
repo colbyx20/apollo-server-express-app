@@ -567,7 +567,9 @@ const resolvers = {
                         lastname: lastname,
                         email: userInfo.email,
                         token: accessToken,
-                        privilege: userInfo.privilege
+                        privilege: userInfo.privilege,
+                        image:userInfo.image
+
                     }
                 }
             }
