@@ -77,7 +77,6 @@ function Login(props) {
 
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
-                //navigate('/student');
             } else if (userData.privilege === 'coordinator') {
                 window.location.href = '/coordinator';
             } else if (userData.privilege === 'professor') {
