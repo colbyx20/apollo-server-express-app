@@ -1,6 +1,6 @@
 import React from "react";
 import Constants from "expo-constants";
-import { FlatList, StyleSheet, View, SafeAreaView } from "react-native";
+import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
 import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/getAllGroups";
 import {
@@ -9,6 +9,7 @@ import {
   Agenda,
   AgendaSchedule,
 } from "react-native-calendars";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import Screen from "../components/Screen";
 import AppText from "../components/AppText";
@@ -16,6 +17,7 @@ import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
+import TitleBar from "../components/TitleBar";
 
 function CalendarScreen(props) {
   //APOLLO CLIENT
@@ -34,18 +36,42 @@ function CalendarScreen(props) {
   console.log(new Date().toLocaleString().split("T")[0]);
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.titleContainer}>
-        <AppText style={styles.title}>Calendar</AppText>
-      </View>
+      <TitleBar
+        title="Availabilities"
+        // leftButton={
+        //   <MaterialCommunityIcons
+        //     name="chevron-left"
+        //     size={30}
+        //     color={colors.grayLight}
+        //   />
+        // }
+        onPressLeft={() => console.log("goBack")}
+        rightButton={
+          <MaterialCommunityIcons
+            name="plus"
+            size={30}
+            color={colors.grayLight}
+          />
+        }
+        onPressRight={() => console.log("add")}
+      />
       <Agenda
         // The list of items that have to be displayed in agenda. If you want to render item as empty date
         // the value of date key has to be an empty array []. If there exists no value for date key it is
         // considered that the date in question is not yet loaded
         items={{
-          "2023-02-22": [{ name: "item 1 - any js object" }],
-          "2023-02-23": [{ name: "item 2 - any js object", height: 80 }],
-          "2023-02-24": [],
-          "2023-02-25": [
+          "2023-03-14": [{ name: "item 1 - any js object" }],
+          "2023-03-23": [
+            {
+              name: "item 2 - any js object",
+              height: 80,
+              groupName: "SD Scheduler",
+              projectField: "IT",
+              groupNumber: "1",
+            },
+          ],
+          "2023-03-24": [],
+          "2023-03-25": [
             { name: "item 3 - any js object" },
             { name: "any js object" },
           ],
@@ -58,6 +84,7 @@ function CalendarScreen(props) {
         onCalendarToggled={(calendarOpened) => {
           console.log(calendarOpened);
         }}
+        animateScroll={false}
         // Callback that gets called on day press
         onDayPress={(day) => {
           console.log("day pressed", day);
@@ -136,7 +163,7 @@ function CalendarScreen(props) {
         // // Hide knob button. Default = false
         // hideKnob={true}
         // // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
-        // showClosingKnob={false}
+        showClosingKnob={true}
         // By default, agenda dates are marked if they have at least one item, but you can override this if needed
         // markedDates={{
         //   "2012-05-16": { selected: true, marked: true },
@@ -161,6 +188,11 @@ function CalendarScreen(props) {
         // }}
         // Agenda theme
         theme={{
+          // "stylesheet.agenda.list": { container: { backgroundColor: "red" } },
+          "stylesheet.agenda.list": {
+            reservations: { backgroundColor: "red" },
+          },
+          "stylesheet.agenda.list": { backgroundColor: "red" },
           calendarBackground: "black", //agenda background
           //gendaKnobColor: "blue", // knob color
           backgroundColor: "black", // background color below agenda
@@ -169,18 +201,30 @@ function CalendarScreen(props) {
           agendaTodayColor: colors.primaryDark, // left number date
           monthTextColor: colors.secondaryDark, // Month and year in calendar
           textDefaultColor: "red",
-          todayBackgroundColor: colors.primaryDark,
-          textSectionTitleColor: colors.secondaryDark,
-          selectedDayBackgroundColor: colors.gold, // calendar sel date
+          todayBackgroundColor: colors.secondaryDark, //today's color
+          todayTextColor: colors.primaryDark,
+          textSectionTitleColor: colors.secondaryDark, //day name color
+          selectedDayBackgroundColor: colors.gold, // selected day color background
+          selectedDayTextColor: colors.primaryDark, //selected day color text
           dayTextColor: colors.secondaryDark, // this month's days
           dotColor: "white", // dots
           textDisabledColor: "red",
           reservationsBackgroundColor: colors.primaryDark,
+          // contentStyle: "red",
+          // event: "red",
+          line: "red",
+          timelineContainer: "red",
+          agendaDayNumColor: "red", //left agenda day color
+          agendaDayTextColor: "green", //left agenda name color
+          agendaKnobColor: "blue",
+          agendaTodayColor: "yellow",
         }}
         // Agenda container style
-        style={{ backgroundColor: "red" }}
+        style={{
+          backgroundColor: colors.primaryDark,
+        }}
       ></Agenda>
-      <View style={styles.titleContainer}>
+      <View>
         <AppText style={styles.title}>
           Just imagine this is a NavBar lol
         </AppText>
@@ -202,18 +246,8 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     paddingTop: Constants.statusBarHeight,
+    backgroundColor: colors.gold, //colors.primaryDark,
     flex: 1,
-  },
-  title: {
-    color: colors.secondaryDark,
-    fontSize: 20,
-    alignSelf: "center",
-    paddingBottom: 10,
-    paddingTop: 20,
-    backgroundColor: colors.primaryDark,
-  },
-  titleContainer: {
-    backgroundColor: colors.primaryDark,
   },
   item: {
     backgroundColor: "white",
