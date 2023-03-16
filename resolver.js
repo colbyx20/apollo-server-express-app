@@ -13,6 +13,7 @@ const Mongoose = require('mongoose');
 const cookie = require("cookie");
 const Fs = require('fs');
 const CsvReadableStream = require('csv-reader');
+// const Login = './helperFunctions/login';
 
 
 const { ObjectId, default: mongoose } = require('mongoose');
@@ -492,130 +493,54 @@ const resolvers = {
 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
-            if (!STUDENT_EMAIL.test(email)) {
+            const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
 
-                const professorsInfo = await UserInfo.findOne({ email }).select('userId privilege email');
-                const coordinator = await Coordinator.findOne({ _id: professorsInfo.userId }).select('coordinatorFName coordinatorLName');
-                const professorsAuth = await Auth.findOne({ userId: professorsInfo.userId }).select('confirm password');
-                const professors = await Professors.findOne({ _id: professorsInfo.userId }).select('professorFName professorLName');
+            if (!userInfo) {
+                throw new Error("User not found");
+            }
 
-                if (professors && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))) {
+            const authUser = await Auth.findOne({ userId: userInfo.userId._id }).select("userId password confirm token");
 
-                    // create a new token ( when you login you give user a new token )
-                    const accessToken = jwt.sign(
-                        {
-                            id: professors._id,
-                            email,
-                            firstname: professors.professorFName,
-                            lastname: professors.professorLName,
-                            privilege: professorsInfo.privilege
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "1m" }
-                    );
-
-                    const refreshToken = jwt.sign(
-                        {
-                            id: professors._id,
-                            email,
-                            firstname: professors.professorFName,
-                            lastname: professors.professorLName,
-                            privilege: professorsInfo.privilege
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "2h" }
-                    );
-
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({ userId: professors._id }, { $set: { token: refreshToken } })
-
-                    // res.cookie("accessToken",accessToken,{
-                    //     expires: new Date(Date.now() + 9000000),
-                    //     httpOnly: true,
-                    //     secure: true,
-                    //     sameSite: true
-                    // });
-
-                    // res.cookie("refreshToken",refreshToken,{
-                    //     expires: new Date(Date.now() + 9000000),
-                    //     httpOnly: true,
-                    //     secure: true,
-                    //     sameSite: true
-                    // });
-
-                    return {
-                        _id: professors._id,
-                        firstname: professors.professorFName,
-                        lastname: professors.professorLName,
-                        email: professorsInfo.email,
-                        token: accessToken,
-                        privilege: professorsInfo.privilege
-                    }
-                } else if (coordinator && professorsInfo && professorsAuth.confirm === true && (await bcrypt.compare(password, professorsAuth.password))) {
-                    // create a new token ( when you login you give user a new token )
-                    const accessToken = jwt.sign(
-                        {
-                            id: coordinator._id,
-                            email,
-                            firstname: coordinator.coordinatorFName,
-                            lastname: coordinator.coordinatorLName,
-                            privilege: professorsInfo.privilege
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "1m" }
-                    );
-
-                    const refreshToken = jwt.sign(
-                        {
-                            id: coordinator._id,
-                            email,
-                            firstname: coordinator.coordinatorFName,
-                            lastname: coordinator.coordinatorLName,
-                            privilege: professorsInfo.privilege
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "2h" }
-                    );
-
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({ userId: coordinator._id }, { $set: { token: refreshToken } })
-
-                    // res.cookie("token",token,{
-                    //     expires: new Date(Date.now() + 9000000),
-                    //     httpOnly: true,
-                    //     secure: true,
-                    //     sameSite: true
-                    // });
-
-                    return {
-                        _id: coordinator._id,
-                        firstname: coordinator.coordinatorFName,
-                        lastname: coordinator.coordinatorLName,
-                        email: professorsInfo.email,
-                        token: accessToken,
-                        privilege: professorsInfo.privilege
-                    }
-
-                } else {
-                    throw new ApolloError("Something Went Wrong");
+            if (email) {
+                switch (userInfo.privilege) {
+                    case 'professor':
+                        return await Login(userInfo, authUser, authUser.confirm);
+                    case 'student':
+                        return await Login(userInfo, authUser, authUser.confirm);
+                    case 'coordinator':
+                        return await Login(userInfo, authUser, authUser.confirm);
+                    default:
+                        console.log("err");
                 }
-            } else if (STUDENT_EMAIL.test(email)) {
+            }
 
-                // 3 small queries are faster than joining all 3 then searching
-                const studentInfo = await UserInfo.findOne({ email }).select('userId privilege email');;
-                const studentAuth = await Auth.findOne({ userId: studentInfo.userId }).select('confirm password');;
-                const student = await Users.findOne({ _id: studentInfo.userId }).select('userFName userLName');
+            async function Login(userInfo, authUser, confirmedUser) {
+                if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
+                    let ID = userInfo.userId._id;
+                    let firstname;
+                    let lastname;
 
-                if (studentInfo && studentAuth.confirm === true && (await bcrypt.compare(password, studentAuth.password))) {
+                    if (userInfo.privilege === 'student') {
+                        firstname = userInfo.userId.userFName;
+                        lastname = userInfo.userId.userLName;
+                    } else if (userInfo.privilege === 'coordinator') {
+                        firstname = userInfo.userId.coordinatorFName;
+                        lastname = userInfo.userId.coordinatorLName;
+                    } else if (userInfo.privilege === 'professor') {
+                        firstname = userInfo.userId.professorFName;
+                        lastname = userInfo.userId.professorLName;
+                    } else {
+                        throw new ApolloError("User Privilege Error On Login");
+                    }
 
                     // create a new token ( when you login you give user a new token )
                     const accessToken = jwt.sign(
                         {
-                            id: student._id,
+                            id: ID,
                             email,
-                            firstname: student.userFName,
-                            lastname: student.userLName,
-                            privilege: studentInfo.privilege
+                            firstname: firstname,
+                            lastname: lastname,
+                            privilege: userInfo.privilege
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "1m" }
@@ -623,28 +548,26 @@ const resolvers = {
 
                     const refreshToken = jwt.sign(
                         {
-                            id: student._id,
+                            id: ID,
                             email,
-                            firstname: student.userFName,
-                            lastname: student.userLName,
-                            privilege: studentInfo.privilege
+                            firstname: firstname,
+                            lastname: lastname,
+                            privilege: userInfo.privilege
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "2h" }
                     );
 
                     // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({ userId: student._id }, { $set: { token: refreshToken } })
+                    await Auth.findOneAndUpdate({ userId: ID }, { $set: { token: refreshToken } })
 
                     return {
-                        _id: student._id,
-                        firstname: student.userFName,
-                        lastname: student.userLName,
-                        email: studentInfo.email,
+                        _id: ID,
+                        firstname: firstname,
+                        lastname: lastname,
+                        email: userInfo.email,
                         token: accessToken,
-                        privilege: studentInfo.privilege,
-                        // firstLogin: true,
-                        // isCoordinatorSponsor: false,
+                        privilege: userInfo.privilege
                     }
                 }
             }
@@ -978,7 +901,7 @@ const resolvers = {
                         </div>`,
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
-
+ 
                 }
             }*/
             }
@@ -1132,10 +1055,9 @@ const resolvers = {
             await userInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
             const here = await userInfo.findById(ID);
             return here.image
-        }
+        },
     }
 }
-
 
 module.exports = resolvers;
 
