@@ -130,7 +130,6 @@ const resolvers = {
             ])
         },
         getAllCoordinatorSchedule: async () => {
-
             return await CoordSchedule.aggregate([
                 {
                     $lookup: {
@@ -140,8 +139,13 @@ const resolvers = {
                         as: "groupId"
                     }
                 },
-                { $project: { coordinatorID: 1, room: 1, time: 1, attending: 1, attending2: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
-                { $unwind: "$groupId" },
+                {
+                    $project: {
+                        coordinatorID: 1, room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
+                        "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
+                    }
+                },
+                { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
                 { $sort: { coordinatorID: 1, time: 1 } }
             ])
         },
@@ -163,8 +167,8 @@ const resolvers = {
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
-                { $unwind: "$groupId" },
-                { $sort: { time: -1 } }
+                { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
+                { $sort: { time: 1 } }
             ])
         },
         refreshToken: async (_, { id, privilege }) => {
