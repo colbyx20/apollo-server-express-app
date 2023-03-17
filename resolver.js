@@ -59,6 +59,7 @@ const resolvers = {
                 _id: group[0]._id,
                 coordinatorId: group[0].coordinatorId,
                 groupName: group[0].groupName,
+                groupNumber: group[0].groupNumber,
                 groupId: group[0].groupId,
                 members: group[0].members
             }
@@ -731,22 +732,26 @@ const resolvers = {
             const UniqueTimes = new Set(Times);
             UniqueTimes.forEach(async (time) => {
                 let t = new Date(time).toISOString();
-                let duplicateTime = (await CoordSchedule.findOne({ time: t }).count());
+                let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
                     // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
                     return false;
                 } else {
                     try {
+
+                        console.log("do i get here?");
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID: ID,
                             room: Room,
-                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null },
+                            groupId: null,
                             time: t,
                             numberOfAttending: 0, // nessecity debatable
                             attending: [],
                             attending2: []
                         });
+
+                        console.log(CoordinatorSchedule);
 
                         await CoordinatorSchedule.save();
 

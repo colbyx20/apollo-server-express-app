@@ -28,6 +28,25 @@ export const GetGroupMembers = ({ SID }) => {
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
-
-    // console.log("Data");
+    const myData = data.getGroupMembers
+    // console.log(data.getGroupMembers);
+    console.log("My Data");
+    console.log(myData);
+    return (
+        <table>
+            <tbody>
+                <tr key={myData._id}>
+                    <td>Group Name: {myData.groupName}</td>
+                </tr>
+                <tr>
+                    <td>Group Number: {myData.groupNumber}</td>
+                </tr>
+                <tr>
+                    <td>User: {myData.members.map((member) => {
+                        return (<tr>{member.userFName + " " + member.userLName + " " + member.role}</tr>)
+                    })}</td>
+                </tr>
+            </tbody>
+        </table >
+    )
 }
