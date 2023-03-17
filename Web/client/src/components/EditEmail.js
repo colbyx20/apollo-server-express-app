@@ -2,11 +2,17 @@ import React, { useState } from 'react';
 import { TextField, Button} from '@mui/material';
 import '../components/css/editaccout.css'
 
-function EditUsernamePopup(props) {
+function EditEmailPopup(props) {
   const [newEmail, setNewEmail] = useState('');
+  const [isValid, setIsValid] = useState(false);
 
   const handleInputChange = (event) => {
+    const inputEmail = event.target.value;
     setNewEmail(event.target.value);
+
+    // check if the input email is valid using regex
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsValid(regex.test(inputEmail));
   };
 
   const handleSubmit = (event) => {
@@ -14,7 +20,6 @@ function EditUsernamePopup(props) {
     props.onClose();
     // call function to update username with newUsername value
   };
-
 
   return (
     <div className="popup">
@@ -42,10 +47,13 @@ function EditUsernamePopup(props) {
           }}
           InputLabelProps={{ className: 'editLabel' }}
           value={newEmail}
+          error={!isValid}
+          helperText={!isValid ? "Please enter a valid email address" : ""}
           onChange={handleInputChange}
         />
           <Button variant="contained" color="primary" type="submit"
-          style={{width: "75%",margin: "auto", marginTop: '4px',display: "flex", alignItems: "center"}}>Submit</Button>
+          style={{width: "75%",margin: "auto", marginTop: '4px',display: "flex", alignItems: "center"}}
+          disabled={!isValid}>Submit</Button>
           <button className='close-btn' type="button" onClick={props.onClose}>
           </button>
         </form>
@@ -54,4 +62,4 @@ function EditUsernamePopup(props) {
   );
 }
 
-export default EditUsernamePopup;
+export default EditEmailPopup;
