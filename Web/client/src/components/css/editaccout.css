@@ -24,7 +24,7 @@
     width: 100%;
     max-width: 440px;
     height: 25%;
-    background-color: #D0A300;
+    background-color: yellow;
     border-radius: 15px;
     overflow-y: auto;
 }
@@ -55,24 +55,46 @@
 }
 
 .close-btn:hover {
-    background-color: #f0f0f0;
+    background-color: rgb(255, 68, 0);
     border-radius: 50%;
-  }
+}
   
-  .close-btn::before,
-  .close-btn::after {
+.close-btn::before,
+.close-btn::after {
     content: "";
     position: absolute;
     width: 2px;
     height: 15px;
     background-color: #333;
-  }
+}
   
-  .close-btn::before {
+.close-btn::before {
     transform: rotate(45deg);
-  }
-  
-  .close-btn::after {
+}
+
+.close-btn::after {
     transform: rotate(-45deg);
+}
+
+.popupPass-inner{
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    height: 45%;
+    background-color: yellow;
+    border-radius: 15px;
+    overflow-y: auto;
+}
+
+.save-button {
+    background-color: #2d8aff;
+    color: #fff;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
 
