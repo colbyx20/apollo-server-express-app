@@ -93,7 +93,6 @@ scalar DateTime
         groupName: String
         projectField: String
         groupNumber: Int
-        memberCount: Int
     } 
     
     input UserInput {
@@ -225,12 +224,27 @@ scalar DateTime
         coordinatorID: String!
     }
 
+    type groupMembers {
+        _id: ID!
+        userFName: String
+        userLName: String
+        role: String
+    }
+    type groups {
+        _id: ID!
+        groupName: String
+        groupNumber: Int
+        members: [groupMembers]
+        coordinatorId:ID
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
         getAllUsers : [Users]
-        getAllGroups :[Group]
+        getGroupsByCoordinator (coordinatorId: String) :[Group]
+        getGroupMembers (studentId: String): groups
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
@@ -238,6 +252,7 @@ scalar DateTime
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
+        getGroupAppointment(studentId: String) : CoordSchedule2
     }
 
     type Mutation {

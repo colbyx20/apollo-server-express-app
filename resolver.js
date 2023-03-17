@@ -37,17 +37,42 @@ const resolvers = {
         getAllProfessors: async () => {
             return await Professors.find();
         },
-        getAllGroups: async () => {
-            return await Group.aggregate([
+        getGroupAppointment: async (_, { studentId }) => {
+            const UID = Mongoose.Types.ObjectId(studentId);
+            console.log(UID);
+            const groupInfo = await Users.findOne({ _id: UID });
+            return await CoordSchedule.findOne({ groupId: groupInfo.groupId });
+        },
+        getGroupMembers: async (_, { studentId }) => {
+            const UID = Mongoose.Types.ObjectId(studentId);
+            // return await Group.findOne({ members: { $in: [UID] } }).populate('members')
+
+            const getUserGroup = await Users.findOne({ _id: UID });
+            console.log(getUserGroup);
+            const group = await Group.aggregate([
+                { $match: { _id: getUserGroup.groupId } },
                 {
-                    $lookup:
-                    {
+                    $lookup: {
                         from: "users",
-                        localField: "members",
-                        foreignField: "_id",
+                        localField: "_id",
+                        foreignField: "groupId",
                         as: "members"
                     }
-                }]);
+                }
+            ])
+
+            return {
+                _id: group[0]._id,
+                coordinatorId: group[0].coordinatorId,
+                groupName: group[0].groupName,
+                groupNumber: group[0].groupNumber,
+                groupId: group[0].groupId,
+                members: group[0].members
+            }
+        },
+        getGroupsByCoordinator: async (_, { coordinatorId }) => {
+            const CID = Mongoose.Types.ObjectId(coordinatorId)
+            return await Group.find({ coordinatorId: CID });
         },
         getProfessorsAppointments: async (_, { profId }) => {
             const PID = Mongoose.Types.ObjectId(profId)
@@ -254,25 +279,28 @@ const resolvers = {
                     const email = row[0].toLowerCase() + '.' + row[1].toLowerCase() + '@knights.ucf.edu';
                     // const checkUniqueGroup = await Group.findOne({coordinatorId:CID,groupNumber:parseInt(row[0])}).count();
                     const checkUniqueStudent = await UserInfo.findOne({ email: email }).count();
-                    const password = "password";
 
                     // if group doesn't exist, make one
                     if (!checkUniqueStudent) {
 
                         const ID = Mongoose.Types.ObjectId(CID);
-                        const encryptedPassword = await bcrypt.hash(password, 10);
+                        const encryptedPassword = await bcrypt.hash("password", 10);
+
+                        const groupId = await Group.findOne({ coordinatorId: CID, groupNumber: row[2] });
 
                         // Build out mongoose model 
                         const newStudent = new Users({
                             userFName: row[0].toLowerCase(),
                             userLName: row[1].toLowerCase(),
                             role: "",
-                            groupNumber: row[2],
+                            groupId: groupId._id,
                             coordinatorId: ID
                         });
 
                         // Save user in MongoDB
                         const res = await newStudent.save();
+
+                        // await Group.findOneAndUpdate({ coordinatorId: CID, groupNumber: row[2] }, { $push: { members: newStudent._id } });
 
                         // create JWT (attach to user model)
                         const token = jwt.sign(
@@ -712,29 +740,32 @@ const resolvers = {
             const UniqueTimes = new Set(Times);
             UniqueTimes.forEach(async (time) => {
                 let t = new Date(time).toISOString();
-                let duplicateTime = (await CoordSchedule.findOne({ time: t }).count());
+                let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
                     // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
                     return false;
                 } else {
                     try {
+
+                        console.log("do i get here?");
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID: ID,
                             room: Room,
-                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null },
+                            groupId: null,
                             time: t,
                             numberOfAttending: 0, // nessecity debatable
                             attending: [],
                             attending2: []
                         });
 
+                        console.log(CoordinatorSchedule);
+
                         await CoordinatorSchedule.save();
 
                     } catch (e) {
                         throw new ApolloError("Something Went Wrong!");
                     }
-
                 }
             });
 
@@ -764,7 +795,7 @@ const resolvers = {
                             groupName: row[1],
                             projectField: "",
                             groupNumber: parseInt(row[0]),
-                            memberCount: 0
+                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null }
                         });
 
                         // Save user in MongoDB
