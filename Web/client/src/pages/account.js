@@ -15,7 +15,7 @@ function Account(props){
     let navigate = useNavigate();
 
     const [isEditingEmail, setIsEditingEmail] = useState(false);
-    const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleEditEmailClick = () => {
         setIsEditingEmail(true);
@@ -25,16 +25,17 @@ function Account(props){
         setIsEditingEmail(false);
     };
 
-    const handlePasswordChangeSubmit = (newPassword) => {
-        // Handle password change submit
+    const handleModalOpen = () => {
+      setIsModalOpen(true);
     };
-
-    const handlePasswordChangeClose = () => {
-        setShowPasswordChangeModal(false);
+  
+    const handleModalClose = () => {
+      setIsModalOpen(false);
     };
-
-    const handlePasswordChangeClick = () => {
-        setShowPasswordChangeModal(true);
+  
+    const handlePasswordChangeSubmit = (oldPassword, newPassword) => {
+      // Handle password change submit logic here
+      console.log(`Password changed from ${oldPassword} to ${newPassword}`);
     };
 
     const onLogout = () => {
@@ -68,7 +69,7 @@ function Account(props){
                                     }}variant="contained">Email</Button>
 
                                     <Button
-                                    onClick={handlePasswordChangeClick}
+                                    onClick={handleModalOpen}
                                     sx={{
                                         display: 'block',
                                         marginRight: 'auto',
@@ -103,10 +104,10 @@ function Account(props){
                                 <p>Email: {user.email}</p>
                                 </div>
                                 {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
-                                {showPasswordChangeModal && (
+                                {isModalOpen && (
                                     <EditPassword
+                                    handleClose={handleModalClose}
                                     handlePasswordChangeSubmit={handlePasswordChangeSubmit}
-                                    handleClose={handlePasswordChangeClose}
                                     />
                                 )} 
                             </div>

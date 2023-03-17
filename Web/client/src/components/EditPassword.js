@@ -28,6 +28,7 @@ function PasswordChangeModal(props) {
         setNewPassword('');
         setConfirmPassword('');
         setError('');
+        // Add if statment to check if old password is correct
         props.handleClose();
         } else {
         setError('Passwords do not match');
