@@ -222,6 +222,7 @@ scalar DateTime
     type groups {
         _id: ID!
         groupName: String
+        groupNumber: Int
         members: [groupMembers]
         coordinatorId:ID
     }
