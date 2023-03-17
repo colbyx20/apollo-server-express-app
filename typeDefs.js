@@ -44,6 +44,18 @@ scalar DateTime
         password: String
     }
 
+    type UserLogin2 {
+        _id:ID
+        firstname: String 
+        lastname: String
+        email: String
+        token:String
+        privilege: String
+        confirm: String
+        password: String
+        image: String
+    }
+
     type Auth {
         token: String
     }
@@ -255,7 +267,7 @@ scalar DateTime
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
-        loginUser(loginInput: loginInput): UserLogin
+        loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(CID:ID!): Boolean
