@@ -31,14 +31,11 @@ export const GetGroups = (props) => {
 
 
     return (
+        <>
+        <div className='Sticky'>
+                <h2>Design Projects</h2>
+            </div>
         <table className="coordiantorGroups">
-            <thead>
-                <tr className='coordTableHeading'>
-                    <th id='topBar'>Design Projects</th>
-                    <th id='topBar'>Options</th>
-                </tr>
-            </thead>
-
 
             <tbody className='coordTableItems'>
                 {filterItems.map((group) => {
@@ -48,14 +45,14 @@ export const GetGroups = (props) => {
                                 <div className='groupContainer'>
                                     {group.groupName} <br />
                                     Group Number: {group.groupNumber} <br />
-                                    {/* Field: {group.projectField} */}
-                                </div>
-                            </td>
-                            <td id='rowName'>
-                                <div className='optionsContainer'>
+                                    <div className='optionsContainer'>
                                     <button id='edit'>Edit</button>
                                     <button id='delete'>Del</button>
                                 </div>
+                                </div>
+                            </td>
+                            <td id='rowName'>
+                                
                             </td>
                         </tr>
                     )
@@ -63,6 +60,7 @@ export const GetGroups = (props) => {
             </tbody>
 
         </table>
+        </>
     )
 
 }
