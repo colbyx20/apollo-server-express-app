@@ -3,10 +3,10 @@ import { TextField, Button} from '@mui/material';
 import '../components/css/editaccout.css'
 
 function EditUsernamePopup(props) {
-  const [newUsername, setNewUsername] = useState('');
+  const [newEmail, setNewEmail] = useState('');
 
   const handleInputChange = (event) => {
-    setNewUsername(event.target.value);
+    setNewEmail(event.target.value);
   };
 
   const handleSubmit = (event) => {
@@ -19,13 +19,13 @@ function EditUsernamePopup(props) {
   return (
     <div className="popup">
       <div className="popup-inner">
-        <h2 className='popUpTitle'>Edit Username</h2>
+        <h2 className='popUpTitle'>Edit Email</h2>
         <form onSubmit={handleSubmit}>
           <TextField
           autoFocus
           margin="dense"
-          id="username"
-          label="New Username"
+          id="email"
+          label="New Email"
           type="text"
           fullWidth
           style={{ width: "75%",  margin: "auto",
@@ -41,7 +41,7 @@ function EditUsernamePopup(props) {
             },
           }}
           InputLabelProps={{ className: 'editLabel' }}
-          value={newUsername}
+          value={newEmail}
           onChange={handleInputChange}
         />
           <Button variant="contained" color="primary" type="submit"
