@@ -218,12 +218,12 @@ scalar DateTime
         userFName: String
         userLName: String
         role: String
-        coordinatorId: ID
     }
     type groups {
         _id: ID!
         groupName: String
         members: [groupMembers]
+        coordinatorId:ID
     }
 
     type Query {
