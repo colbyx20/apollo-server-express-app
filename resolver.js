@@ -131,31 +131,41 @@ const resolvers = {
         },
         getAllCoordinatorSchedule: async () => {
 
-            const user = await CoordSchedule.find({})
-                .populate('groupId', ['groupName', 'groupNumber', 'projectField'])
-                .sort({ time: 1 })
-            return user;
-
-            // return await CoordSchedule.aggregate([
-            //     {
-            //         $lookup: {
-            //             from: "groups",
-            //             localField: "groupId",
-            //             foreignField: "_id",
-            //             as: "groupId"
-            //         }
-            //     },
-            //     { $project: { room: 1, time: 1, attending: 1, attending2: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
-            //     { $unwind: "$groupId" },
-            //     { $sort: { time: 1 } }
-            // ])
+            return await CoordSchedule.aggregate([
+                {
+                    $lookup: {
+                        from: "groups",
+                        localField: "groupId",
+                        foreignField: "_id",
+                        as: "groupId"
+                    }
+                },
+                { $project: { room: 1, time: 1, attending: 1, attending2: 1, "groupId.groupName": 1, "groupId.groupNumber": 1 } },
+                { $unwind: "$groupId" },
+                { $sort: { time: 1 } }
+            ])
         },
         getCoordinatorSchedule: async (_, { CID }) => {
             const coordCID = Mongoose.Types.ObjectId(CID)
-            const user = await CoordSchedule.find({ coordinatorID: coordCID })
-                .populate('groupId', ['groupName', 'groupNumber', 'projectField'])
-                .sort({ time: 1 })
-            return user;
+            return await CoordSchedule.aggregate([
+                { $match: { coordinatorID: coordCID } },
+                {
+                    $lookup: {
+                        from: "groups",
+                        localField: "groupId",
+                        foreignField: "_id",
+                        as: "groupId"
+                    }
+                },
+                {
+                    $project: {
+                        room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
+                        "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
+                    }
+                },
+                { $unwind: "$groupId" },
+                { $sort: { time: -1 } }
+            ])
         },
         refreshToken: async (_, { id, privilege }) => {
 
