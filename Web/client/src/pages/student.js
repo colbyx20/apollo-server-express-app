@@ -29,7 +29,6 @@ function Student(props) {
         logout();
         navigate('/');
     }
-    console.log(user)
 
     return (
         <>
@@ -68,6 +67,10 @@ function Student(props) {
                                 </div>
                             </div>
                         </div>
+
+                        
+                    
+                   
                     </>
                     :
                     <>

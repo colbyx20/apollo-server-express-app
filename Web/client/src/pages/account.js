@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import {Button, Switch, Grid,FormControlLabel} from "@mui/material";
 import '../components/css/account.css'
 import ImgUpload from '../components/ImgUpload';
+import EditEmailPopup from '../components/EditEmail';
+import EditPassword from '../components/EditPassword';
 
 function Account(props){
 
@@ -12,12 +14,34 @@ function Account(props){
     const {user, logout} = useContext(AuthContext);
     let navigate = useNavigate();
 
+    const [isEditingEmail, setIsEditingEmail] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleEditEmailClick = () => {
+        setIsEditingEmail(true);
+    };
+
+    const handleEditEmailClose = () => {
+        setIsEditingEmail(false);
+    };
+
+    const handleModalOpen = () => {
+      setIsModalOpen(true);
+    };
+  
+    const handleModalClose = () => {
+      setIsModalOpen(false);
+    };
+  
+    const handlePasswordChangeSubmit = (oldPassword, newPassword) => {
+      // Handle password change submit logic here
+      console.log(`Password changed from ${oldPassword} to ${newPassword}`);
+    };
+
     const onLogout = () => {
         logout();
         navigate('/');
     }
-
-    console.log(user.Account);
 
     return (
         <>
@@ -33,23 +57,20 @@ function Account(props){
                             <div className='accountInformation'>
                                 <div className='accountContainer'>
                                     <h2 className='accountTitle'>Profile Options</h2>
-                                    <Button sx={{
+                                    <Button
+                                    onClick={handleEditEmailClick} 
+                                    sx={{
                                     display: 'block',
+                                    marginTop: '5%',
                                     marginRight: 'auto',
                                     marginLeft: 'auto',
                                     marginBottom: '7px',
                                     width: '55%',
                                     }}variant="contained">Email</Button>
 
-                                    <Button sx={{
-                                        display: 'block',
-                                        marginRight: 'auto',
-                                        marginLeft: 'auto',
-                                        marginBottom: '7px',
-                                        width: '55%',
-                                    }}variant="contained">Username</Button>
-
-                                    <Button sx={{
+                                    <Button
+                                    onClick={handleModalOpen}
+                                    sx={{
                                         display: 'block',
                                         marginRight: 'auto',
                                         marginLeft: 'auto',
@@ -82,7 +103,13 @@ function Account(props){
                                 <p>Name: {user.firstname} {user.lastname}</p>
                                 <p>Email: {user.email}</p>
                                 </div>
-                                
+                                {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
+                                {isModalOpen && (
+                                    <EditPassword
+                                    handleClose={handleModalClose}
+                                    handlePasswordChangeSubmit={handlePasswordChangeSubmit}
+                                    />
+                                )} 
                             </div>
 
                             
