@@ -213,12 +213,27 @@ scalar DateTime
         coordinatorID: String!
     }
 
+    type groupMembers {
+        _id: ID!
+        userFName: String
+        userLName: String
+        role: String
+        coordinatorId: ID
+    }
+    type groups {
+        _id: ID!
+        groupName: String
+        members: [groupMembers]
+        coordinatorId:ID
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
         getAllUsers : [Users]
         getAllGroups :[Group]
+        getGroupMembers (studentId: String): groups
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime

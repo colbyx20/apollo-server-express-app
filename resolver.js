@@ -37,6 +37,10 @@ const resolvers = {
         getAllProfessors: async () => {
             return await Professors.find();
         },
+        getGroupMembers: async (_, { studentId }) => {
+            const UID = Mongoose.Types.ObjectId(studentId);
+            return await Group.findOne({ members: { $in: [UID] } }).populate('members')
+        },
         getAllGroups: async () => {
             return await Group.aggregate([
                 {
@@ -254,13 +258,16 @@ const resolvers = {
                     const email = row[0].toLowerCase() + '.' + row[1].toLowerCase() + '@knights.ucf.edu';
                     // const checkUniqueGroup = await Group.findOne({coordinatorId:CID,groupNumber:parseInt(row[0])}).count();
                     const checkUniqueStudent = await UserInfo.findOne({ email: email }).count();
-                    const password = "password";
 
                     // if group doesn't exist, make one
                     if (!checkUniqueStudent) {
 
                         const ID = Mongoose.Types.ObjectId(CID);
-                        const encryptedPassword = await bcrypt.hash(password, 10);
+                        const encryptedPassword = await bcrypt.hash("password", 10);
+
+                        const groupId = await Group.findOne({ coordinatorId: CID, groupNumber: row[2] });
+                        console.log("My groups");
+                        console.log(groupId);
 
                         // Build out mongoose model 
                         const newStudent = new Users({
@@ -273,6 +280,8 @@ const resolvers = {
 
                         // Save user in MongoDB
                         const res = await newStudent.save();
+
+                        await Group.findOneAndUpdate({ coordinatorId: CID, groupNumber: row[2] }, { $push: { members: newStudent._id } });
 
                         // create JWT (attach to user model)
                         const token = jwt.sign(
@@ -762,7 +771,7 @@ const resolvers = {
                             groupName: row[1],
                             projectField: "",
                             groupNumber: parseInt(row[0]),
-                            memberCount: 0
+                            groupMembers: { type: mongoose.Schema.Types.ObjectId, default: null }
                         });
 
                         // Save user in MongoDB
