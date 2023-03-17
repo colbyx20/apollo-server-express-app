@@ -40,7 +40,9 @@ const resolvers = {
         getGroupMembers: async (_, { studentId }) => {
             const UID = Mongoose.Types.ObjectId(studentId);
             // return await Group.findOne({ members: { $in: [UID] } }).populate('members')
+
             const getUserGroup = await Users.findOne({ _id: UID });
+            console.log(getUserGroup);
             const group = await Group.aggregate([
                 { $match: { _id: getUserGroup.groupId } },
                 {
@@ -284,7 +286,7 @@ const resolvers = {
                             userFName: row[0].toLowerCase(),
                             userLName: row[1].toLowerCase(),
                             role: "",
-                            groupNumber: groupId._id,
+                            groupId: groupId._id,
                             coordinatorId: ID
                         });
 
