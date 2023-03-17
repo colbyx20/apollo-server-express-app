@@ -1,11 +1,21 @@
-import React from "react";
-import { View, StyleSheet, Image, TouchableHighlight } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableHighlight,
+  Modal,
+  Button,
+} from "react-native";
 import {
   Swipeable,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
+import AppButton from "./AppButton";
+import Screen from "./Screen";
 import colors from "../config/colors";
 import AppText from "./AppText";
+import AvailabilityModal from "./AvailabilityModal";
 
 function GroupItem({
   title,
@@ -17,6 +27,7 @@ function GroupItem({
   renderLeftActions,
   style,
 }) {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={style}>
       <GestureHandlerRootView>
@@ -27,7 +38,7 @@ function GroupItem({
           <TouchableHighlight
             style={styles.highlight}
             underlayColor={colors.grayMedium}
-            onPress={onPress}
+            onPress={() => setModalVisible(true)}
           >
             <View style={[styles.container]}>
               <View>
@@ -40,6 +51,10 @@ function GroupItem({
               </View>
             </View>
           </TouchableHighlight>
+          <AvailabilityModal
+            onPress={() => setModalVisible(false)}
+            modalVisible={modalVisible}
+          ></AvailabilityModal>
         </Swipeable>
       </GestureHandlerRootView>
     </View>

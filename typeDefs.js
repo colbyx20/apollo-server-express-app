@@ -4,19 +4,6 @@ const typeDefs = gql`
 
 scalar DateTime
 
-    type Admin {
-        _id:ID!
-        firstname: String 
-        lastname: String 
-        email: String 
-        password: String 
-        confirmpassword: String 
-        privilege: String 
-        confirm: Int 
-        token: String 
-        image: String
-        role: String
-    }
     type Appointment {
         Time: String
         Group: ID
@@ -24,6 +11,7 @@ scalar DateTime
     }
     type Coordinator {
         _id:ID!
+        
         firstname: String
         lastname: String
         email: String
@@ -56,6 +44,18 @@ scalar DateTime
         password: String
     }
 
+    type UserLogin2 {
+        _id:ID
+        firstname: String 
+        lastname: String
+        email: String
+        token:String
+        privilege: String
+        confirm: String
+        password: String
+        image: String
+    }
+
     type Auth {
         token: String
     }
@@ -65,11 +65,15 @@ scalar DateTime
         professorFName: String
         professorLName: String
         availSchedule: [DateTime]
-        email: String
-        password: String
-        privilege: String
-        confirm: Boolean
-        token: String
+        appointments: [userAppointments]
+    }
+
+    type userAppointments {
+        _id:ID
+        time: DateTime
+        room: String
+        groupName: String
+        groupNumber: Int
     }
 
     type Appointments {
@@ -179,12 +183,17 @@ scalar DateTime
         projectField: String
     }
 
+    type profData {
+        _id:ID!
+        fullName: String
+    }
     type CoordSchedule2 {
         _id: ID
         room: String
         time: DateTime
         numberOfAttending: Int
         attending: [String]
+        attending2: [profData]
         groupId: groupData
     }
 
@@ -201,6 +210,7 @@ scalar DateTime
         CID:ID
 
     }
+
     input cancelation {
         CancelerID:ID
         ApID:ID
@@ -212,21 +222,22 @@ scalar DateTime
     }
 
     input coordinatorInput {
-        coordinatorID: ID!
+        coordinatorID: String!
     }
 
     type Query {
         getUser(ID:ID!) : Users
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
-        getAllUsers(ID:ID!) : [Users]
+        getAllUsers : [Users]
         getAllGroups :[Group]
-        getAdmins : Admin
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
+        availScheduleProfessor: DateTime
         getAllCoordinatorSchedule:[CoordSchedule2]
-        getCoordinatorSchedule(coordinatorInput:coordinatorInput): [CoordSchedule2]
+        getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
+        getProfessorsAppointments (profId: String ) : [userAppointments]
     }
 
     type Mutation {
@@ -236,10 +247,12 @@ scalar DateTime
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
+        groupSelectAppointmentTime(CID:ID!, GID:ID!, time: DateTime): Boolean
+        RandomlySelectProfessorsToAGroup(CID:ID!) : Boolean
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
-        loginUser(loginInput: loginInput): UserLogin
+        loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
         createGroup(CID:ID!): Boolean
@@ -247,6 +260,7 @@ scalar DateTime
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
         createStudentAccounts(CID:ID!): Boolean
+        setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
     }
 `

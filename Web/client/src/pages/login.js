@@ -1,10 +1,10 @@
-import {useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 // When register is created, we needto call AuthProvider function
-import { AuthContext } from '../context/authContext'; 
-import {useForm} from "../utility/hooks";
-import {useLazyQuery, useMutation} from "@apollo/react-hooks";
-import {gql} from 'graphql-tag';
-import {TextField, Button, Container, Stack, Alert, Checkbox, FormControlLabel, withTheme} from "@mui/material";
+import { AuthContext } from '../context/authContext';
+import { useForm } from "../utility/hooks";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { gql } from 'graphql-tag';
+import { TextField, Button, Container, Stack, Alert, Checkbox, FormControlLabel, withTheme } from "@mui/material";
 import { blue } from '@mui/material/colors';
 import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
@@ -19,11 +19,12 @@ const LOGIN_USER = gql`
             email
             token 
             privilege
+            image
         }
     }
 `
 
-function Login(props){
+function Login(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
@@ -35,7 +36,7 @@ function Login(props){
     });
 
     // Get checkbox state
-    useEffect(() =>{
+    useEffect(() => {
         const data = window.localStorage.getItem('checkbox')
         if (data !== null) setChecked(JSON.parse(data))
     }, [])
@@ -54,47 +55,46 @@ function Login(props){
     const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
-    function loginUserCallback(){
+    function loginUserCallback() {
         loginUser();
     }
 
-    const {onChange, onSubmit, values} = useForm(loginUserCallback,{
-        email:"",
-        password:""
+    const { onChange, onSubmit, values } = useForm(loginUserCallback, {
+        email: "",
+        password: ""
     });
 
-    const [loginUser]  = useMutation(LOGIN_USER,{
-        update(proxy,{data:{loginUser: userData}}){
+    const [loginUser] = useMutation(LOGIN_USER, {
+        update(proxy, { data: { loginUser: userData } }) {
             context.login(userData)
-            if(checked == true)
+            if (checked === true)
                 window.localStorage.setItem('...', JSON.stringify(userData.email));
 
-            localStorage.setItem("firstname",userData.firstname);
-            localStorage.setItem("lastname",userData.lastname);
-            localStorage.setItem("token",userData.token);
-            
-            if(STUDENT_EMAIL.test(userData.email)){
-                // go to student page 
-                 window.location.href = '/student';
-            }else if(PROFESSOR_EMAIL.test(userData.email)){
-                // go to professor page 
-                if(userData.privilege === "coordinator")
-                    window.location.href = '/coordinator';
-                else
-                    window.location.href = '/professor';
-            }else{
-                window.location.href = '/professor';
+            localStorage.setItem("_id", userData._id);
+            localStorage.setItem("firstname", userData.firstname);
+            localStorage.setItem("lastname", userData.lastname);
+            localStorage.setItem("privilege", userData.privilege);
+            localStorage.setItem("token", userData.token);
+            localStorage.setItem("image",userData.image)
+            if (userData.privilege === 'student') {
+                window.location.href = '/student';
+            } else if (userData.privilege === 'coordinator') {
+                window.location.href = '/coordinator';
+            } else if (userData.privilege === 'professor') {
+                window.location.href = '/professor'
+            } else {
+                console.log("User doesn't exist");
             }
         },
-        onError({graphQLErrors}){
+        onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
-        variables:{loginInput:values}
+        variables: { loginInput: values }
     });
 
-    
-    return(
-        
+
+    return (
+
         // coding front end part 
         <div className='webPage'>
             <div className='loginContainer'>
@@ -103,52 +103,55 @@ function Login(props){
                     <h3>Login</h3>
 
                     <Button sx={
-                        {backgroundColor: 'red',
-                        marginBottom: '8%',
-                        marginRight: 'auto',
-                        marginLeft: 'auto',
-                        display: 'block',
-                        }} 
-                    variant="contained">MyUCF coming soon</Button>
+                        {
+                            backgroundColor: 'red',
+                            marginBottom: '8%',
+                            marginRight: 'auto',
+                            marginLeft: 'auto',
+                            display: 'block',
+                        }}
+                        variant="contained">MyUCF coming soon</Button>
 
                     <Stack spacing={2} paddingBottom={2}>
                         <TextField sx={{
-                            input: { color: 'white' } ,
-                           
-                              '& .MuiOutlinedInput-root': {
+                            input: { color: 'white' },
+
+                            '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: 'white',
+                                    borderColor: 'white',
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: 'yellow',},
+                                    borderColor: 'yellow',
+                                },
                             },
-                            
+
                         }}
-                            InputLabelProps={{className: 'mylabel'}}
-                            label = "Email" 
-                            name = "email"
+                            InputLabelProps={{ className: 'mylabel' }}
+                            label="Email"
+                            name="email"
                             defaultValue={log}
                             onChange={onChange}
                         />
                         <TextField sx={{
-                            input: { color: 'white' } ,
+                            input: { color: 'white' },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: 'white',
+                                    borderColor: 'white',
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: 'yellow',},
+                                    borderColor: 'yellow',
+                                },
                             },
-                        }} 
-                            InputLabelProps={{className: 'mylabel'}}
+                        }}
+                            InputLabelProps={{ className: 'mylabel' }}
                             type="password"
                             label="Password"
                             name="password"
                             onChange={onChange}
                         />
                     </Stack>
-                    {errors.map(function(error){
-                        return(
+                    {errors.map(function (error) {
+                        return (
                             <Alert severity="error">
                                 {error.message}
                             </Alert>
@@ -160,28 +163,28 @@ function Login(props){
                         marginLeft: 'auto',
                         marginBottom: '5%',
                         width: '100%',
-                    }}variant="contained" onClick={onSubmit}>Login</Button>
+                    }} variant="contained" onClick={onSubmit}>Login</Button>
                     <FormControlLabel control={
-                    <Checkbox
-                    id='rememberCheck'
-                    checked={checked}
-                    onChange={handleChange}
-                    sx={{
-                        color: 'white',
-                        '&.Mui-checked': {
-                          color: blue[500],
-                        },
-                    }}
-                    />}label="Remember Email"/>
-                    <br/>
+                        <Checkbox
+                            id='rememberCheck'
+                            checked={checked}
+                            onChange={handleChange}
+                            sx={{
+                                color: 'white',
+                                '&.Mui-checked': {
+                                    color: blue[500],
+                                },
+                            }}
+                        />} label="Remember Email" />
+                    <br />
                     <span><a href='/'>  Forgot password?</a></span>
-                    
+
 
                 </Container>
             </div>
             <div className='imageContainer'>
-                    <Slider>
-                    </Slider>
+                <Slider>
+                </Slider>
             </div>
         </div>
 

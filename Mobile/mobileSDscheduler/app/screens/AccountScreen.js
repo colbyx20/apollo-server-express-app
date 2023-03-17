@@ -22,7 +22,7 @@ function AccountScreen(props) {
         icon="email"
         keyboardType="email-address"
         placeholder="UCF Email"
-        textContectType="emailAddress" //might need to remove
+        textContextType="emailAddress" //might need to remove
       />
       <AppTextInput
         autoCapitalize="none"
@@ -30,7 +30,7 @@ function AccountScreen(props) {
         icon="lock"
         placeholder="Password"
         secureTextEntry
-        textContectType="password" //might need to remove
+        textContextType="password" //might need to remove
       />
       <View style={styles.container}>
         <AppButton
