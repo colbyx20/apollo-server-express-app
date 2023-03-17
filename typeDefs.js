@@ -81,7 +81,6 @@ scalar DateTime
         groupName: String
         projectField: String
         groupNumber: Int
-        memberCount: Int
     } 
     
     input UserInput {
@@ -232,7 +231,7 @@ scalar DateTime
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
         getAllUsers : [Users]
-        getAllGroups :[Group]
+        getGroupsByCoordinator (coordinatorId: String) :[Group]
         getGroupMembers (studentId: String): groups
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime

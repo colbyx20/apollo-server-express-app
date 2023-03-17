@@ -39,19 +39,31 @@ const resolvers = {
         },
         getGroupMembers: async (_, { studentId }) => {
             const UID = Mongoose.Types.ObjectId(studentId);
-            return await Group.findOne({ members: { $in: [UID] } }).populate('members')
-        },
-        getAllGroups: async () => {
-            return await Group.aggregate([
+            // return await Group.findOne({ members: { $in: [UID] } }).populate('members')
+            const getUserGroup = await Users.findOne({ _id: UID });
+            const group = await Group.aggregate([
+                { $match: { _id: getUserGroup.groupId } },
                 {
-                    $lookup:
-                    {
+                    $lookup: {
                         from: "users",
-                        localField: "members",
-                        foreignField: "_id",
+                        localField: "_id",
+                        foreignField: "groupId",
                         as: "members"
                     }
-                }]);
+                }
+            ])
+
+            return {
+                _id: group[0]._id,
+                coordinatorId: group[0].coordinatorId,
+                groupName: group[0].groupName,
+                groupId: group[0].groupId,
+                members: group[0].members
+            }
+        },
+        getGroupsByCoordinator: async (_, { coordinatorId }) => {
+            const CID = Mongoose.Types.ObjectId(coordinatorId)
+            return await Group.find({ coordinatorId: CID });
         },
         getProfessorsAppointments: async (_, { profId }) => {
             const PID = Mongoose.Types.ObjectId(profId)
@@ -266,22 +278,20 @@ const resolvers = {
                         const encryptedPassword = await bcrypt.hash("password", 10);
 
                         const groupId = await Group.findOne({ coordinatorId: CID, groupNumber: row[2] });
-                        console.log("My groups");
-                        console.log(groupId);
 
                         // Build out mongoose model 
                         const newStudent = new Users({
                             userFName: row[0].toLowerCase(),
                             userLName: row[1].toLowerCase(),
                             role: "",
-                            groupNumber: row[2],
+                            groupNumber: groupId._id,
                             coordinatorId: ID
                         });
 
                         // Save user in MongoDB
                         const res = await newStudent.save();
 
-                        await Group.findOneAndUpdate({ coordinatorId: CID, groupNumber: row[2] }, { $push: { members: newStudent._id } });
+                        // await Group.findOneAndUpdate({ coordinatorId: CID, groupNumber: row[2] }, { $push: { members: newStudent._id } });
 
                         // create JWT (attach to user model)
                         const token = jwt.sign(
@@ -771,7 +781,7 @@ const resolvers = {
                             groupName: row[1],
                             projectField: "",
                             groupNumber: parseInt(row[0]),
-                            groupMembers: { type: mongoose.Schema.Types.ObjectId, default: null }
+                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null }
                         });
 
                         // Save user in MongoDB
