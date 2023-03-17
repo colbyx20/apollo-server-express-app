@@ -224,7 +224,6 @@ scalar DateTime
         _id: ID!
         groupName: String
         members: [groupMembers]
-        coordinatorId:ID
     }
 
     type Query {
