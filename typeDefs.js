@@ -240,6 +240,7 @@ scalar DateTime
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
+        getGroupAppointment(studentId: String) : CoordSchedule2
     }
 
     type Mutation {

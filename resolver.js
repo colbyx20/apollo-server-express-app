@@ -37,6 +37,12 @@ const resolvers = {
         getAllProfessors: async () => {
             return await Professors.find();
         },
+        getGroupAppointment: async (_, { studentId }) => {
+            const UID = Mongoose.Types.ObjectId(studentId);
+            console.log(UID);
+            const groupInfo = await Users.findOne({ _id: UID });
+            return await CoordSchedule.findOne({ groupId: groupInfo.groupId });
+        },
         getGroupMembers: async (_, { studentId }) => {
             const UID = Mongoose.Types.ObjectId(studentId);
             // return await Group.findOne({ members: { $in: [UID] } }).populate('members')
@@ -758,7 +764,6 @@ const resolvers = {
                     } catch (e) {
                         throw new ApolloError("Something Went Wrong!");
                     }
-
                 }
             });
 

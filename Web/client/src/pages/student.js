@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material";
 import CustomSidebar from '../components/Sidebar';
 import { GetGroupMembers } from '../components/GetGroupMembers';
+import { GetGroupAppointment } from '../components/GetGroupAppointment';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import "../components/css/student.css";
 
@@ -48,6 +49,7 @@ function Student(props) {
                                 </div>
                                 <div className='displayNotification'>
                                     <p className='notificationTitle'>Design Meeting <NotificationsNoneIcon /></p>
+                                    <div><GetGroupAppointment SID={user.id} /></div>
                                 </div>
 
                             </div>

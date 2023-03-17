@@ -36,16 +36,20 @@ export const GetGroupMembers = ({ SID }) => {
         <table>
             <tbody>
                 <tr key={myData._id}>
-                    <td>Group Name: {myData.groupName}</td>
+                    <td style={{ border: "2px solid black" }}>Group Name: {myData.groupName}</td>
                 </tr>
                 <tr>
-                    <td>Group Number: {myData.groupNumber}</td>
+                    <td style={{ border: "2px solid black" }}>Group Number: {myData.groupNumber}</td>
                 </tr>
-                <tr>
-                    <td>User: {myData.members.map((member) => {
-                        return (<tr>{member.userFName + " " + member.userLName + " " + member.role}</tr>)
-                    })}</td>
-                </tr>
+                <table>
+                    <tbody>
+                        <tr >
+                            <td style={{ border: "2px solid black" }}>User: {myData.members.map((member) => {
+                                return (<tr>{member.userFName + " " + member.userLName + " - " + member.role}</tr>)
+                            })}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </tbody>
         </table >
     )
