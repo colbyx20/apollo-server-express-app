@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { gql } from 'graphql-tag';
+const RESET_PASSWORD = gql`
+    mutation Mutation($resetPassword: resetPassword) {
+        resetPassword(resetPassword: $resetPassword)
+    }
+`
 function PasswordChangeModal(props) {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
