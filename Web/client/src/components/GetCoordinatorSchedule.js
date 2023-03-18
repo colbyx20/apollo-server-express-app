@@ -62,10 +62,10 @@ export const GetCoordinatorSchedule = (props) => {
                         >
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.time}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId.groupName}</TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId.groupNumber}</TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.attending2.map((e) => {
-                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e.fullName}</span>
+                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupName}</TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupNumber}</TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.attending2?.map((e) => {
+                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}</span>
                             })}</TableCell>
                         </TableRow>
                         )
