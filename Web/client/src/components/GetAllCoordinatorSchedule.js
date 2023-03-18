@@ -10,23 +10,28 @@ import Paper from '@mui/material/Paper';
 import './css/getgroups.css';
 
 const GET_All_COORDINATOR_SCHEDULE = gql`
-    query Query {
-        getAllCoordinatorSchedule {
+query Query {
+    getAllCoordinatorSchedule {
+        _id
+        coordinatorInfo {
             _id
-            time
-            room
-            numberOfAttending
-            groupId {
+            coordinatorFName
+            coordinatorLName
+        }
+        time
+        room
+        numberOfAttending
+        groupId {
             groupName
             groupNumber
             projectField
-            }
-            attending2 {
+        }
+        attending2 {
             _id
             fullName
-            }
         }
     }
+}
 `
 
 export const GetAllCoordinatorSchedule = (props) => {
@@ -64,6 +69,7 @@ export const GetAllCoordinatorSchedule = (props) => {
                                 {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}{new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                                 {new Date(coordinator.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                             </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo.coordinatorFName + " " + coordinator.coordinatorInfo.coordinatorLName} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupName}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupNumber}</TableCell>
