@@ -130,7 +130,15 @@ const resolvers = {
             ])
         },
         getAllCoordinatorSchedule: async () => {
-            return await CoordSchedule.aggregate([
+            const user = await CoordSchedule.aggregate([
+                {
+                    $lookup: {
+                        from: "coordinators",
+                        localField: "coordinatorID",
+                        foreignField: "_id",
+                        as: "coordinatorInfo"
+                    }
+                },
                 {
                     $lookup: {
                         from: "groups",
@@ -141,13 +149,17 @@ const resolvers = {
                 },
                 {
                     $project: {
-                        coordinatorID: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
+                        coordinatorID: 1, coordinatorInfo: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
                 { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
+                { $unwind: "$coordinatorInfo" },
                 { $sort: { coordinatorID: 1, time: 1 } }
             ])
+
+            console.log(user);
+            return user;
         },
         getCoordinatorSchedule: async (_, { CID }) => {
             const coordCID = Mongoose.Types.ObjectId(CID)

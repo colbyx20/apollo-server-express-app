@@ -188,6 +188,13 @@ scalar DateTime
         _id:ID!
         fullName: String
     }
+
+    type coordinatorDetails {
+        _id:ID
+        coordinatorFName: String
+        coordinatorLName: String
+    }
+
     type CoordSchedule2 {
         _id: ID
         room: String
@@ -196,6 +203,17 @@ scalar DateTime
         attending: [String]
         attending2: [profData]
         groupId: groupData
+    }
+
+    type getAllCoordScheduleFormat {
+        _id: ID
+        room: String
+        time: DateTime
+        numberOfAttending: Int
+        attending: [String]
+        attending2: [profData]
+        groupId: groupData
+        coordinatorInfo: coordinatorDetails
     }
 
     input coordinatorSInput {
@@ -250,7 +268,7 @@ scalar DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
-        getAllCoordinatorSchedule:[CoordSchedule2]
+        getAllCoordinatorSchedule:[getAllCoordScheduleFormat]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
