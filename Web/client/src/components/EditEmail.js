@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button} from '@mui/material';
+import { TextField, Button } from '@mui/material';
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
 import '../components/css/editaccout.css'
@@ -28,8 +28,8 @@ function EditEmailPopup(props) {
     props.onClose();
     // call function to update username with newUsername value
   };
-  const notificationEmail = useMutation(NOTIFICATION_EMAIL,{
-    variables:{editNotificationEmailId2:localStorage.getItem('_id'),email:inputEmail}
+  const notificationEmail = useMutation(NOTIFICATION_EMAIL, {
+    variables: { editNotificationEmailId2: localStorage.getItem('_id'), email: "inputEmail" }
   })
   return (
     <div className="popup">
@@ -37,33 +37,35 @@ function EditEmailPopup(props) {
         <h2 className='popUpTitle'>Edit Email</h2>
         <form onSubmit={handleSubmit}>
           <TextField
-          autoFocus
-          margin="dense"
-          id="email"
-          label="New Email"
-          type="text"
-          fullWidth
-          style={{ width: "75%",  margin: "auto",
-          display: "flex",
-          alignItems: "center"}}
-          sx={{
-            color: "#D0A300", // Set the text color
-            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#000", // Set the outline color
-            },
-            "&.Mui-focused .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#000", // Set the outline color on focus
-            },
-          }}
-          InputLabelProps={{ className: 'editLabel' }}
-          value={newEmail}
-          error={!isValid}
-          helperText={!isValid ? "Please enter a valid email address" : ""}
-          onChange={handleInputChange}
-        />
+            autoFocus
+            margin="dense"
+            id="email"
+            label="New Email"
+            type="text"
+            fullWidth
+            style={{
+              width: "75%", margin: "auto",
+              display: "flex",
+              alignItems: "center"
+            }}
+            sx={{
+              color: "#D0A300", // Set the text color
+              "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#000", // Set the outline color
+              },
+              "&.Mui-focused .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#000", // Set the outline color on focus
+              },
+            }}
+            InputLabelProps={{ className: 'editLabel' }}
+            value={newEmail}
+            error={!isValid}
+            helperText={!isValid ? "Please enter a valid email address" : ""}
+            onChange={handleInputChange}
+          />
           <Button variant="contained" color="primary" type="submit"
-          style={{width: "75%",margin: "auto", marginTop: '4px',display: "flex", alignItems: "center"}}
-          disabled={!isValid}>Submit</Button>
+            style={{ width: "75%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
+            disabled={!isValid}>Submit</Button>
           <button className='close-btn' type="button" onClick={props.onClose}>
           </button>
         </form>
