@@ -45,7 +45,7 @@ export const GetGroupMembers = ({ SID }) => {
                     <tbody>
                         <tr >
                             <td style={{ border: "2px solid black" }}>User: {myData.members.map((member) => {
-                                return (<tr>{member.userFName + " " + member.userLName + " - " + member.role}</tr>)
+                                return (<tr key={member._id}>{member.userFName + " " + member.userLName + " - " + member.role}</tr>)
                             })}</td>
                         </tr>
                     </tbody>
