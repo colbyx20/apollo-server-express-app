@@ -28,7 +28,7 @@ function EditEmailPopup(props) {
     props.onClose();
     // call function to update username with newUsername value
   };
-  const notificationEmail = useMutation(NOTIFICATION_EMAIL, {
+  const [notificationEmail] = useMutation(NOTIFICATION_EMAIL, {
     variables: { editNotificationEmailId2: localStorage.getItem('_id'), email: "inputEmail" }
   })
   return (

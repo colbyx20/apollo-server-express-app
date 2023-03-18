@@ -24,7 +24,7 @@ function PasswordChangeModal(props) {
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
     };
-    const resetPassword = useMutation(RESET_PASSWORD,{
+    const [resetPassword] = useMutation(RESET_PASSWORD,{
         variables:
         {
             resetPassword:
