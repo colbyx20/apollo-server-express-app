@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { gql } from 'graphql-tag';
+const RESET_PASSWORD = gql`
+    mutation Mutation($resetPassword: resetPassword) {
+        resetPassword(resetPassword: $resetPassword)
+    }
+`
 function PasswordChangeModal(props) {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -18,7 +24,17 @@ function PasswordChangeModal(props) {
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
     };
-
+    const resetPassword = useMutation(RESET_PASSWORD,{
+        variables:
+        {
+            resetPassword:
+            {
+                email:localStorage.getItem("email"),
+                password:newPassword,
+                confirmPassword:newPassword
+            }
+        }
+    });
     const handleSubmit = (event) => {
         event.preventDefault();
 

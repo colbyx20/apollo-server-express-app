@@ -666,35 +666,22 @@ const resolvers = {
             if (password !== confirmPassword) {
                 throw new ApolloError("Passwords Do Not Match!");
             }
+            try {
+                // encrypt password
+                const encryptedPassword = await bcrypt.hash(password, 10);
+                //find Auth
+                const finduser=UserInfo.findOne({ email: email })
+            
+                // set password from user 
+                const setNewPassword = await Auth.findOneAndUpdate({ userId: finduser.userId }, { password: encryptedPassword, confirmpassword: encryptedPassword });
 
-            if (STUDENT_EMAIL.test(email)) {
-                try {
-                    // encrypt password
-                    const encryptedPassword = await bcrypt.hash(password, 10);
+                setNewPassword.save();
 
-                    // set password from user 
-                    const setNewPassword = await Users.findOneAndUpdate({ email: email }, { password: encryptedPassword, confirmpassword: encryptedPassword });
 
-                    setNewPassword.save();
-
-                } catch (e) {
-                    throw new ApolloError("Email is Invalid");
-                }
-            } else if (PROFESSOR_EMAIL.test(email)) {
-                try {
-                    // encrypt password
-                    const encryptedPassword = await bcrypt.hash(password, 10);
-
-                    // set password from user 
-                    const setNewPassword = await Professors.findOneAndUpdate({ email: email }, { password: encryptedPassword, confirmpassword: encryptedPassword });
-
-                    setNewPassword.save();
-
-                } catch (e) {
-                    throw new ApolloError("Email is Invalid");
-                }
+            } catch (e) {
+                throw new ApolloError("Email is Invalid");
             }
-
+            return true
         },
 
         // might take out if statement to differ between professor and coordinator
@@ -1093,6 +1080,11 @@ const resolvers = {
             const here = await userInfo.findById(ID);
             return here.image
         },
+        editNotificationEmail: async(_,{ID,email}) => {
+            await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
+            const here = await userInfo.findOne({userId:ID});
+            return here.notificationEmail;
+        }
     }
 }
 
