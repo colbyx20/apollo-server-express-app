@@ -2,13 +2,15 @@ import { gql, useQuery } from '@apollo/client';
 import './css/getgroups.css';
 
 const GET_GROUPS = gql`
-    query GetAllGroups {
-        getAllGroups {
-            groupName
-            groupNumber
-            projectField
-        }
+query Query($coordinatorId: String) {
+    getGroupsByCoordinator(coordinatorId: $coordinatorId) {
+        _id
+        coordinatorId
+        groupName
+        groupNumber
+        projectField
     }
+}
 `
 
 const getFilteredData = (query, items) => {
@@ -20,46 +22,50 @@ const getFilteredData = (query, items) => {
 
 export const GetGroups = (props) => {
 
-    const { loading, error, data } = useQuery(GET_GROUPS);
+    const ID = localStorage.getItem('_id');
+
+    const { loading, error, data } = useQuery(GET_GROUPS, {
+        variables: { coordinatorId: ID }
+    });
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
     const search = props.data;
-    const { getAllGroups } = data;
-    const filterItems = getFilteredData(search, getAllGroups);
+    const { getGroupsByCoordinator } = data;
+    const filterItems = getFilteredData(search, getGroupsByCoordinator);
 
 
     return (
         <>
-        <div className='Sticky'>
+            <div className='Sticky'>
                 <h2>Design Projects</h2>
             </div>
-        <table className="coordiantorGroups">
+            <table className="coordiantorGroups">
 
-            <tbody className='coordTableItems'>
-                {filterItems.map((group) => {
-                    return (
-                        <tr key={group.groupNumber}>
-                            <td id='rowNumber'>
-                                <div className='groupContainer'>
-                                    {group.groupName} <br />
-                                    Group Number: {group.groupNumber} <br />
-                                    <div className='optionsContainer'>
-                                    <button id='edit'>Edit</button>
-                                    <button id='delete'>Del</button>
-                                </div>
-                                </div>
-                            </td>
-                            <td id='rowName'>
-                                
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
+                <tbody className='coordTableItems'>
+                    {filterItems.map((group) => {
+                        return (
+                            <tr key={group.groupNumber}>
+                                <td id='rowNumber'>
+                                    <div className='groupContainer'>
+                                        {group.groupName} <br />
+                                        Group Number: {group.groupNumber} <br />
+                                        <div className='optionsContainer'>
+                                            <button id='edit'>Edit</button>
+                                            <button id='delete'>Del</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td id='rowName'>
 
-        </table>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+
+            </table>
         </>
     )
 

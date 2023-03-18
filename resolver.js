@@ -257,7 +257,7 @@ const resolvers = {
             const coordinatorInfo = new UserInfo({
                 userId: res._id,
                 email: email.toLowerCase(),
-                notificationEmail:email.toLowerCase(),
+                notificationEmail: email.toLowerCase(),
                 image: '',
                 privilege: "coordinator"
             })
@@ -332,7 +332,7 @@ const resolvers = {
                         const studentInfo = new UserInfo({
                             userId: res._id,
                             email: email,
-                            notificationEmail:email.toLowerCase(),
+                            notificationEmail: email.toLowerCase(),
                             privilege: "student",
                             image: '',
                         })
@@ -418,7 +418,7 @@ const resolvers = {
                 const studentInfo = new UserInfo({
                     userId: res._id,
                     email: email.toLowerCase(),
-                    notificationEmail:email.toLowerCase(),
+                    notificationEmail: email.toLowerCase(),
                     image: ''
                 })
 
@@ -490,7 +490,7 @@ const resolvers = {
                 const professorInfo = new UserInfo({
                     userId: res._id,
                     email: email.toLowerCase(),
-                    notificationEmail:email.toLowerCase(),
+                    notificationEmail: email.toLowerCase(),
                     image: '',
                     privilege: "professor"
                 })
@@ -614,53 +614,50 @@ const resolvers = {
         confirmEmail: async (_, { confirmEmail: { email } }) => {
 
             // check if email is valid 
-                try {
-                    // check if email is valid 
-                    const isValidEmail = await UserInfo.findOne({notificationEmail: email });
-                    // find the corresponding user info
-                    var who;
-                    var first,last;//first and last name
-                    if(isValidEmail.privilege=='student')
-                    {
-                        who=await Users.findOne({_id:isValidEmail.userId})
-                        first=who.userFName;
-                        last=who.userLName;
-                    }
-                    else if(isValidEmail.privilege == 'professor')
-                    {
-                        who=await Professors.findOne({_id:isValidEmail.userId})
-                        first=who.professorFName;
-                        last=who.professorLName;
-                    }
-                    else if(isValidEmail.privilege=='coordinator')
-                    {
-                        who=await Coordinator.findOne({_id:isValidEmail.userId})
-                        first=who.coordinatorFName
-                        last=who.coordinatorLName
-                    }
+            try {
+                // check if email is valid 
+                const isValidEmail = await UserInfo.findOne({ notificationEmail: email });
+                // find the corresponding user info
+                var who;
+                var first, last;//first and last name
+                if (isValidEmail.privilege == 'student') {
+                    who = await Users.findOne({ _id: isValidEmail.userId })
+                    first = who.userFName;
+                    last = who.userLName;
+                }
+                else if (isValidEmail.privilege == 'professor') {
+                    who = await Professors.findOne({ _id: isValidEmail.userId })
+                    first = who.professorFName;
+                    last = who.professorLName;
+                }
+                else if (isValidEmail.privilege == 'coordinator') {
+                    who = await Coordinator.findOne({ _id: isValidEmail.userId })
+                    first = who.coordinatorFName
+                    last = who.coordinatorLName
+                }
 
 
 
-                    // set up email 
-                    let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+                // set up email 
+                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
-                    // send email to user. 
-                    transport.sendMail({
-                        from: "group13confirmation@gmail.com",
-                        to: email,
-                        subject: "mySDSchedule - Please Confirm Your Account",
-                        html: `<h1>Email Confirmation</h1>
+                // send email to user. 
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Please Confirm Your Account",
+                    html: `<h1>Email Confirmation</h1>
                         <h2>Hello ${first} ${last}</h2>
                         <p>Click Link to reset your password!</p>
                         <p>If you did not select to reset your password please ignore this email</p>
                         </div>`,
-                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                    })
-                } catch (e) {
-                    // email is not valid 
-                    throw new ApolloError("Email IS Not Valid");
-                }
-           
+                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                })
+            } catch (e) {
+                // email is not valid 
+                throw new ApolloError("Email IS Not Valid");
+            }
+
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
 
@@ -804,14 +801,14 @@ const resolvers = {
             return false
         },
         deleteUser: async (_, { ID }) => {
-            const wasDeletedAuth = (await Auth.deleteOne({userId:ID}))
-            const wasDeletedUserInfo = (await UserInfo.deleteOne({userId:ID}))
+            const wasDeletedAuth = (await Auth.deleteOne({ userId: ID }))
+            const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: ID }))
             const wasDeletedUser = (await Users.deleteOne({ _id: ID })).deletedCount;
             return wasDeletedUser;
         },
         deleteProfessor: async (_, { ID }) => {
-            const wasDeletedAuth = (await Auth.deleteOne({userId:ID}))
-            const wasDeletedUserInfo = (await UserInfo.deleteOne({userId:ID}))
+            const wasDeletedAuth = (await Auth.deleteOne({ userId: ID }))
+            const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: ID }))
             const wasDeletedProfessor = (await Professors.deleteOne({ _id: ID })).deletedCount;
             return wasDeletedProfessor;
         },
@@ -915,12 +912,12 @@ const resolvers = {
                 //send out notifications
                 // set up email 
                 let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-        
+
                 //Professor Notification and availability removal
-        
-                for(prof of professorsAttending){
-                    await Professors.updateOne({_id:prof},{$pull:{availSchedule:chrono},$push:{appointments:appoinment._id}})
-                    const notify= await UserInfo.find({userId:prof})
+
+                for (prof of professorsAttending) {
+                    await Professors.updateOne({ _id: prof }, { $pull: { availSchedule: chrono }, $push: { appointments: appoinment._id } })
+                    const notify = await UserInfo.find({ userId: prof })
                     // send email to user. 
                     transport.sendMail({
                         from: "SDSNotifier@gmail.com",
@@ -931,7 +928,7 @@ const resolvers = {
                         </div>`,
                         //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
- 
+
                 }
             }
         },
