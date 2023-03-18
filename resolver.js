@@ -1093,6 +1093,11 @@ const resolvers = {
             const here = await userInfo.findById(ID);
             return here.image
         },
+        editNotificationEmail: async(_,{ID,email}) => {
+            await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
+            const here = await userInfo.findOne({userId:ID});
+            return here.notificationEmail;
+        }
     }
 }
 

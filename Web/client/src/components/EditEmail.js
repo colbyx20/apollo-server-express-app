@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { TextField, Button} from '@mui/material';
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { gql } from 'graphql-tag';
 import '../components/css/editaccout.css'
-
+const NOTIFICATION_EMAIL = gql`
+    mutation Mutation($editNotificationEmailId2: ID!, $email: String!) {
+      editNotificationEmail(ID: $editNotificationEmailId2, email: $email) {
+        newEmail
+      }
+    }
+`
 function EditEmailPopup(props) {
   const [newEmail, setNewEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -20,7 +28,9 @@ function EditEmailPopup(props) {
     props.onClose();
     // call function to update username with newUsername value
   };
-
+  const notificationEmail = useMutation(NOTIFICATION_EMAIL,{
+    variables:{editNotificationEmailId2:localStorage.getItem('_id'),email:inputEmail}
+  })
   return (
     <div className="popup">
       <div className="popup-inner">

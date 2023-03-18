@@ -55,7 +55,9 @@ scalar DateTime
         password: String
         image: String
     }
-
+    type notificationEmail{
+        newEmail:String
+    }
     type Auth {
         token: String
     }
@@ -277,6 +279,7 @@ scalar DateTime
         createStudentAccounts(CID:ID!): Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
+        editNotificationEmail(ID:ID!,email:String!): notificationEmail
     }
 `
 
