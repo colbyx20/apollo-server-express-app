@@ -82,7 +82,7 @@ const resolvers = {
                 { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupId" } },
                 { $unwind: "$groupId" },
                 { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room" }] } } },
-                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: 1, room: 1 } }
+                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, room: 1 } }
             ])
         },
         availSchedule: async () => {
@@ -141,7 +141,7 @@ const resolvers = {
                 },
                 {
                     $project: {
-                        coordinatorID: 1, room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
+                        coordinatorID: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
@@ -163,7 +163,7 @@ const resolvers = {
                 },
                 {
                     $project: {
-                        coordinatorID: 1, room: 1, time: 1, attending: 1, attending2: 1, numberOfAttending: 1,
+                        coordinatorID: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
                         "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
                     }
                 },
@@ -670,8 +670,8 @@ const resolvers = {
                 // encrypt password
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 //find Auth
-                const finduser=UserInfo.findOne({ email: email })
-            
+                const finduser = UserInfo.findOne({ email: email })
+
                 // set password from user 
                 const setNewPassword = await Auth.findOneAndUpdate({ userId: finduser.userId }, { password: encryptedPassword, confirmpassword: encryptedPassword });
 
@@ -1080,9 +1080,9 @@ const resolvers = {
             const here = await userInfo.findById(ID);
             return here.image
         },
-        editNotificationEmail: async(_,{ID,email}) => {
+        editNotificationEmail: async (_, { ID, email }) => {
             await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
-            const here = await userInfo.findOne({userId:ID});
+            const here = await userInfo.findOne({ userId: ID });
             return here.notificationEmail;
         }
     }

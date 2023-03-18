@@ -60,7 +60,11 @@ export const GetCoordinatorSchedule = (props) => {
                             key={coordinator._id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
                         >
-                            <TableCell sx={{ color: 'white' }} align='left'>{coordinator.time}</TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'>
+                                {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
+                                {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}{new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                                {new Date(coordinator.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                            </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupName}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupNumber}</TableCell>
