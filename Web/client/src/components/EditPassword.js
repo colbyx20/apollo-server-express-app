@@ -24,7 +24,17 @@ function PasswordChangeModal(props) {
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
     };
-
+    const resetPassword = useMutation(RESET_PASSWORD,{
+        variables:
+        {
+            resetPassword:
+            {
+                email:localStorage.getItem("email"),
+                password:newPassword,
+                confirmPassword:newPassword
+            }
+        }
+    });
     const handleSubmit = (event) => {
         event.preventDefault();
 
