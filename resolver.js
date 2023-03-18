@@ -257,6 +257,7 @@ const resolvers = {
             const coordinatorInfo = new UserInfo({
                 userId: res._id,
                 email: email.toLowerCase(),
+                notificationEmail:email.toLowerCase(),
                 image: '',
                 privilege: "coordinator"
             })
@@ -331,6 +332,7 @@ const resolvers = {
                         const studentInfo = new UserInfo({
                             userId: res._id,
                             email: email,
+                            notificationEmail:email.toLowerCase(),
                             privilege: "student",
                             image: '',
                         })
@@ -416,6 +418,7 @@ const resolvers = {
                 const studentInfo = new UserInfo({
                     userId: res._id,
                     email: email.toLowerCase(),
+                    notificationEmail:email.toLowerCase(),
                     image: ''
                 })
 
@@ -487,6 +490,7 @@ const resolvers = {
                 const professorInfo = new UserInfo({
                     userId: res._id,
                     email: email.toLowerCase(),
+                    notificationEmail:email.toLowerCase(),
                     image: '',
                     privilege: "professor"
                 })
@@ -610,10 +614,32 @@ const resolvers = {
         confirmEmail: async (_, { confirmEmail: { email } }) => {
 
             // check if email is valid 
-            if (STUDENT_EMAIL.test(email)) {
                 try {
                     // check if email is valid 
-                    const isValidEmail = await Users.findOne({ email });
+                    const isValidEmail = await UserInfo.findOne({notificationEmail: email });
+                    // find the corresponding user info
+                    var who;
+                    var first,last;//first and last name
+                    if(isValidEmail.privilege=='student')
+                    {
+                        who=await Users.findOne({_id:isValidEmail.userId})
+                        first=who.userFName;
+                        last=who.userLName;
+                    }
+                    else if(isValidEmail.privilege == 'professor')
+                    {
+                        who=await Professors.findOne({_id:isValidEmail.userId})
+                        first=who.professorFName;
+                        last=who.professorLName;
+                    }
+                    else if(isValidEmail.privilege=='coordinator')
+                    {
+                        who=await Coordinator.findOne({_id:isValidEmail.userId})
+                        first=who.coordinatorFName
+                        last=who.coordinatorLName
+                    }
+
+
 
                     // set up email 
                     let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
@@ -624,7 +650,7 @@ const resolvers = {
                         to: email,
                         subject: "mySDSchedule - Please Confirm Your Account",
                         html: `<h1>Email Confirmation</h1>
-                        <h2>Hello ${isValidEmail.firstname} ${isValidEmail.lastname}</h2>
+                        <h2>Hello ${first} ${last}</h2>
                         <p>Click Link to reset your password!</p>
                         <p>If you did not select to reset your password please ignore this email</p>
                         </div>`,
@@ -634,31 +660,7 @@ const resolvers = {
                     // email is not valid 
                     throw new ApolloError("Email IS Not Valid");
                 }
-            } else if (PROFESSOR_EMAIL.test(email)) {
-                try {
-                    // check if email is valid 
-                    const isValidEmail = await Professors.findOne({ email }, { _id: 1, email: 1, firstname: 1, lastname: 1 });
-
-                    // set up email 
-                    let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-
-                    // send email to user. 
-                    transport.sendMail({
-                        from: "group13confirmation@gmail.com",
-                        to: email,
-                        subject: "mySDSchedule - Please Confirm Your Account",
-                        html: `<h1>Email Confirmation</h1>
-                        <h2>Hello ${isValidEmail.firstname} ${isValidEmail.lastname}</h2>
-                        <p>Click Link to reset your password!</p>
-                        <p>If you did not select to reset your password please ignore this email</p>
-                        </div>`,
-                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                    })
-                } catch (e) {
-                    // email is not valid 
-                    throw new ApolloError("Email IS Not Valid");
-                }
-            }
+           
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
 
@@ -802,10 +804,14 @@ const resolvers = {
             return false
         },
         deleteUser: async (_, { ID }) => {
+            const wasDeletedAuth = (await Auth.deleteOne({userId:ID}))
+            const wasDeletedUserInfo = (await UserInfo.deleteOne({userId:ID}))
             const wasDeletedUser = (await Users.deleteOne({ _id: ID })).deletedCount;
             return wasDeletedUser;
         },
         deleteProfessor: async (_, { ID }) => {
+            const wasDeletedAuth = (await Auth.deleteOne({userId:ID}))
+            const wasDeletedUserInfo = (await UserInfo.deleteOne({userId:ID}))
             const wasDeletedProfessor = (await Professors.deleteOne({ _id: ID })).deletedCount;
             return wasDeletedProfessor;
         },
@@ -908,7 +914,7 @@ const resolvers = {
 
                 //send out notifications
                 // set up email 
-                /*let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+                let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
         
                 //Professor Notification and availability removal
         
@@ -918,7 +924,7 @@ const resolvers = {
                     // send email to user. 
                     transport.sendMail({
                         from: "SDSNotifier@gmail.com",
-                        to: notify.email,
+                        to: notify.notificationEmail,
                         subject: "A Senior Design final Review has been schedule",
                         html: `<h1>Demo Notin appointment at ${appointment.time} in room ${appointment.room}</h2>
                         <p>If you need to cancel please get on the app or visit our website to do so  </p>
@@ -927,7 +933,6 @@ const resolvers = {
                     })
  
                 }
-            }*/
             }
         },
         roomChange: async (_, { CID, newRoom }) => {
@@ -953,7 +958,7 @@ const resolvers = {
                 const notify = await UserInfo.find({ userId: lead._id });
                 transport.sendMail({
                     from: "SDSNotifier@gmail.com",
-                    to: notify.email,
+                    to: notify.notificationEmail,
                     subject: "A Senior Design final Review has been schedule",
                     html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
             <p>Please reschedule a new proffessor</p>
@@ -968,18 +973,17 @@ const resolvers = {
             }
             //coordinator
             else if (canceler.privilege == 'coordinator') {
-                var effected
                 if (reason == "Group")// cancel on groups behalf
                 {
                     if (appointment.attending.length > 0)//Group had professors
                     {
                         for (prof of appointment.attending)//send email and update
                         {
-                            effected = await UserInfo.findOne({ userId: prof });
+                            const effected = await UserInfo.findOne({ userId: prof });
                             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
-                                to: effected.email,
+                                to: effected.notificationEmail,
                                 subject: "A Senior Design final Review has been canceled",
                                 html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
                         <p>If you need to cancel please get on the app or visit our website to do so  </p>
@@ -1004,11 +1008,11 @@ const resolvers = {
                         const notify = await UserInfo.find({ userId: lead._id });
                         transport.sendMail({
                             from: "SDSNotifier@gmail.com",
-                            to: notify.email,
+                            to: notify.notificationEmail,
                             subject: "A Senior Design final Review has been schedule",
-                            html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
-                    <p>Please reschedule a new proffessor</p>
-                    </div>`,
+                            html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
+                            <p>Please reschedule a new proffessor</p>
+                            </div>`,
                             //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
                     }
@@ -1016,15 +1020,15 @@ const resolvers = {
                     {
                         for (prof of appointment.attending)//send email and update
                         {
-                            effected = await UserInfo.findOne({ userId: prof });
+                            const profe = await UserInfo.findOne({ userId: prof });
                             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
-                                to: effected.email,
+                                to: profe.email,
                                 subject: "A Senior Design final Review has been canceled",
-                                html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
-                        <p>If you need to cancel please get on the app or visit our website to do so  </p>
-                        </div>`,
+                                html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
+                                 <p>Thank you for your understanding</p>
+                                </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                             await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
