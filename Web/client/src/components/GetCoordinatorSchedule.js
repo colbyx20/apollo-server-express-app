@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, NetworkStatus } from '@apollo/client';
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,10 +29,12 @@ const GET_SCHEDULE = gql`
 
 export const GetCoordinatorSchedule = ({ ID }) => {
 
-    const { loading, error, data } = useQuery(GET_SCHEDULE, {
-        variables: { cid: ID }
+    const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE, {
+        variables: { cid: ID },
+        notifyOnNetworkStatusChange: true,
     });
 
+    if (networkStatus === NetworkStatus.refetch) return 'Refetching!';
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
@@ -40,6 +42,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
+            <button onClick={() => refetch()}>Refetch</button>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
