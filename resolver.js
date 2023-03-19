@@ -1062,7 +1062,7 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
 
             try {
-                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending2: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
+                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, numberOfAppointments: { $lt: 3 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
                 const date = new Date(coordinatorInfo.time);
 
                 const matchProfessors = await Professors.aggregate([
@@ -1098,7 +1098,21 @@ const resolvers = {
             await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
             const here = await userInfo.findOne({ userId: ID });
             return here.notificationEmail;
-        }
+        },
+        deleteProfessorAppointment: async (_, { professorId, scheduleId }) => {
+            const PID = Mongoose.Types.ObjectId(professorId);
+            const SCID = Mongoose.Types.ObjectId(scheduleId);
+
+            try {
+                await Promise.all([
+                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $pull: { attending2: { _id: PID } } }, { new: true }),
+                    Professors.findOneAndUpdate({ _id: PID }, { $pull: { appointments: SCID } }, { new: true })
+                ]);
+                return true;
+            } catch (e) {
+                throw new ApolloError("Appointment cannot be Deleted");
+            }
+        },
     }
 }
 

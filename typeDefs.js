@@ -298,6 +298,7 @@ scalar DateTime
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
         editNotificationEmail(ID:ID!,email:String!): notificationEmail
+        deleteProfessorAppointment(professorId:String, scheduleId:String) : Boolean
     }
 `
 
