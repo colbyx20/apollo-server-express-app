@@ -1109,7 +1109,7 @@ const resolvers = {
 
             try {
                 await Promise.all([
-                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $pull: { attending2: { _id: PID } } }, { new: true }),
+                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $inc: { numberOfAttending: -1 }, $pull: { attending2: { _id: PID } } }, { new: true }),
                     Professors.findOneAndUpdate({ _id: PID }, { $pull: { appointments: SCID } }, { new: true })
                 ]);
                 return true;
