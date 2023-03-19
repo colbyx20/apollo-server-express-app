@@ -7,6 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+
 import './css/getgroups.css';
 
 const GET_SCHEDULE = gql`
@@ -42,7 +44,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
-            <button onClick={() => refetch()}>Refetch</button>
+            <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}>Refetch</Button>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
