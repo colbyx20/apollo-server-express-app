@@ -55,7 +55,7 @@ scalar DateTime
         password: String
         image: String
     }
-    type notificationEmail{
+    type notificationEmail {
         newEmail:String
     }
     type Auth {
