@@ -1094,13 +1094,14 @@ const resolvers = {
             }
         },
         updateProfilePic: async (_, { ID, ppURL }) => {
-            await userInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
-            const here = await userInfo.findById(ID);
+            await UserInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
+            const here = await UserInfo.findById(ID);
             return here.image
         },
         editNotificationEmail: async (_, { ID, email }) => {
-            await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
-            const here = await userInfo.findOne({ userId: ID });
+            const newEmail = email
+            await UserInfo.updateOne({ userId: ID }, { $set: { notificationEmail: newEmail } });
+            const here = await UserInfo.findOne({ userId: ID });
             return here.notificationEmail;
         },
         deleteProfessorAppointment: async (_, { professorId, scheduleId }) => {
