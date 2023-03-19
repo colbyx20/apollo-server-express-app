@@ -1060,25 +1060,38 @@ const resolvers = {
         RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
 
             const coordinatorId = Mongoose.Types.ObjectId(CID)
+            const MAX_APPOINTMENTS = 3;
 
             try {
-                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, numberOfAppointments: { $lt: 3 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
+                const coordinatorInfo = await CoordSchedule.findOne(
+                    { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
+                    { coordinatorID: 1, attending: 1, attending2: 1, time: 1, numberOfAttending: 1 });
+
                 const date = new Date(coordinatorInfo.time);
+
+                console.log(coordinatorInfo);
+
+                console.log("sampleSize");
+                console.log(MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending)
 
                 const matchProfessors = await Professors.aggregate([
                     { $match: { availSchedule: date } },
-                    { $sample: { size: 3 } },
+                    { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                     { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                 ])
+                console.log("My Matches");
+                console.log(matchProfessors);
 
-                if (matchProfessors.length >= 3) {
+                if (matchProfessors) {
                     const professorInfo = matchProfessors.map((professor) => ({
                         _id: professor._id,
                         fullName: professor.fullName
                     }));
 
+                    console.log("DO i get here?");
+
                     await Promise.all([
-                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $push: { attending2: { $each: professorInfo } } }),
+                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: 1 }, $push: { attending2: { $each: professorInfo } } }),
                         Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                     ]);
 
@@ -1086,7 +1099,7 @@ const resolvers = {
                 }
                 return false;
             } catch (e) {
-                throw new ApolloError("err");
+                return false;
             }
         },
         updateProfilePic: async (_, { ID, ppURL }) => {
