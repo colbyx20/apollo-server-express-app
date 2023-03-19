@@ -1069,26 +1069,17 @@ const resolvers = {
 
                 const date = new Date(coordinatorInfo.time);
 
-                console.log(coordinatorInfo);
-
-                console.log("sampleSize");
-                console.log(MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending)
-
                 const matchProfessors = await Professors.aggregate([
                     { $match: { availSchedule: date } },
                     { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                     { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                 ])
-                console.log("My Matches");
-                console.log(matchProfessors);
 
                 if (matchProfessors) {
                     const professorInfo = matchProfessors.map((professor) => ({
                         _id: professor._id,
                         fullName: professor.fullName
                     }));
-
-                    console.log("DO i get here?");
 
                     await Promise.all([
                         CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
