@@ -1,4 +1,4 @@
-import { gql, useQuery, NetworkStatus } from '@apollo/client';
+import { gql, useQuery, NetworkStatus, useMutation } from '@apollo/client';
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,6 +29,13 @@ const GET_SCHEDULE = gql`
     }
 `
 
+const GENERATE_APPOINTMENT = gql`
+    mutation RandomlySelectProfessorsToAGroup($cid: ID!) {
+    RandomlySelectProfessorsToAGroup(CID: $cid)
+    }
+
+`
+
 export const GetCoordinatorSchedule = ({ ID }) => {
 
     const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE, {
@@ -36,15 +43,25 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         notifyOnNetworkStatusChange: true,
     });
 
+    const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
+
     if (networkStatus === NetworkStatus.refetch) return 'Refetching!';
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
     const { getCoordinatorSchedule } = data;
 
+    function handleCreateGenerateViewers(e, ID) {
+        e.preventDefault()
+        randomlySelectProfessorsToAGroup({
+            variables: { cid: ID },
+        }).then(() => { refetch() });
+    }
+
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'auto' }}>
             <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}>Refetch</Button>
+            <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
             <Table stickyTable aria-label="sticky table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
