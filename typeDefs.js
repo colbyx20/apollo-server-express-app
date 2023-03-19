@@ -101,6 +101,7 @@ scalar DateTime
         name: String
         lastname: String
         email: String
+        notificationEmail: String
         password: String
         group: String
     }

@@ -43,9 +43,9 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const { getCoordinatorSchedule } = data;
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'auto' }}>
             <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}>Refetch</Button>
-            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+            <Table stickyTable aria-label="sticky table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
                         <TableCell sx={{ color: 'white' }} align='left'>Time</TableCell>
@@ -70,7 +70,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupName}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupNumber}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.attending2?.map((e) => {
-                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}</span>
+                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}<br /></span>
                             })}</TableCell>
                         </TableRow>
                         )
