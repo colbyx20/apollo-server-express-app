@@ -27,23 +27,21 @@ export const GetGroupAppointment = ({ SID }) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
     const myData = data.getGroupAppointment
-    // console.log(data.getGroupMembers);
-    console.log("My Data");
-    console.log(myData);
+
     return (
         <table>
             <tbody>
-                <tr key={myData._id}>
-                    <td style={{ border: "2px solid black" }}>Time: {myData.time}</td>
+                <tr key={myData?._id}>
+                    <td style={{ border: "2px solid black" }}>Time: {myData?.time}</td>
                 </tr>
                 <tr>
-                    <td style={{ border: "2px solid black" }}>Room: {myData.room}</td>
+                    <td style={{ border: "2px solid black" }}>Room: {myData?.room}</td>
                 </tr>
                 <table>
                     <tbody>
                         <tr >
-                            <td style={{ border: "2px solid black" }}>Attending Professors: {myData.attending2.map((member) => {
-                                return (<tr key={member._id}>{member.fullName}</tr>)
+                            <td style={{ border: "2px solid black" }}>Attending Professors: {myData?.attending2.map((member) => {
+                                return (<tr key={member?._id}>{member?.fullName}</tr>)
                             })}</td>
                         </tr>
                     </tbody>
