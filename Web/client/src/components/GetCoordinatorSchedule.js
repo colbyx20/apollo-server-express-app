@@ -27,20 +27,16 @@ const GET_SCHEDULE = gql`
     }
 `
 
-export const GetCoordinatorSchedule = (props) => {
-
-    const CID = localStorage.getItem('_id');
+export const GetCoordinatorSchedule = ({ ID }) => {
 
     const { loading, error, data } = useQuery(GET_SCHEDULE, {
-        variables: { cid: CID }
+        variables: { cid: ID }
     });
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    const search = props.data;
     const { getCoordinatorSchedule } = data;
-    console.log(getCoordinatorSchedule);
 
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
