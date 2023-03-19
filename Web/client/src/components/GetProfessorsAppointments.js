@@ -27,20 +27,29 @@ export const GetProfessorsAppointments = (props) => {
     const schedule = data.getProfessorsAppointments;
     console.log(schedule);
 
+    function cancelAppointment(professorId, scheduleId) {
+        console.log(`scheduleID ${scheduleId}`);
+        console.log(`professorId ${professorId}`);
+
+    }
+
     return (
-        <table style={{ color: "white" }}>{
-            schedule.map((s) => {
-                return <tbody>
-                    <tr
-                        style={{ color: "black" }}
-                        key={s._id}>
-                        <td>{s.time}</td>
-                        <td>{s.room}</td>
-                        <td>{s.groupName}</td>
-                        <td>{s.groupNumber}</td>
-                    </tr>
-                </tbody>
-            })
-        }  </table>
-    )
+        <table style={{ color: "white" }}>
+            {schedule.map((s) => {
+                return (
+                    <tbody key={s._id}>
+                        <tr style={{ color: "black" }}>
+                            <td>{s.time}</td>
+                            <td>{s.room}</td>
+                            <td>{s.groupName}</td>
+                            <td>{s.groupNumber}</td>
+                            <td>
+                                <button onClick={() => cancelAppointment(PID, s._id)}>Cancel Meeting</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                );
+            })}
+        </table>
+    );
 }

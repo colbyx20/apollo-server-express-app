@@ -78,11 +78,12 @@ const resolvers = {
             const PID = Mongoose.Types.ObjectId(profId)
             return CoordSchedule.aggregate([
                 { $match: { "attending2._id": PID } },
-                { $project: { groupId: 1, time: 1, room: 1 } },
+                { $project: { _id: 1, groupId: 1, time: 1, room: 1 } },
                 { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupId" } },
                 { $unwind: "$groupId" },
-                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room" }] } } },
-                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, room: 1 } }
+                { $addFields: { original_id: "$_id" } },
+                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room", original_id: "$original_id" }] } } },
+                { $project: { _id: "$original_id", groupName: "$groupName", groupNumber: "$groupNumber", time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, room: 1 } }
             ])
         },
         availSchedule: async () => {
