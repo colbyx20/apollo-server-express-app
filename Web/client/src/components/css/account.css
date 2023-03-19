@@ -93,5 +93,20 @@
     background-color: #D0A300;
     border-radius: 15px;
     text-align: center;
+}
 
+.user-data{
+    margin-left: 25px;
+    margin-bottom: 5px;
+    text-align: left;
+    color: #000;
+}
+
+.userData-container{
+    margin: auto;
+    margin-top: 5px;
+    padding-top: 100px;
+    width: 85%;
+    height: 85%;
+    background-color: beige;
 }

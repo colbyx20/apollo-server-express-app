@@ -75,7 +75,8 @@ function Login(props) {
             localStorage.setItem("lastname", userData.lastname);
             localStorage.setItem("privilege", userData.privilege);
             localStorage.setItem("token", userData.token);
-            localStorage.setItem("image",userData.image)
+            localStorage.setItem("image",userData.image);
+            localStorage.setItem("notificationEmail",userData.notification);
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
             } else if (userData.privilege === 'coordinator') {
