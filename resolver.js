@@ -1091,7 +1091,7 @@ const resolvers = {
                     console.log("DO i get here?");
 
                     await Promise.all([
-                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: 1 }, $push: { attending2: { $each: professorInfo } } }),
+                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
                         Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                     ]);
 
