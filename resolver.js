@@ -78,11 +78,12 @@ const resolvers = {
             const PID = Mongoose.Types.ObjectId(profId)
             return CoordSchedule.aggregate([
                 { $match: { "attending2._id": PID } },
-                { $project: { groupId: 1, time: 1, room: 1 } },
+                { $project: { _id: 1, groupId: 1, time: 1, room: 1 } },
                 { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupId" } },
                 { $unwind: "$groupId" },
-                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room" }] } } },
-                { $project: { _id: 1, groupName: "$groupName", groupNumber: "$groupNumber", time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, room: 1 } }
+                { $addFields: { original_id: "$_id" } },
+                { $replaceRoot: { newRoot: { $mergeObjects: ["$groupId", { time: "$time", room: "$room", original_id: "$original_id" }] } } },
+                { $project: { _id: "$original_id", groupName: "$groupName", groupNumber: "$groupNumber", time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, room: 1 } }
             ])
         },
         availSchedule: async () => {
@@ -1059,25 +1060,29 @@ const resolvers = {
         RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
 
             const coordinatorId = Mongoose.Types.ObjectId(CID)
+            const MAX_APPOINTMENTS = 3;
 
             try {
-                const coordinatorInfo = await CoordSchedule.findOne({ coordinatorID: coordinatorId, attending2: { $size: 0 } }, { coordinatorID: 1, attending: 1, attending2: 1, time: 1 });
+                const coordinatorInfo = await CoordSchedule.findOne(
+                    { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
+                    { coordinatorID: 1, attending: 1, attending2: 1, time: 1, numberOfAttending: 1 });
+
                 const date = new Date(coordinatorInfo.time);
 
                 const matchProfessors = await Professors.aggregate([
                     { $match: { availSchedule: date } },
-                    { $sample: { size: 3 } },
+                    { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                     { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                 ])
 
-                if (matchProfessors.length >= 3) {
+                if (matchProfessors) {
                     const professorInfo = matchProfessors.map((professor) => ({
                         _id: professor._id,
                         fullName: professor.fullName
                     }));
 
                     await Promise.all([
-                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $push: { attending2: { $each: professorInfo } } }),
+                        CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
                         Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                     ]);
 
@@ -1085,19 +1090,34 @@ const resolvers = {
                 }
                 return false;
             } catch (e) {
-                throw new ApolloError("err");
+                return false;
             }
         },
         updateProfilePic: async (_, { ID, ppURL }) => {
-            await userInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
-            const here = await userInfo.findById(ID);
+            await UserInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
+            const here = await UserInfo.findById(ID);
             return here.image
         },
         editNotificationEmail: async (_, { ID, email }) => {
-            await userInfo.updateOne({ userId: ID }, { $set: { notificationEmail: email } });
-            const here = await userInfo.findOne({ userId: ID });
+            const newEmail = email
+            await UserInfo.updateOne({ userId: ID }, { $set: { notificationEmail: newEmail } });
+            const here = await UserInfo.findOne({ userId: ID });
             return here.notificationEmail;
-        }
+        },
+        deleteProfessorAppointment: async (_, { professorId, scheduleId }) => {
+            const PID = Mongoose.Types.ObjectId(professorId);
+            const SCID = Mongoose.Types.ObjectId(scheduleId);
+
+            try {
+                await Promise.all([
+                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $inc: { numberOfAttending: -1 }, $pull: { attending2: { _id: PID } } }, { new: true }),
+                    Professors.findOneAndUpdate({ _id: PID }, { $pull: { appointments: SCID } }, { new: true })
+                ]);
+                return true;
+            } catch (e) {
+                throw new ApolloError("Appointment cannot be Deleted");
+            }
+        },
     }
 }
 
