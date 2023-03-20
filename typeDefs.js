@@ -11,18 +11,7 @@ scalar DateTime
     }
     type Coordinator {
         _id:ID!
-        
-        firstname: String
-        lastname: String
-        email: String
-        password: String
-        confirmpassword: String
-        privilege: Int
-        confirm: Int
-        token: String
-        image: String
-        groups: [Group]
-        schedule: [DateTime]
+        notificationEmail: String
     }
 
     type Users {
@@ -261,6 +250,7 @@ scalar DateTime
 
     type Query {
         getUser(ID:ID!) : Users
+        getCoordinatorEmail(ID:ID!): Coordinator
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
         getAllUsers : [Users]
@@ -300,6 +290,7 @@ scalar DateTime
         updateProfilePic(ID:ID!, ppURL:String!):String
         editNotificationEmail(ID:ID!,email:String!): notificationEmail
         deleteProfessorAppointment(professorId:String, scheduleId:String) : Boolean
+        sendEventEmail(ID: String!, email: String!, privilege: String!) : Boolean
     }
 `
 

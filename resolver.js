@@ -23,10 +23,15 @@ const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.u
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 const resolvers = {
+
     Query: {
         getUser: async (_, { ID }) => {
             const coordinatorId = Mongoose.Types.ObjectId(ID)
             return await Users.findById({ _id: coordinatorId });
+        },
+        getCoordinatorEmail: async (_, { ID }) => {
+            const CID = Mongoose.Types.ObjectId(ID);
+            return UserInfo.findOne({ userId: CID });
         },
         getAllUsers: async () => {
             return await Users.find();
@@ -1092,6 +1097,67 @@ const resolvers = {
             await UserInfo.updateOne({ userId: ID }, { $set: { notificationEmail: newEmail } });
             const here = await UserInfo.findOne({ userId: ID });
             return here.notificationEmail;
+        },
+        sendEventEmail: async (_, { ID, email, privilege }) => {
+            if (ID === undefined || email === undefined) {
+                throw new ApolloError("Must send an email");
+            }
+            try {
+                const CID = Mongoose.Types.ObjectId(ID);
+
+                if (privilege === 'coordinator') {
+                    const [getCoordinator, getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
+                        Coordinator.findOne({ _id: ID }),
+                        CoordSchedule.find({ coordinatorID: ID }),
+                        UserInfo.findOne({ userId: CID }),
+                    ])
+
+                    if (getNotificationEmail.notificationEmail === email) {
+                        console.log(getNotificationEmail);
+                        console.log(getCoordinatorSchedule);
+
+                        let transport = nodemailer.createTransport({
+                            service: "Gmail",
+                            host: process.env.EMAIL_USERNAME,
+                            secure: false,
+                            auth: {
+                                user: process.env.EMAIL_USERNAME,
+                                pass: process.env.EMAIL_PASSWORD
+                            },
+                        });
+
+                        transport.sendMail({
+                            from: "group13confirmation@gmail.com",
+                            to: email,
+                            subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
+                            html: `<h1>Senior Design Appointments </h1>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                      
+                                    ${getCoordinatorSchedule}
+                                        
+                                    </tr>
+                                </tbody>    
+                            </table>
+    
+                            
+    
+                            `,
+                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                        })
+
+                    }
+
+                }
+                // const getNotificationEmail = await UserInfo.findOne({ userId: CID });
+
+                return true;
+
+
+            } catch (e) {
+                throw new ApolloError("Error on Sending Notification Email");
+            }
         },
         deleteProfessorAppointment: async (_, { professorId, scheduleId }) => {
             const PID = Mongoose.Types.ObjectId(professorId);
