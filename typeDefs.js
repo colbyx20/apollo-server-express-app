@@ -31,6 +31,7 @@ scalar DateTime
         privilege: String
         confirm: String
         password: String
+        notificationEmail: String
     }
 
     type UserLogin2 {

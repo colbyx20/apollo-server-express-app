@@ -205,7 +205,8 @@ const resolvers = {
                         email: decodedRefreshToken.email,
                         firstname: decodedRefreshToken.firstname,
                         lastname: decodedRefreshToken.lastname,
-                        privilege: decodedRefreshToken.privilege
+                        privilege: decodedRefreshToken.privilege,
+                        notificationEmail: decodedRefreshToken.notificationEmail
                     },
                     "UNSAFE_STRING", // stored in a secret file 
                     { expiresIn: "1m" }
@@ -586,7 +587,8 @@ const resolvers = {
                             email,
                             firstname: firstname,
                             lastname: lastname,
-                            privilege: userInfo.privilege
+                            privilege: userInfo.privilege,
+                            notificationEmail: userInfo.notificationEmail
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "1m" }
@@ -598,7 +600,8 @@ const resolvers = {
                             email,
                             firstname: firstname,
                             lastname: lastname,
-                            privilege: userInfo.privilege
+                            privilege: userInfo.privilege,
+                            notificationEmail: userInfo.notificationEmail
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "2h" }
@@ -614,6 +617,7 @@ const resolvers = {
                         email: userInfo.email,
                         token: accessToken,
                         privilege: userInfo.privilege,
+                        notificationEmail: userInfo.notificationEmail,
                         image: userInfo.image
 
                     }
