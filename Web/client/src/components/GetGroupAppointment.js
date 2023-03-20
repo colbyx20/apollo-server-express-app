@@ -22,7 +22,6 @@ export const GetGroupAppointment = ({ SID }) => {
     const { loading, error, data } = useQuery(GET_GROUP_APPOINTMENT, {
         variables: { studentId: SID },
     })
-    console.log(data);
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
@@ -31,22 +30,12 @@ export const GetGroupAppointment = ({ SID }) => {
     return (
         <table>
             <tbody>
-                <tr key={myData?._id}>
-                    <td style={{ border: "2px solid black" }}>Time: {myData?.time}</td>
+                <tr >
+                    <td style={{ border: "2px dotted black" }}>Attending Professors: {myData.attending2.map((member) => {
+                        return (<tr key={member._id}>{member.fullName}</tr>)
+                    })}</td>
                 </tr>
-                <tr>
-                    <td style={{ border: "2px solid black" }}>Room: {myData?.room}</td>
-                </tr>
-                <table>
-                    <tbody>
-                        <tr >
-                            <td style={{ border: "2px solid black" }}>Attending Professors: {myData?.attending2.map((member) => {
-                                return (<tr key={member?._id}>{member?.fullName}</tr>)
-                            })}</td>
-                        </tr>
-                    </tbody>
-                </table>
             </tbody>
-        </table >
+        </table>
     )
 }
