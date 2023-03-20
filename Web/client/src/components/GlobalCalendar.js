@@ -10,9 +10,10 @@ const GlobalCalendar = (props) => {
     const requestAbortController = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
+    const [highlightedDays, setHighlightedDays] = useState([]);
 
     const shouldDisableDate = (date) => {
+        fetchHighlightedDays(date)
         const day = dayjs(date).day();
         return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
     };
@@ -75,7 +76,6 @@ const GlobalCalendar = (props) => {
         value={selectedDate}
         onChange={(date) => setSelectedDate(date)}
         renderInput={(props) => null}
-        sx={{ backgroundColor: '#F67537' }}
         renderDay={(day, _value, DayComponentProps) => {
             const isSelected =
                 !DayComponentProps.outsideCurrentMonth &&
