@@ -81,7 +81,7 @@
 .group-container{
     width: 85%;
     height: 225px;
-    background-color: beige;
+    background-color: #231F20;
     margin: auto;
     border-radius: 5px;
     overflow-y: auto;
@@ -101,7 +101,7 @@
     height: 100%;
     padding-top: 8px;
     font-weight: normal;
-    color: #000;
+    color: white;
 }
 
 .group-table{

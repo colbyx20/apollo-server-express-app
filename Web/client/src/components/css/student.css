@@ -36,6 +36,7 @@
     border-radius: 5px;
     background-color: #D0A300;
     overflow-y: auto;
+    color: aliceblue;
 }
 
 .displayNotification{

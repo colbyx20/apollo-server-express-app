@@ -4,6 +4,7 @@ import { useNavigate} from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { add } from 'date-fns';
+import TimeSelectDisplay from '../components/TimeSelectDisplay';
 import GlobalCalendar from '../components/GlobalCalendar';
 import {Button, Badge, TextField, Typography} from "@mui/material";
 import { LocalizationProvider, DatePicker, PickersDay} from '@mui/x-date-pickers';
@@ -191,7 +192,10 @@ function Calendar(props){
                         </div>
                         <div className='rightContainer'>
                             <div className='selectTimes'>
-                                <h2 className='timeTitle'>Select Times</h2>
+                                <h2 className='timeTitle'>Create Schedule</h2>
+                                <div className='timeContainer'>
+                                    <TimeSelectDisplay/>
+                                </div>
                             </div>
                         </div>
                     </div>
