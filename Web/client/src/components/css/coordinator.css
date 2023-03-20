@@ -1,43 +1,43 @@
-*{
+* {
     margin: 0;
     padding: 0;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-.coordPage{
+.coordPage {
     width: 100%;
     height: auto;
     display: flex;
 }
 
-.coordWrapper{
+.coordWrapper {
     width: 100%;
     height: 100vh;
     flex-direction: column;
     overflow-x: hidden;
 }
 
-.userInfo{
+.userInfo {
     /* margin: 0 auto; */
     width: 400px;
     height: 8%;
     min-height: 50px;
 }
 
-.coordHeader{
+.coordHeader {
     padding: 0%;
     margin: 0 auto;
     font-size: 3em;
     padding-top: 5px;
 }
 
-.coordContainer{   
-    margin-top: 10px; 
+.coordContainer {
+    margin-top: 10px;
     width: 95%;
     height: 100px;
 }
 
-.leftLinkContainer{
+.leftLinkContainer {
     margin-left: 5%;
     width: 45%;
     height: 100%;
@@ -47,7 +47,7 @@
     float: left;
 }
 
-.rightLinkContainer{
+.rightLinkContainer {
     width: 45%;
     height: 100%;
     background-color: #D0A300;
@@ -56,7 +56,7 @@
     float: right;
 }
 
-.linkTitle{
+.linkTitle {
     overflow-y: auto;
     margin-bottom: 15px;
     padding-top: 5px;
@@ -64,14 +64,14 @@
     color: #000;
 }
 
-.link{
+.link {
     overflow: hidden;
     padding-left: 5px;
     text-align: left;
     color: #000;
 }
 
-.notificationContainer{
+.notificationContainer {
     width: 100%;
     height: 55%;
     align-items: center;
@@ -79,16 +79,16 @@
     overflow: none;
 }
 
-.notificationBox{
+.notificationBox {
     margin: 10px auto;
     width: 90.5%;
     height: 100%;
     background-color: #D0A300;
     border-radius: 5px;
-    overflow: none;
+    overflow: hidden;
 }
 
-.notificationTitle{
+.notificationTitle {
     color: #000;
     font-size: 1.4em;
     display: flex;
@@ -100,7 +100,7 @@
     font-weight: bold;
 }
 
-.appointmentContainer{
+.appointmentContainer {
     margin: 0 auto;
     width: 90%;
     height: 85%;
@@ -108,15 +108,15 @@
     background-color: bisque;
 }
 
-.appointmentObject{
+.appointmentObject {
     margin: 0 auto;
     padding-top: 15%;
     text-align: center;
     width: 500px;
-    
+
 }
 
-.emailContainer{
+.emailContainer {
     width: 50%;
     height: 20%;
     margin: 0 auto;
@@ -126,7 +126,7 @@
     overflow-y: auto;
 }
 
-.emailTitle{
+.emailTitle {
     padding-top: 2px;
     font-size: 1.3em;
     font-weight: bold;
@@ -134,12 +134,12 @@
     margin-bottom: 5px;
 }
 
-.emailClause{
+.emailClause {
     color: rgb(41, 40, 40);
     margin-bottom: 0px;
 }
 
-.emailSubmit{
+.emailSubmit {
     margin-top: 20px;
     width: 100%;
     height: 50%;
@@ -149,13 +149,13 @@
     text-align: center;
 }
 
-.semesterHeader{
+.semesterHeader {
     padding: 0%;
     font-size: 3em;
     padding-top: 5px;
 }
 
-.searchWrapper{
+.searchWrapper {
     width: 50%;
     max-width: 1300px;
     height: 90%;
@@ -163,7 +163,7 @@
     overflow-y: hidden;
 }
 
-.searchBar{
+.searchBar {
     width: 93%;
     min-width: 400px;
     height: 110px;
@@ -175,7 +175,7 @@
     border-radius: 5px;
 }
 
-.searchInput{
+.searchInput {
     margin-top: 30px;
     margin-left: 15px;
     padding-left: 15px;
@@ -187,13 +187,13 @@
     border-style: none;
 }
 
-.searchInput:focus{
+.searchInput:focus {
     outline: 10px black;
-    border:1px solid red;
+    border: 1px solid red;
     box-shadow: 0 0 5px #030303;
 }
 
-.searchResults{
+.searchResults {
     width: 93%;
     min-width: 380px;
     height: 80%;
@@ -203,14 +203,14 @@
     overflow-y: auto;
 }
 
-.importerWrapper{
+.importerWrapper {
     width: 50%;
     height: 88%;
     float: right;
     overflow: none;
 }
 
-.importer{
+.importer {
     width: 93%;
     height: 75%;
     background-color: #D0A300;
@@ -221,7 +221,7 @@
     border-radius: 15px;
 }
 
-.dangerZone{
+.dangerZone {
     width: 93%;
     height: 22%;
     margin-left: 10px;
@@ -231,7 +231,7 @@
     overflow-y: auto;
 }
 
-.dangerTitle{
+.dangerTitle {
     text-align: center;
     margin-bottom: 2%;
 }

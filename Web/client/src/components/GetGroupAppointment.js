@@ -26,6 +26,7 @@ export const GetGroupAppointment = ({ SID }) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
     const myData = data.getGroupAppointment
+
     return (
         <table>
             <tbody>

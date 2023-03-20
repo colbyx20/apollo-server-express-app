@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, NetworkStatus, useMutation } from '@apollo/client';
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,6 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+
 import './css/getgroups.css';
 
 const GET_SCHEDULE = gql`
@@ -27,24 +29,40 @@ const GET_SCHEDULE = gql`
     }
 `
 
-export const GetCoordinatorSchedule = (props) => {
+const GENERATE_APPOINTMENT = gql`
+    mutation RandomlySelectProfessorsToAGroup($cid: ID!) {
+    RandomlySelectProfessorsToAGroup(CID: $cid)
+    }
 
-    const CID = localStorage.getItem('_id');
+`
 
-    const { loading, error, data } = useQuery(GET_SCHEDULE, {
-        variables: { cid: CID }
+export const GetCoordinatorSchedule = ({ ID }) => {
+
+    const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE, {
+        variables: { cid: ID },
+        notifyOnNetworkStatusChange: true,
     });
 
+    const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
+
+    if (networkStatus === NetworkStatus.refetch) return 'Refetching!';
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    const search = props.data;
     const { getCoordinatorSchedule } = data;
-    console.log(getCoordinatorSchedule);
+
+    function handleCreateGenerateViewers(e, ID) {
+        e.preventDefault()
+        randomlySelectProfessorsToAGroup({
+            variables: { cid: ID },
+        }).then(() => { refetch() });
+    }
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>
-            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'auto' }}>
+            <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}>Refetch</Button>
+            <Button sx={{ color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
+            <Table stickyTable aria-label="sticky table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
                         <TableCell sx={{ color: 'white' }} align='left'>Time</TableCell>
@@ -69,7 +87,7 @@ export const GetCoordinatorSchedule = (props) => {
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupName}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.groupId?.groupNumber}</TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{coordinator.attending2?.map((e) => {
-                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}</span>
+                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}<br /></span>
                             })}</TableCell>
                         </TableRow>
                         )

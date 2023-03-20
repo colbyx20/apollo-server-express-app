@@ -79,7 +79,7 @@ function Coordinator(props) {
                                 <div className='notificationBox'>
                                     <p className='notificationTitle'>Upcoming Events<NotificationsNoneIcon /> </p>
                                     <div className='appointmentContainer'>
-                                        <div ><GetCoordinatorSchedule /></div>
+                                        <div ><GetCoordinatorSchedule ID={user.id} /></div>
                                     </div>
                                 </div>
                             </div>

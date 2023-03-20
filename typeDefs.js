@@ -55,7 +55,7 @@ scalar DateTime
         password: String
         image: String
     }
-    type notificationEmail{
+    type notificationEmail {
         newEmail:String
     }
     type Auth {
@@ -101,6 +101,7 @@ scalar DateTime
         name: String
         lastname: String
         email: String
+        notificationEmail: String
         password: String
         group: String
     }
