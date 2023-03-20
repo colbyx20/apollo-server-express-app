@@ -537,7 +537,6 @@ const resolvers = {
             } else {
                 throw new ApolloError("Invalid Email " + email, " EMAIL IS NOT VALID");
             }
-
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
@@ -1097,10 +1096,9 @@ const resolvers = {
             return here.image
         },
         editNotificationEmail: async (_, { ID, email }) => {
-            const newEmail = email
-            await UserInfo.updateOne({ userId: ID }, { $set: { notificationEmail: newEmail } });
-            const here = await UserInfo.findOne({ userId: ID });
-            return here.notificationEmail;
+            const userId = Mongoose.Types.ObjectId(ID);
+            await UserInfo.updateOne({ userId: userId }, { $set: { notificationEmail: email } });
+            return true;
         },
         sendEventEmail: async (_, { ID, email, privilege }) => {
             if (ID === undefined || email === undefined) {

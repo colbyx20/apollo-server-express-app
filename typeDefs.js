@@ -289,7 +289,7 @@ scalar DateTime
         createStudentAccounts(CID:ID!): Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
-        editNotificationEmail(ID:ID!,email:String!): notificationEmail
+        editNotificationEmail(ID:String!,email:String!): Boolean
         deleteProfessorAppointment(professorId:String, scheduleId:String) : Boolean
         sendEventEmail(ID: String!, email: String!, privilege: String!) : Boolean
     }
