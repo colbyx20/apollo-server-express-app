@@ -1,0 +1,60 @@
+*{
+    margin: 0%;
+    padding: 0%;
+}
+
+.calendar2Page{
+    width: 100%;
+    height: auto;
+    display: flex;
+}
+
+.calendar2Wrapper{
+    width: 100%;
+    height: 100vh;
+    overflow: none;
+}
+
+.leftContainer{
+    width: 50%;
+    height: 91.5%;
+    float: left;
+}
+
+.rightContainer{
+    width: 50%;
+    height: 91.5%;
+    background-color: antiquewhite;
+    float: right;
+}
+
+.calendar-Title{
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.coordWeekContainer{
+    overflow-y: auto;
+    margin: auto;
+    margin-top: 5px;
+    background-color: #D0A300;
+    border-radius: 10px;
+    width: 90%;
+    height: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-container{
+    background-color: #D0A300;
+    border-radius: 10px;
+    width: 90%;
+    height: 62%;
+    margin: auto;
+    margin-top: 15px;
+    overflow-y: auto;
+}
+

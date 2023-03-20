@@ -32,7 +32,7 @@ export const datasidebar = [
     {
         title: <p className='sideBarText'>Calendar</p>,
         icon: <img className='icon' src={Calendar}></img>,
-        link: "/calendar"
+        link: "/calendar2"
     },
     {
         title: <p className='sideBarText'>Logout</p>,

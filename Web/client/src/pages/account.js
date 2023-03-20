@@ -44,7 +44,7 @@ function Account(props){
         logout();
         navigate('/');
     }
-
+    console.log(user)
     return (
         <>
             <div className='accountPage'>
@@ -106,8 +106,11 @@ function Account(props){
                                 
                                 <div className='userData'>
                                 <h2 className='themeTitle'>Information</h2>
-                                <p>Name: {user.firstname} {user.lastname}</p>
-                                <p>Email: {user.email}</p>
+                                    <div className='userData-container'>
+                                        <p className='user-data'>Name: {user.firstname} {user.lastname}</p>
+                                        <p className='user-data'>Account Email: {user.email}</p>
+                                        <p className='user-data'>Notification Email:</p>
+                                    </div>
                                 </div>
                                 {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
                                 {isModalOpen && (
