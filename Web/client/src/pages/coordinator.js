@@ -110,7 +110,7 @@ function Coordinator(props) {
                                     <br />
                                     <Button
                                         variant='contained'
-                                        sx={{ marginTop: '5px', width: '50%' }}
+                                        sx={{ marginTop: '3px', width: '50%', height: '45%' }}
                                         onClick={() => sendEmail()}
                                     >Submit</Button>
                                 </div>
