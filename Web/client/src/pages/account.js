@@ -109,7 +109,7 @@ function Account(props){
                                     <div className='userData-container'>
                                         <p className='user-data'>Name: {user.firstname} {user.lastname}</p>
                                         <p className='user-data'>Account Email: {user.email}</p>
-                                        <p className='user-data'>Notification Email:</p>
+                                        <p className='user-data'>Notification Email:{user.notificationEmail}</p>
                                     </div>
                                 </div>
                                 {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
