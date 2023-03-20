@@ -1,18 +1,19 @@
-import {useContext, useState} from 'react';
-import { AuthContext } from '../context/authContext'; 
+import { useContext, useState } from 'react';
+import { AuthContext } from '../context/authContext';
 import { ThemeContext } from '../context/themeContext'
+import { GetUserInfo } from '../components/GetUserInfo';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
-import {Button, Switch, Grid,FormControlLabel} from "@mui/material";
+import { Button, Switch, Grid, FormControlLabel } from "@mui/material";
 import '../components/css/account.css'
 import ImgUpload from '../components/ImgUpload';
 import EditEmailPopup from '../components/EditEmail';
 import EditPassword from '../components/EditPassword';
 
-function Account(props){
+function Account(props) {
 
     // user data lives in here 
-    const {user, logout} = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
     const theme = useContext(ThemeContext)
     let navigate = useNavigate();
 
@@ -28,29 +29,28 @@ function Account(props){
     };
 
     const handleModalOpen = () => {
-      setIsModalOpen(true);
+        setIsModalOpen(true);
     };
-  
+
     const handleModalClose = () => {
-      setIsModalOpen(false);
+        setIsModalOpen(false);
     };
-  
+
     const handlePasswordChangeSubmit = (oldPassword, newPassword) => {
-      // Handle password change submit logic here
-      console.log(`Password changed from ${oldPassword} to ${newPassword}`);
+        // Handle password change submit logic here
+        console.log(`Password changed from ${oldPassword} to ${newPassword}`);
     };
 
     const onLogout = () => {
         logout();
         navigate('/');
     }
-    console.log(user)
     return (
         <>
             <div className='accountPage'>
-                {user !== null?
+                {user !== null ?
                     <>
-                        <CustomSidebar/>
+                        <CustomSidebar />
                         <div className='accountWrapper'>
                             <div className='userInfo'>
                                 <p className='accountHeader'>Account</p>
@@ -60,29 +60,29 @@ function Account(props){
                                 <div className='accountContainer'>
                                     <h2 className='accountTitle'>Profile Options</h2>
                                     <Button
-                                    onClick={handleEditEmailClick} 
-                                    sx={{
-                                    display: 'block',
-                                    marginTop: '5%',
-                                    marginRight: 'auto',
-                                    marginLeft: 'auto',
-                                    marginBottom: '7px',
-                                    width: '55%',
-                                    }}variant="contained">Email</Button>
+                                        onClick={handleEditEmailClick}
+                                        sx={{
+                                            display: 'block',
+                                            marginTop: '5%',
+                                            marginRight: 'auto',
+                                            marginLeft: 'auto',
+                                            marginBottom: '7px',
+                                            width: '55%',
+                                        }} variant="contained">Email</Button>
 
                                     <Button
-                                    onClick={handleModalOpen}
-                                    sx={{
-                                        display: 'block',
-                                        marginRight: 'auto',
-                                        marginLeft: 'auto',
-                                        marginBottom: '5px',
-                                        width: '55%',
-                                    }}variant="contained">Password</Button>
+                                        onClick={handleModalOpen}
+                                        sx={{
+                                            display: 'block',
+                                            marginRight: 'auto',
+                                            marginLeft: 'auto',
+                                            marginBottom: '5px',
+                                            width: '55%',
+                                        }} variant="contained">Password</Button>
                                 </div>
 
                                 <div className='accountImporter'>
-                                <ImgUpload />
+                                    <ImgUpload />
                                 </div>
                             </div>
 
@@ -93,43 +93,41 @@ function Account(props){
                                         <Grid item>Darkmode</Grid>
                                         <Grid item>
                                             <Switch
-                                            value="checkedA"
-                                            checked={theme.theme === 'light' ? true : false}
-                                            onChange={() => {
-                                                theme.setTheme((curTheme) => curTheme === 'dark' ? 'light' : 'dark')
-                                            }}
+                                                value="checkedA"
+                                                checked={theme.theme === 'light' ? true : false}
+                                                onChange={() => {
+                                                    theme.setTheme((curTheme) => curTheme === 'dark' ? 'light' : 'dark')
+                                                }}
                                             />
                                         </Grid>
                                         <Grid item>Lightmode</Grid>
                                     </Grid>
                                 </div>
-                                
+
                                 <div className='userData'>
-                                <h2 className='themeTitle'>Information</h2>
+                                    <h2 className='themeTitle'>Information</h2>
                                     <div className='userData-container'>
-                                        <p className='user-data'>Name: {user.firstname} {user.lastname}</p>
-                                        <p className='user-data'>Account Email: {user.email}</p>
-                                        <p className='user-data'>Notification Email:{user.notificationEmail}</p>
+                                        <GetUserInfo />
                                     </div>
                                 </div>
                                 {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
                                 {isModalOpen && (
                                     <EditPassword
-                                    handleClose={handleModalClose}
-                                    handlePasswordChangeSubmit={handlePasswordChangeSubmit}
+                                        handleClose={handleModalClose}
+                                        handlePasswordChangeSubmit={handlePasswordChangeSubmit}
                                     />
-                                )} 
+                                )}
                             </div>
 
-                            
+
 
                         </div>
                     </>
-                    : 
+                    :
                     <>
                         <div className='noUser'>
                             <h3>No Page Found</h3>
-                            <Button style={{color:'white'}}onClick={onLogout}>Redirect to Login</Button>
+                            <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
                         </div>
                     </>
                 }

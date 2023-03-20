@@ -23,10 +23,19 @@ const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.u
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
 
 const resolvers = {
+
     Query: {
         getUser: async (_, { ID }) => {
-            const coordinatorId = Mongoose.Types.ObjectId(ID)
-            return await Users.findById({ _id: coordinatorId });
+            const userId = Mongoose.Types.ObjectId(ID)
+            return await Users.findById({ _id: userId });
+        },
+        getUserInfo: async (_, { ID }) => {
+            const userId = Mongoose.Types.ObjectId(ID)
+            return await UserInfo.findOne({ userId: userId });
+        },
+        getCoordinatorEmail: async (_, { ID }) => {
+            const CID = Mongoose.Types.ObjectId(ID);
+            return UserInfo.findOne({ userId: CID });
         },
         getAllUsers: async () => {
             return await Users.find();
@@ -200,7 +209,8 @@ const resolvers = {
                         email: decodedRefreshToken.email,
                         firstname: decodedRefreshToken.firstname,
                         lastname: decodedRefreshToken.lastname,
-                        privilege: decodedRefreshToken.privilege
+                        privilege: decodedRefreshToken.privilege,
+                        notificationEmail: decodedRefreshToken.notificationEmail
                     },
                     "UNSAFE_STRING", // stored in a secret file 
                     { expiresIn: "1m" }
@@ -531,7 +541,6 @@ const resolvers = {
             } else {
                 throw new ApolloError("Invalid Email " + email, " EMAIL IS NOT VALID");
             }
-
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
@@ -557,7 +566,10 @@ const resolvers = {
 
             async function Login(userInfo, authUser, confirmedUser) {
                 if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
+                    console.log(userInfo)
                     let ID = userInfo.userId._id;
+                    console.log("My ID");
+                    console.log(ID);
                     let firstname;
                     let lastname;
 
@@ -581,7 +593,8 @@ const resolvers = {
                             email,
                             firstname: firstname,
                             lastname: lastname,
-                            privilege: userInfo.privilege
+                            privilege: userInfo.privilege,
+                            notificationEmail: userInfo.notificationEmail
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "1m" }
@@ -593,7 +606,8 @@ const resolvers = {
                             email,
                             firstname: firstname,
                             lastname: lastname,
-                            privilege: userInfo.privilege
+                            privilege: userInfo.privilege,
+                            notificationEmail: userInfo.notificationEmail
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "2h" }
@@ -609,6 +623,7 @@ const resolvers = {
                         email: userInfo.email,
                         token: accessToken,
                         privilege: userInfo.privilege,
+                        notificationEmail: userInfo.notificationEmail,
                         image: userInfo.image
 
                     }
@@ -1088,10 +1103,82 @@ const resolvers = {
             return here.image
         },
         editNotificationEmail: async (_, { ID, email }) => {
-            const newEmail = email
-            await UserInfo.updateOne({ userId: ID }, { $set: { notificationEmail: newEmail } });
-            const here = await UserInfo.findOne({ userId: ID });
-            return here.notificationEmail;
+            const userId = Mongoose.Types.ObjectId(ID);
+            await UserInfo.updateOne({ userId: userId }, { $set: { notificationEmail: email } });
+            return true;
+        },
+        sendEventEmail: async (_, { ID, email, privilege }) => {
+            if (ID === undefined || email === undefined) {
+                throw new ApolloError("Must send an email");
+            }
+            try {
+                const CID = Mongoose.Types.ObjectId(ID);
+
+                if (privilege === 'coordinator') {
+                    const [getCoordinator, getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
+                        Coordinator.findOne({ _id: ID }),
+                        CoordSchedule.find({ coordinatorID: ID }),
+                        UserInfo.findOne({ userId: CID }),
+                    ])
+
+                    if (getNotificationEmail.notificationEmail === email) {
+                        console.log(getNotificationEmail);
+                        console.log(getCoordinatorSchedule);
+
+                        let transport = nodemailer.createTransport({
+                            service: "Gmail",
+                            host: process.env.EMAIL_USERNAME,
+                            secure: false,
+                            auth: {
+                                user: process.env.EMAIL_USERNAME,
+                                pass: process.env.EMAIL_PASSWORD
+                            },
+                        });
+
+                        const scheduleTableRows = getCoordinatorSchedule.map((schedule) => {
+                            const estDate = new Date(schedule.time);
+                            return `<tr>
+                                        <td>${estDate.toDateString()}</td>
+                                        <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                                        <td>${schedule.room}</td>
+                                    </tr>`;
+                        }).join('');
+
+                        transport.sendMail({
+                            from: "group13confirmation@gmail.com",
+                            to: email,
+                            subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
+                            html: `<h1>Senior Design Appointments </h1>
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${scheduleTableRows}
+                            </tbody>
+                        </table>
+    
+                            
+    
+                            `,
+                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                        })
+
+                    }
+
+                }
+                // const getNotificationEmail = await UserInfo.findOne({ userId: CID });
+
+                return true;
+
+
+            } catch (e) {
+                throw new ApolloError("Error on Sending Notification Email");
+            }
         },
         deleteProfessorAppointment: async (_, { professorId, scheduleId }) => {
             const PID = Mongoose.Types.ObjectId(professorId);

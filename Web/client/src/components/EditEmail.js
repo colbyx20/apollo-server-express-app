@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button } from '@mui/material';
+import { AuthContext } from '../context/authContext';
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
 import '../components/css/editaccout.css'
+
 const NOTIFICATION_EMAIL = gql`
-    mutation Mutation($editNotificationEmailId2: ID!, $email: String!) {
-      editNotificationEmail(ID: $editNotificationEmailId2, email: $email) {
-        newEmail
-      }
-    }
+  mutation EditNotificationEmail($id: String!, $email: String!) {
+    editNotificationEmail(ID: $id, email: $email)
+  }
 `
+
 function EditEmailPopup(props) {
+  const { user } = useContext(AuthContext);
+  console.log(user);
   const [newEmail, setNewEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [notificationEmail] = useMutation(NOTIFICATION_EMAIL)
 
   const handleInputChange = (event) => {
     const inputEmail = event.target.value;
@@ -25,12 +29,14 @@ function EditEmailPopup(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.onClose();
     // call function to update username with newUsername value
+    notificationEmail({
+      variables: { id: user.id, email: newEmail.toLowerCase() }
+    })
+    props.onClose();
   };
-  const [notificationEmail] = useMutation(NOTIFICATION_EMAIL, {
-    variables: { editNotificationEmailId2: localStorage.getItem('_id'), email: "inputEmail" }
-  })
+
+
   return (
     <div className="popup">
       <div className="popup-inner">
