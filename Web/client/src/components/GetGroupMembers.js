@@ -24,33 +24,27 @@ export const GetGroupMembers = ({ SID }) => {
     const { loading, error, data } = useQuery(GET_MEMBERS, {
         variables: { studentId: SID },
     })
-    console.log(data);
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
     const myData = data.getGroupMembers
-    // console.log(data.getGroupMembers);
-    console.log("My Data");
-    console.log(myData);
+    // <td>Group Name: {myData.groupName}</td>
+    //  <td>Group Number: {myData.groupNumber}</td>
     return (
-        <table>
-            <tbody>
-                <tr key={myData._id}>
-                    <td style={{ border: "2px solid black" }}>Group Name: {myData.groupName}</td>
-                </tr>
-                <tr>
-                    <td style={{ border: "2px solid black" }}>Group Number: {myData.groupNumber}</td>
-                </tr>
-                <table>
-                    <tbody>
-                        <tr >
-                            <td style={{ border: "2px solid black" }}>User: {myData.members.map((member) => {
-                                return (<tr key={member._id}>{member.userFName + " " + member.userLName + " - " + member.role}</tr>)
-                            })}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </tbody>
-        </table >
+        <div className='group-container'>
+            <div className='group-heading'>
+                <h3 className='group-title'>{myData.groupName}</h3>
+                <h3 className='group-title'>Group: {myData.groupNumber}</h3>
+            </div>
+            <table className='group-table'>
+                <tbody>
+                    <tr>
+                        <td className='group-members'>{myData.members.map((member) => {
+                            return (<h4 className='members' key={member._id}>{member.userFName + " " + member.userLName + " - " + member.role}</h4>)
+                        })}</td>
+                    </tr>
+                </tbody>
+            </table >
+        </div>
     )
 }

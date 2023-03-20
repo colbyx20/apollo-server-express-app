@@ -19,8 +19,6 @@ function Student(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
-    console.log("From Student Page");
-    console.log(user);
     let navigate = useNavigate();
 
     var year = new Date().getFullYear()
