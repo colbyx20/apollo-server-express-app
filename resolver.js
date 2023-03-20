@@ -1126,20 +1126,32 @@ const resolvers = {
                             },
                         });
 
+                        const scheduleTableRows = getCoordinatorSchedule.map((schedule) => {
+                            const estDate = new Date(schedule.time);
+                            return `<tr>
+                                        <td>${estDate.toDateString()}</td>
+                                        <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                                        <td>${schedule.room}</td>
+                                    </tr>`;
+                        }).join('');
+
                         transport.sendMail({
                             from: "group13confirmation@gmail.com",
                             to: email,
                             subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
                             html: `<h1>Senior Design Appointments </h1>
                             <table>
-                                <tbody>
-                                    <tr>
-                                      
-                                    ${getCoordinatorSchedule}
-                                        
-                                    </tr>
-                                </tbody>    
-                            </table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${scheduleTableRows}
+                            </tbody>
+                        </table>
     
                             
     
