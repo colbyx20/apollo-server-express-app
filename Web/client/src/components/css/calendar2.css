@@ -24,7 +24,6 @@
 .rightContainer{
     width: 50%;
     height: 91.5%;
-    background-color: antiquewhite;
     float: right;
 }
 
@@ -56,5 +55,13 @@
     margin: auto;
     margin-top: 15px;
     overflow-y: auto;
+}
+
+.selectTimes{
+    width: 90%;
+    height: 90%;
+    margin-top: 25px;
+    background-color: #D0A300;
+    border-radius: 10px;
 }
 

@@ -190,7 +190,9 @@ function Calendar(props){
                             </div>
                         </div>
                         <div className='rightContainer'>
-
+                            <div className='selectTimes'>
+                                <h2 className='timeTitle'>Select Times</h2>
+                            </div>
                         </div>
                     </div>
                 </>
