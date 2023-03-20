@@ -4,13 +4,13 @@ import { AuthContext } from '../context/authContext';
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
 import '../components/css/editaccout.css'
+
 const NOTIFICATION_EMAIL = gql`
-  mutation Mutation($id: ID!, $email: String!) {
-    editNotificationEmail(ID: $id, email: $email) {
-      newEmail
-    }
+  mutation EditNotificationEmail($id: String!, $email: String!) {
+    editNotificationEmail(ID: $id, email: $email)
   }
 `
+
 function EditEmailPopup(props) {
   const { user } = useContext(AuthContext);
   console.log(user);

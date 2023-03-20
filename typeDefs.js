@@ -14,6 +14,12 @@ scalar DateTime
         notificationEmail: String
     }
 
+    type UserInfo {
+        userId: ID!
+        notificationEmail: String
+        email: String
+    }
+
     type Users {
         _id:ID
         userFName: String
@@ -251,6 +257,7 @@ scalar DateTime
 
     type Query {
         getUser(ID:ID!) : Users
+        getUserInfo(ID: String!): UserInfo
         getCoordinatorEmail(ID:ID!): Coordinator
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]

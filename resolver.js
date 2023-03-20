@@ -26,8 +26,12 @@ const resolvers = {
 
     Query: {
         getUser: async (_, { ID }) => {
-            const coordinatorId = Mongoose.Types.ObjectId(ID)
-            return await Users.findById({ _id: coordinatorId });
+            const userId = Mongoose.Types.ObjectId(ID)
+            return await Users.findById({ _id: userId });
+        },
+        getUserInfo: async (_, { ID }) => {
+            const userId = Mongoose.Types.ObjectId(ID)
+            return await UserInfo.findOne({ userId: userId });
         },
         getCoordinatorEmail: async (_, { ID }) => {
             const CID = Mongoose.Types.ObjectId(ID);
@@ -562,7 +566,10 @@ const resolvers = {
 
             async function Login(userInfo, authUser, confirmedUser) {
                 if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
+                    console.log(userInfo)
                     let ID = userInfo.userId._id;
+                    console.log("My ID");
+                    console.log(ID);
                     let firstname;
                     let lastname;
 

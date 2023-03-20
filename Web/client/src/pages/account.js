@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/authContext';
 import { ThemeContext } from '../context/themeContext'
+import { GetUserInfo } from '../components/GetUserInfo';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { Button, Switch, Grid, FormControlLabel } from "@mui/material";
@@ -106,9 +107,7 @@ function Account(props) {
                                 <div className='userData'>
                                     <h2 className='themeTitle'>Information</h2>
                                     <div className='userData-container'>
-                                        <p className='user-data'>Name: {user.firstname} {user.lastname}</p>
-                                        <p className='user-data'>Account Email: {user.email}</p>
-                                        <p className='user-data'>Notification Email:{user.notificationEmail}</p>
+                                        <GetUserInfo />
                                     </div>
                                 </div>
                                 {isEditingEmail && (<EditEmailPopup onClose={handleEditEmailClose} />)}
