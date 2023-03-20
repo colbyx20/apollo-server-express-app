@@ -1,5 +1,6 @@
 import {useContext, useState} from 'react';
 import { AuthContext } from '../context/authContext'; 
+import { ThemeContext } from '../context/themeContext'
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import {Button, Switch, Grid,FormControlLabel} from "@mui/material";
@@ -12,6 +13,7 @@ function Account(props){
 
     // user data lives in here 
     const {user, logout} = useContext(AuthContext);
+    const theme = useContext(ThemeContext)
     let navigate = useNavigate();
 
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -92,6 +94,10 @@ function Account(props){
                                         <Grid item>
                                             <Switch
                                             value="checkedA"
+                                            checked={theme.theme === 'light' ? true : false}
+                                            onChange={() => {
+                                                theme.setTheme((curTheme) => curTheme === 'dark' ? 'light' : 'dark')
+                                            }}
                                             />
                                         </Grid>
                                         <Grid item>Lightmode</Grid>

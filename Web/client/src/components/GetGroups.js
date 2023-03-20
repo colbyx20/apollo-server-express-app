@@ -1,5 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
 import './css/getgroups.css';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button } from "@mui/material";
 
 const GET_GROUPS = gql`
 query Query($coordinatorId: String) {
@@ -35,7 +38,6 @@ export const GetGroups = (props) => {
     const { getGroupsByCoordinator } = data;
     const filterItems = getFilteredData(search, getGroupsByCoordinator);
 
-
     return (
         <>
             <div className='Sticky'>
@@ -52,8 +54,10 @@ export const GetGroups = (props) => {
                                         {group.groupName} <br />
                                         Group Number: {group.groupNumber} <br />
                                         <div className='optionsContainer'>
-                                            <button id='edit'>Edit</button>
-                                            <button id='delete'>Del</button>
+                                            {/* <button id='edit'><ModeEditIcon /></button>
+                                            <button id='delete'><DeleteIcon /></button> */}
+                                            <Button size="small" sx={{backgroundColor: 'blue', color: 'white'}}><ModeEditIcon /></Button>
+                                            <Button size="small" sx={{backgroundColor: 'red', color: 'white'}}><DeleteIcon /></Button>
                                         </div>
                                     </div>
                                 </td>

@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { ThemeContext } from './context/themeContext'
+import './index.css';
 import Homepage from './pages/homepage';
 import Register from './pages/register';
 import Login from './pages/login';
@@ -11,12 +13,15 @@ import Calendar from "./pages/calendar";
 import Semester from "./pages/semester";
 import Account from "./pages/account";
 
-const ThemeContext = createContext(null)
-
 function App() {
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
+
+  useEffect(()=> {
+    window.localStorage.setItem('theme', theme)
+  }, [theme])
+
   return (
-    <div>
+    <div className="app" data-theme={theme}>
       {/* <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Loginpath />} />
@@ -30,7 +35,7 @@ function App() {
         <Route path="/semester" element={<Semester />} />
       </Routes> */}
 
-      <ThemeContext.Provider value={theme} >
+      <ThemeContext.Provider value={{theme, setTheme}} >
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Loginpath />} />
@@ -38,7 +43,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/student" element={<Student />} />
           <Route path="/professor" element={<Professors />} />
-          <Route path="/calendar" element={<Calendar lightMode={false} />} />
+          <Route path="/calendar" element={<Calendar lightMode={theme === 'dark' ? false : true} />} />
           <Route path="/coordinator" element={<Coordinator />} />
           <Route path="/account" element={<Account />} />
           <Route path="/semester" element={<Semester />} />

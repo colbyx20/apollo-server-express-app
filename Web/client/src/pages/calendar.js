@@ -2,6 +2,7 @@ import CalendarComp from '../components/Calendar'
 import ProfCal from '../components/ProfCalendar'
 import CustomSidebar from '../components/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
+import { gql, useQuery } from '@apollo/client';
 
 import { useState } from 'react';
 import { ThemeProvider, createTheme, colors } from '@mui/material';
@@ -57,7 +58,26 @@ const getDesignTokens = (mode) => ({
   },
 });
 
+const GET_COORD_SCHEDULE = gql`
+  query Query {
+    getAllCoordinatorSchedule {
+      time
+      _id
+      coordinatorInfo {
+        _id
+        coordinatorFName
+        coordinatorLName
+      }
+    }
+  }
+`
+
 export default function Calendar( { lightMode } ) {
+
+  const { loading, error, data } = useQuery(GET_COORD_SCHEDULE);
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`
+
 
   const theme = createTheme(getDesignTokens(lightMode))
   return (
@@ -69,7 +89,7 @@ export default function Calendar( { lightMode } ) {
               <p className='calendarHeader'>Calendar</p>
             </div> */}
             <ThemeProvider theme={theme}>
-                <ProfCal className="calendarComponent" />
+                <ProfCal className="calendarComponent" data={data} />
             </ThemeProvider>
           </div>
       </div>
