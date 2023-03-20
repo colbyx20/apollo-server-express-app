@@ -19,6 +19,7 @@ function Coordinator(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
+    console.log(user);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
     const [registerProf, setRegisterProf] = useState("Add to Clipboard");
@@ -46,7 +47,6 @@ function Coordinator(props) {
         sendEventEmail({
             variables: { id: user.id, email: emailInput.toLocaleLowerCase(), privilege: user.privilege }
         })
-        // <SendEmailNotification ID={user.id} email={emailInput} />
     }
 
     return (
