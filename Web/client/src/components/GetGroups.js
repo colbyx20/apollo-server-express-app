@@ -54,8 +54,6 @@ export const GetGroups = (props) => {
                                         {group.groupName} <br />
                                         Group Number: {group.groupNumber} <br />
                                         <div className='optionsContainer'>
-                                            {/* <button id='edit'><ModeEditIcon /></button>
-                                            <button id='delete'><DeleteIcon /></button> */}
                                             <Button size="small" sx={{backgroundColor: 'blue', color: 'white'}}><ModeEditIcon /></Button>
                                             <Button size="small" sx={{backgroundColor: 'red', color: 'white'}}><DeleteIcon /></Button>
                                         </div>

@@ -4,12 +4,14 @@ import { useNavigate} from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { add } from 'date-fns';
+import TimeSelectDisplay from '../components/TimeSelectDisplay';
 import GlobalCalendar from '../components/GlobalCalendar';
 import {Button, Badge, TextField, Typography} from "@mui/material";
 import { LocalizationProvider, DatePicker, PickersDay} from '@mui/x-date-pickers';
 import { CalendarPickerSkeleton } from '@mui/x-date-pickers/CalendarPickerSkeleton';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import "../components/css/calendar2.css"
+import HourSelectDisplay from '../components/HourSelectDisplay';
 
 function Calendar(props){
     const requestAbortController = useRef(null);
@@ -22,6 +24,8 @@ function Calendar(props){
     const [value, setValue] = useState(initialValue);
     const [endValue, setEndValue] = useState(null);
     const maxDate = add(new Date(), { months: 2 });
+    const [selectedDate, setSelectedDate] = useState([]);
+    const [selectedTime, setSelectedTime] = useState([]);
 
 
     // user data lives in here  
@@ -86,6 +90,14 @@ function Calendar(props){
     fetchHighlightedDays(date);
     };
 
+    const handleDateChange = (newDate) => {
+        setSelectedDate(newDate);
+    };
+    
+      const handleTimeChange = (newHour) => {
+        setSelectedTime(newHour);
+    };
+
     const shouldDisableDate = (date) => {
         const day = dayjs(date).day();
         return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
@@ -96,6 +108,11 @@ function Calendar(props){
     const handleSubmit = () => {
       // Perform form submission logic here
       setIsSubmitted(true);
+    }
+
+    const handleSaveScheduel = () => {
+        console.log(selectedDate);
+        console.log(selectedTime);
     }
 
     return(
@@ -191,7 +208,19 @@ function Calendar(props){
                         </div>
                         <div className='rightContainer'>
                             <div className='selectTimes'>
-                                <h2 className='timeTitle'>Select Times</h2>
+                                <h2 className='timeTitle'>Create Schedule</h2>
+                                <div className='timeContainer'>
+                                    <TimeSelectDisplay onDateChange={handleDateChange}/>
+                                    <HourSelectDisplay onTimeChange={handleTimeChange}/>
+                                    <Button variant="contained" color="primary" type="submit"
+                                style={{ width: "50%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
+                                >Submit</Button>
+                                </div>
+                                <br/>
+                                <h2 className='timeTitle'>View Schedule</h2>
+                                <div className='viewSchedule'>
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
