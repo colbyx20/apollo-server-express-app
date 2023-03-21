@@ -216,7 +216,6 @@ function Calendar(props){
                                 style={{ width: "50%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
                                 >Submit</Button>
                                 </div>
-                                <br/>
                                 <h2 className='timeTitle'>View Schedule</h2>
                                 <div className='viewSchedule'>
                                     
