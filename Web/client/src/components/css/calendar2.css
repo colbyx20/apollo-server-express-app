@@ -66,7 +66,7 @@
 }
 
 .timeTitle{
-    padding-left: 4.5%;
+    padding-left: 10%;
     padding-top: 5px;
 }
 
@@ -74,8 +74,8 @@
     margin: auto;
     margin-top: 5px;
     padding-top: 10px;
-    background-color: #231F20;
-    width: 92%;
+    background-color: bisque;
+    width: 82%;
     height: 30%;
     border-radius: 10px;
     display: flex;
@@ -89,4 +89,19 @@
     width: 92%;
 }
 
+.hourContainer{
+    margin: auto;
+    margin-top: 5px;
+    background-color: bisque;
+    width: 82%;
+    height: 35%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
 
+.css-6od3lo-MuiChip-label{
+    color: black !important;
+}

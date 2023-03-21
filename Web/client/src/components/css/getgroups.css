@@ -74,8 +74,9 @@
     text-align: center;
     padding-top: 5px;
     padding-bottom: 2px;
-    background-color: beige;
+    background-color: bisque;
     border-radius: 5px;
+    z-index: 9;
 }
 
 .group-container{
@@ -115,4 +116,7 @@
     font-size: large;
 }
 
-
+.StickyHeader{
+    position: sticky; top: 0;
+    width: 100%;
+}

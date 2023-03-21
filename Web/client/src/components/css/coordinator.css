@@ -107,6 +107,7 @@
     height: 85%;
     margin-bottom: 5px;
     background-color: bisque;
+    overflow-y: auto;
 }
 
 .appointmentObject {
@@ -114,7 +115,6 @@
     padding-top: 15%;
     text-align: center;
     width: 500px;
-
 }
 
 .emailContainer {
