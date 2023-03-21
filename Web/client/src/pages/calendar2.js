@@ -211,11 +211,16 @@ function Calendar(props){
                                 <h2 className='timeTitle'>Create Schedule</h2>
                                 <div className='timeContainer'>
                                     <TimeSelectDisplay onDateChange={handleDateChange}/>
-                                </div>
-                                <div className='hourContainer'>
                                     <HourSelectDisplay onTimeChange={handleTimeChange}/>
+                                    <Button variant="contained" color="primary" type="submit"
+                                style={{ width: "50%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
+                                >Submit</Button>
                                 </div>
-                                <button onClick={handleSaveScheduel}>Submit</button>
+                                <br/>
+                                <h2 className='timeTitle'>View Schedule</h2>
+                                <div className='viewSchedule'>
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
