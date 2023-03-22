@@ -255,6 +255,11 @@ scalar DateTime
         coordinatorId:ID
     }
 
+    type File {
+        groupNumber: String 
+        groupName: String
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getUserInfo(ID: String!): UserInfo
@@ -289,7 +294,7 @@ scalar DateTime
         loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createGroup(CID:ID!): Boolean
+        createGroup(CID:ID!, groupNumber: String, groupName: String): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule

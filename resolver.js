@@ -802,46 +802,32 @@ const resolvers = {
 
             return true;
         },
-        createGroup: async (_, { CID }) => {
+        createGroup: async (_, { CID, groupNumber, groupName }) => {
 
             if (CID === "") {
                 throw new ApolloError("Please fill all Fields!");
             }
 
+            try {
+                const ID = Mongoose.Types.ObjectId(CID);
+                const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count();
+                if (!checkUniqueGroup) {
+                    // create a new group Document
+                    const newGroup = new Group({
+                        coordinatorId: ID,
+                        groupName: groupName,
+                        projectField: "",
+                        groupNumber: parseInt(groupNumber),
+                    });
 
-            let inputStream = Fs.createReadStream('./csv/group.csv', 'utf8');
-
-            inputStream
-                .pipe(new CsvReadableStream({ parseNumbers: true, parseBooleans: true, trim: true }))
-                .on('data', async function (row) {
-
-                    // console.log(row);
-
-                    const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: parseInt(row[0]) }).count();
-                    // if group doesn't exist, make one
-                    if (!checkUniqueGroup) {
-
-                        const ID = Mongoose.Types.ObjectId(CID);
-                        // create a new group Document
-                        const newGroup = new Group({
-                            coordinatorId: ID,
-                            groupName: row[1],
-                            projectField: "",
-                            groupNumber: parseInt(row[0]),
-                            groupId: { type: mongoose.Schema.Types.ObjectId, default: null }
-                        });
-
-                        // Save user in MongoDB
-                        const res = await newGroup.save();
-
-                        // return res
-                        return true;
-                    }
-                })
-                .on('end', function () {
-                    console.log("Success");
-                })
-            return false
+                    // Save user in MongoDB
+                    await newGroup.save();
+                    return true;
+                }
+            } catch (error) {
+                throw new ApolloError("CSV Failed");
+            }
+            return true
         },
         deleteUser: async (_, { ID }) => {
             const wasDeletedAuth = (await Auth.deleteOne({ userId: ID }))
