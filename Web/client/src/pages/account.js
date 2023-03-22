@@ -27,6 +27,7 @@ function Account(props) {
 
     const [isEditingEmail, setIsEditingEmail] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [profileUpdate, setProfileUpdate] = useState('');
 
     const handleEditEmailClick = () => {
         setIsEditingEmail(true);
@@ -45,19 +46,25 @@ function Account(props) {
     };
 
     const [updatePassword] = useMutation(UPDATE_USER_PASSWORD);
-    const handlePasswordChangeSubmit = (oldPassword, newPassword) => {
-        // Handle password change submit logic here
-        console.log(`Password changed from ${oldPassword} to ${newPassword}`);
+    const handlePasswordChangeSubmit = async (oldPassword, newPassword) => {
 
-        updatePassword({
-            variables: {
-                id: user.id,
-                oldPassword: oldPassword,
-                newPassword: newPassword,
-                confirmedPassword: newPassword
-            }
-        })
+        try {
+            // Handle password change submit logic here
+            console.log(`Password changed from ${oldPassword} to ${newPassword}`);
 
+            await updatePassword({
+                variables: {
+                    id: user.id,
+                    oldPassword: oldPassword,
+                    newPassword: newPassword,
+                    confirmedPassword: newPassword
+                }
+            })
+
+            setProfileUpdate("Password Has Been Updated");
+        } catch (error) {
+            setProfileUpdate(error.message);
+        }
     };
 
     const onLogout = () => {
@@ -98,6 +105,7 @@ function Account(props) {
                                             marginBottom: '5px',
                                             width: '55%',
                                         }} variant="contained">Password</Button>
+                                    <span className='passwordUpdate'>{profileUpdate}</span>
                                 </div>
 
                                 <div className='accountImporter'>
@@ -137,9 +145,6 @@ function Account(props) {
                                     />
                                 )}
                             </div>
-
-
-
                         </div>
                     </>
                     :

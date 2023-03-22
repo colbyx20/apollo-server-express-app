@@ -13,7 +13,6 @@ const NOTIFICATION_EMAIL = gql`
 
 function EditEmailPopup(props) {
   const { user } = useContext(AuthContext);
-  console.log(user);
   const [newEmail, setNewEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [notificationEmail] = useMutation(NOTIFICATION_EMAIL)

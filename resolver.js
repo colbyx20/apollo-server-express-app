@@ -698,9 +698,8 @@ const resolvers = {
                     throw new ApolloError("current password doesn't Match!");
                 }
                 return true;
-
             } catch (e) {
-                throw new ApolloError("Password was not updated!");
+                throw new ApolloError("Current Password Does Not Match!");
             }
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
