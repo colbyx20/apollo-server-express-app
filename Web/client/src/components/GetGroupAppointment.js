@@ -31,7 +31,7 @@ export const GetGroupAppointment = ({ SID }) => {
         <table>
             <tbody>
                 <tr >
-                    <td style={{ border: "2px dotted black" }}>Attending Professors: {myData.attending2.map((member) => {
+                    <td style={{ border: "2px dotted black" }}>Attending Professors: {myData?.attending2.map((member) => {
                         return (<tr key={member._id}>{member.fullName}</tr>)
                     })}</td>
                 </tr>
