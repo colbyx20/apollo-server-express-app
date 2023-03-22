@@ -220,6 +220,16 @@ const resolvers = {
                 return "Unauthorized User"
             }
         },
+        getCoordinatorTimeRange: async (_, { CID }) => {
+            const ID = Mongoose.Types.ObjectId(CID);
+            try {
+                return await CoordSchedule.aggregate([{ $match: { coordinatorID: ID } }, { $project: { time: 1, _id: 0 } }])
+
+            } catch (error) {
+                throw new ApolloError("Coordinator Error");
+            }
+
+        }
     },
     Mutation: {
         registerCoordinator: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
@@ -802,32 +812,106 @@ const resolvers = {
 
             return true;
         },
-        createGroup: async (_, { CID, groupNumber, groupName }) => {
+        createClass: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname }) => {
 
             if (CID === "") {
                 throw new ApolloError("Please fill all Fields!");
             }
 
+            async function createAllUserCollections(ID, groupNumber, groupName, userLogin, password, firstname, lastname) {
+
+                const encryptedPassword = await bcrypt.hash(password, 10);
+
+                const newGroup = new Group({
+                    coordinatorId: ID,
+                    groupName: groupName.toLowerCase(),
+                    projectField: "",
+                    groupNumber: parseInt(groupNumber),
+                });
+
+                newGroup.save();
+
+                // Build out mongoose model 
+                const newStudent = new Users({
+                    userFName: firstname.toLowerCase(),
+                    userLName: lastname.toLowerCase(),
+                    role: "",
+                    groupId: newGroup._id,
+                    coordinatorId: ID
+                });
+
+                newStudent.save()
+
+                // console.log(newGroup);
+                // console.log(newStudent);
+
+                // const [groupResult, studentResult] = await Promise.all([
+                //     newGroup.save(),
+                //     newStudent.save()
+                // ])
+
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    { id: newStudent._id, email, privilege: "student" },
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+
+                // create professors auth information in separate collection called Auth
+                const authStudent = new Auth({
+                    userId: newStudent._id,
+                    password: encryptedPassword,
+                    confirm: true,
+                    token: token
+                })
+
+                authStudent.save();
+
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId: studentResult._id,
+                    email: userLogin.toLowerCase(),
+                    notificationEmail: "",
+                    privilege: "student",
+                    image: '',
+                })
+                studentInfo.save();
+
+                // console.log(authStudent);
+                // console.log(studentInfo);
+
+                // const [auth, info] = await Promise.all([
+                //     authStudent.save(),
+                //     studentInfo.save()
+                // ])
+            }
+
             try {
                 const ID = Mongoose.Types.ObjectId(CID);
-                const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count();
-                if (!checkUniqueGroup) {
-                    // create a new group Document
-                    const newGroup = new Group({
-                        coordinatorId: ID,
-                        groupName: groupName,
-                        projectField: "",
-                        groupNumber: parseInt(groupNumber),
-                    });
+                const encryptedPassword = await bcrypt.hash(password, 10);
 
-                    // Save user in MongoDB
-                    await newGroup.save();
-                    return true;
+                const [checkUniqueGroup, isStudentActive] = await Promise.all([
+                    Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count(),
+                    Users.findOne({ email: userLogin }).count()
+                ])
+
+                // console.log(`${checkUniqueGroup} ${isStudentActive}`)
+
+                if (checkUniqueGroup == 1 && isStudentActive == 1) {
+                    return false;
+                } else {
+                    try {
+                        await createAllUserCollections(ID, groupNumber, groupName, userLogin, encryptedPassword, firstname, lastname)
+                        return true;
+                    } catch (error) {
+                        throw new ApolloError("Something Went Wrong");
+                    }
                 }
             } catch (error) {
                 throw new ApolloError("CSV Failed");
             }
-            return true
         },
         deleteUser: async (_, { ID }) => {
             const wasDeletedAuth = (await Auth.deleteOne({ userId: ID }))
@@ -1206,30 +1290,27 @@ const resolvers = {
                 throw new ApolloError("Appointment cannot be Deleted");
             }
         },
-        deleteGroup: async (_, { groupId } ) => {
-            const findGroup = Users.find({groupId:groupId})
-            for(member of findGroup)
-            {
+        deleteGroup: async (_, { groupId }) => {
+            const findGroup = Users.find({ groupId: groupId })
+            for (member of findGroup) {
                 const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
                 const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
             }
-            const deleteMebers= await Users.deleteMany({groupId:groupId})
-            const deleteGroup= await Group.deleteOne({_id:groupId})
+            const deleteMebers = await Users.deleteMany({ groupId: groupId })
+            const deleteGroup = await Group.deleteOne({ _id: groupId })
             return true
         },
-        deleteAllGroups: async(_,{CID})=>{
-            const relevantGroups = await Group.find({coordinatorId:CID})
-            for(group of relevantGroups)
-            {
-                const findGroup = await Users.find({groupId:group._id})
-                for(member of findGroup)
-                {
+        deleteAllGroups: async (_, { CID }) => {
+            const relevantGroups = await Group.find({ coordinatorId: CID })
+            for (group of relevantGroups) {
+                const findGroup = await Users.find({ groupId: group._id })
+                for (member of findGroup) {
                     await Auth.deleteOne({ userId: member._id })
                     await UserInfo.deleteOne({ userId: member._id })
                 }
-                await Users.deleteMany({groupId:group._id})
+                await Users.deleteMany({ groupId: group._id })
             }
-            await Group.deleteMany({coordinatorId:CID})
+            await Group.deleteMany({ coordinatorId: CID })
             return true
         }
     }
@@ -1238,3 +1319,32 @@ const resolvers = {
 module.exports = resolvers;
 
 
+
+// Delete users and authUsers.
+// db.users.aggregate([
+//     {
+//       $lookup: {
+//         from: "information",
+//         localField: "_id",
+//         foreignField: "user_id",
+//         as: "user_info"
+//       }
+//     },
+//     {
+//       $match: {
+//         _id: { $exists: true }
+//       }
+//     },
+//     {
+//       $unwind: "$user_info"
+//     },
+//     {
+//       $project: {
+//         user_id: "$_id",
+//         info_id: "$user_info._id"
+//       }
+//     }
+//   ]).forEach(function(doc) {
+//     db.information.deleteOne({ _id: doc.info_id });
+//     db.users.deleteOne({ _id: doc.user_id });
+//   });

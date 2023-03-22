@@ -10,9 +10,9 @@ import { AuthContext } from '../context/authContext';
 import Papa from "papaparse";
 
 
-const CREATE_GROUPS = gql`
-    mutation Mutation($cid: ID!, $groupNumber: String, $groupName: String) {
-    createGroup(CID: $cid, groupNumber: $groupNumber, groupName: $groupName)
+const CREATE_CLASS = gql`
+    mutation Mutation($cid: ID!, $groupNumber: String, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String) {
+    createClass(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname)
     }
 `
 
@@ -21,7 +21,7 @@ function FileUpload() {
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [createGroup] = useMutation(CREATE_GROUPS)
+    const [createClass] = useMutation(CREATE_CLASS)
 
     const reset = () => {
         setFileName("No selected file")
@@ -40,11 +40,15 @@ function FileUpload() {
             complete: function (results) {
                 console.log(results.data)
                 results.data.forEach((row) => {
-                    createGroup({
+                    createClass({
                         variables: {
                             cid: user.id,
                             groupNumber: row[0],
                             groupName: row[1],
+                            userLogin: row[2],
+                            password: row[3],
+                            firstname: row[4],
+                            lastname: row[5]
                         }
                     })
                 })
