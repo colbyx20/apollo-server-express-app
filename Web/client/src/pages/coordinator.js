@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useContext, useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
@@ -9,16 +9,24 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { GetCoordinatorSchedule } from '../components/GetCoordinatorSchedule';
 import '../components/css/coordinator.css';
 
+const GET_NOTIFICATION_EMAIL = gql`
+    mutation Mutation($id: String!, $email: String!) {
+        sendEventEmail(ID: $id, email: $email)
+    }
+`
 
 function Coordinator(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
+    console.log(user);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
     const [registerProf, setRegisterProf] = useState("Add to Clipboard");
     const [registerCoord, setRegisterCoord] = useState("Add to Clipboard");
+    const [emailInput, setEmailInput] = useState('');
 
+    const [sendEventEmail] = useMutation(GET_NOTIFICATION_EMAIL)
 
     const onLogout = () => {
         logout();
@@ -33,6 +41,12 @@ function Coordinator(props) {
     const onRegisterCoord = () => {
         navigator.clipboard.writeText("http://localhost:3000/registerCoordinator");
         setRegisterCoord("Copied");
+    }
+
+    function sendEmail() {
+        sendEventEmail({
+            variables: { id: user.id, email: emailInput.toLocaleLowerCase(), privilege: user.privilege }
+        })
     }
 
     return (
@@ -79,7 +93,7 @@ function Coordinator(props) {
                                 <div className='notificationBox'>
                                     <p className='notificationTitle'>Upcoming Events<NotificationsNoneIcon /> </p>
                                     <div className='appointmentContainer'>
-                                        <div ><GetCoordinatorSchedule /></div>
+                                        <GetCoordinatorSchedule ID={user.id} />
                                     </div>
                                 </div>
                             </div>
@@ -87,12 +101,17 @@ function Coordinator(props) {
                                 <p className='emailTitle'>Email Notifications</p>
                                 <p className='emailClause'>Want to be emailed about upcoming appointments?</p>
                                 <div className='emailSubmit'>
-                                    <TextField size="small"
-                                        sx={{ width: '50%', backgroundColor: 'white', borderRadius: '5px' }}></TextField>
+                                    <TextField
+                                        size="small"
+                                        sx={{ width: '50%', backgroundColor: 'white', borderRadius: '5px' }}
+                                        value={emailInput}
+                                        onChange={(e) => setEmailInput(e.target.value)}
+                                    />
                                     <br />
                                     <Button
                                         variant='contained'
-                                        sx={{ marginTop: '5px', width: '50%' }}
+                                        sx={{ marginTop: '3px', width: '50%', height: '45%' }}
+                                        onClick={() => sendEmail()}
                                     >Submit</Button>
                                 </div>
                             </div>

@@ -19,6 +19,7 @@ const LOGIN_USER = gql`
             email
             token 
             privilege
+            image
         }
     }
 `
@@ -74,16 +75,16 @@ function Login(props) {
             localStorage.setItem("lastname", userData.lastname);
             localStorage.setItem("privilege", userData.privilege);
             localStorage.setItem("token", userData.token);
-
-            if (STUDENT_EMAIL.test(userData.email)) {
+            localStorage.setItem("image",userData.image);
+            localStorage.setItem("notificationEmail",userData.notification);
+            if (userData.privilege === 'student') {
                 window.location.href = '/student';
-                //navigate('/student');
-            } else if (!STUDENT_EMAIL.test(userData.email)) {
-                if (userData.privilege === "coordinator") {
-                    window.location.href = '/coordinator';
-                } else {
-                    window.location.href = '/professor';
-                }
+            } else if (userData.privilege === 'coordinator') {
+                window.location.href = '/coordinator';
+            } else if (userData.privilege === 'professor') {
+                window.location.href = '/professor'
+            } else {
+                console.log("User doesn't exist");
             }
         },
         onError({ graphQLErrors }) {

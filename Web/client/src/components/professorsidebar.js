@@ -26,7 +26,7 @@ export const professorsidebar = [
     {
         title: <p className='sideBarText'>Calendar</p>,
         icon: <img className='icon' src={Calendar}></img>,
-        link: "/calendar"
+        link: "/calendar3"
     },
     {
         title: <p className='sideBarText'>Logout</p>,

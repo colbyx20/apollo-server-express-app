@@ -68,4 +68,55 @@
     background-color: rgb(250, 30, 30);
 }
 
+.Sticky{
+    position: sticky; top: 0;
+    width: auto;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 2px;
+    background-color: bisque;
+    border-radius: 5px;
+    z-index: 9;
+}
 
+.group-container{
+    width: 85%;
+    height: 225px;
+    background-color: #231F20;
+    margin: auto;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.group-heading{
+    height: 50px;
+    border: 2px dotted;
+    border-color: #231F20;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.group-title{
+    display: inline-block;
+    width: 50%;
+    height: 100%;
+    padding-top: 8px;
+    font-weight: normal;
+    color: white;
+}
+
+.group-table{
+    margin: auto;
+}
+
+.members{
+    text-align: center;
+    padding-bottom: 5px;
+    font-weight: normal;
+    font-size: large;
+}
+
+.StickyHeader{
+    position: sticky; top: 0;
+    width: 100%;
+}

@@ -1,14 +1,19 @@
 import { gql, useQuery } from '@apollo/client';
 import './css/getgroups.css';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button } from "@mui/material";
 
 const GET_GROUPS = gql`
-    query GetAllGroups {
-        getAllGroups {
-            groupName
-            groupNumber
-            projectField
-        }
+query Query($coordinatorId: String) {
+    getGroupsByCoordinator(coordinatorId: $coordinatorId) {
+        _id
+        coordinatorId
+        groupName
+        groupNumber
+        projectField
     }
+}
 `
 
 const getFilteredData = (query, items) => {
@@ -20,49 +25,50 @@ const getFilteredData = (query, items) => {
 
 export const GetGroups = (props) => {
 
-    const { loading, error, data } = useQuery(GET_GROUPS);
+    const ID = localStorage.getItem('_id');
+
+    const { loading, error, data } = useQuery(GET_GROUPS, {
+        variables: { coordinatorId: ID }
+    });
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
     const search = props.data;
-    const { getAllGroups } = data;
-    const filterItems = getFilteredData(search, getAllGroups);
-
+    const { getGroupsByCoordinator } = data;
+    const filterItems = getFilteredData(search, getGroupsByCoordinator);
 
     return (
-        <table className="coordiantorGroups">
-            <thead>
-                <tr className='coordTableHeading'>
-                    <th id='topBar'>Design Projects</th>
-                    <th id='topBar'>Options</th>
-                </tr>
-            </thead>
+        <>
+            <div className='Sticky'>
+                <h2>Design Projects</h2>
+            </div>
+            <table className="coordiantorGroups">
 
+                <tbody className='coordTableItems'>
+                    {filterItems.map((group) => {
+                        return (
+                            <tr key={group.groupNumber}>
+                                <td id='rowNumber'>
+                                    <div className='groupContainer'>
+                                        {group.groupName} <br />
+                                        Group Number: {group.groupNumber} <br />
+                                        <div className='optionsContainer'>
+                                            <Button size="small" sx={{backgroundColor: 'blue', color: 'white'}}><ModeEditIcon /></Button>
+                                            <Button size="small" sx={{backgroundColor: 'red', color: 'white'}}><DeleteIcon /></Button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td id='rowName'>
 
-            <tbody className='coordTableItems'>
-                {filterItems.map((group) => {
-                    return (
-                        <tr key={group.groupNumber}>
-                            <td id='rowNumber'>
-                                <div className='groupContainer'>
-                                    {group.groupName} <br />
-                                    Group Number: {group.groupNumber} <br />
-                                    {/* Field: {group.projectField} */}
-                                </div>
-                            </td>
-                            <td id='rowName'>
-                                <div className='optionsContainer'>
-                                    <button id='edit'>Edit</button>
-                                    <button id='delete'>Del</button>
-                                </div>
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
 
-        </table>
+            </table>
+        </>
     )
 
 }
