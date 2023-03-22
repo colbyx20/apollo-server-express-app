@@ -1212,3 +1212,32 @@ const resolvers = {
 module.exports = resolvers;
 
 
+
+// Delete users and authUsers.
+// db.users.aggregate([
+//     {
+//       $lookup: {
+//         from: "information",
+//         localField: "_id",
+//         foreignField: "user_id",
+//         as: "user_info"
+//       }
+//     },
+//     {
+//       $match: {
+//         _id: { $exists: true }
+//       }
+//     },
+//     {
+//       $unwind: "$user_info"
+//     },
+//     {
+//       $project: {
+//         user_id: "$_id",
+//         info_id: "$user_info._id"
+//       }
+//     }
+//   ]).forEach(function(doc) {
+//     db.information.deleteOne({ _id: doc.info_id });
+//     db.users.deleteOne({ _id: doc.user_id });
+//   });
