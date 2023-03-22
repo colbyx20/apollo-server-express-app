@@ -1206,6 +1206,32 @@ const resolvers = {
                 throw new ApolloError("Appointment cannot be Deleted");
             }
         },
+        deleteGroup: async (_, { groupId } ) => {
+            const findGroup = Users.find({groupId:groupId})
+            for(member of findGroup)
+            {
+                const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
+                const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
+            }
+            const deleteMebers= await Users.deleteMany({groupId:groupId})
+            const deleteGroup= await Group.deleteOne({_id:groupId})
+            return true
+        },
+        deleteAllGroups: async(_,{CID})=>{
+            const relevantGroups = await Group.find({coordinatorId:CID})
+            for(group of relevantGroups)
+            {
+                const findGroup = await Users.find({groupId:group._id})
+                for(member of findGroup)
+                {
+                    await Auth.deleteOne({ userId: member._id })
+                    await UserInfo.deleteOne({ userId: member._id })
+                }
+                await Users.deleteMany({groupId:group._id})
+            }
+            await Group.deleteMany({coordinatorId:CID})
+            return true
+        }
     }
 }
 
