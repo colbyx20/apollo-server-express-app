@@ -23,8 +23,6 @@ export const GetUserInfo = (props) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    console.log(data);
-
     return (
         <div>
             <p className='user-data'>Name: {user.firstname} {user.lastname}</p>
