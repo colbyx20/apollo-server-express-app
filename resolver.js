@@ -13,7 +13,6 @@ const Mongoose = require('mongoose');
 const cookie = require("cookie");
 const Fs = require('fs');
 const CsvReadableStream = require('csv-reader');
-// const Login = './helperFunctions/login';
 
 
 const { ObjectId, default: mongoose } = require('mongoose');
@@ -566,10 +565,9 @@ const resolvers = {
 
             async function Login(userInfo, authUser, confirmedUser) {
                 if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
-                    console.log(userInfo)
+
                     let ID = userInfo.userId._id;
-                    console.log("My ID");
-                    console.log(ID);
+
                     let firstname;
                     let lastname;
 
@@ -678,6 +676,33 @@ const resolvers = {
                 throw new ApolloError("Email IS Not Valid");
             }
 
+        },
+        updatePassword: async (_, { ID, oldPassword, newPassword, confirmedPassword }) => {
+            const userId = Mongoose.Types.ObjectId(ID);
+
+            if (newPassword !== confirmedPassword) {
+                throw new ApolloError("New Passwords Do Not Match!");
+            }
+
+            if (newPassword.length < 4) {
+                throw new ApolloError("New Password is too short");
+            }
+            try {
+                const [authUser, encryptedPassword] = await Promise.all([
+                    Auth.findOne({ userId: userId }).select('userId password'),
+                    bcrypt.hash(confirmedPassword, 10)
+                ])
+
+                if (authUser && (await bcrypt.compare(oldPassword, authUser.password))) {
+                    await Auth.findOneAndUpdate({ userId: userId }, { $set: { password: encryptedPassword } });
+                } else {
+                    throw new ApolloError("current password doesn't Match!");
+                }
+                return true;
+
+            } catch (e) {
+                throw new ApolloError("Password was not updated!");
+            }
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
 

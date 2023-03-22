@@ -299,6 +299,7 @@ scalar DateTime
         editNotificationEmail(ID:String!,email:String!): Boolean
         deleteProfessorAppointment(professorId:String, scheduleId:String) : Boolean
         sendEventEmail(ID: String!, email: String!, privilege: String!) : Boolean
+        updatePassword (ID: String!, oldPassword: String!, newPassword: String!, confirmedPassword: String!) : Boolean
     }
 `
 

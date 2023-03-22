@@ -9,6 +9,14 @@ import '../components/css/account.css'
 import ImgUpload from '../components/ImgUpload';
 import EditEmailPopup from '../components/EditEmail';
 import EditPassword from '../components/EditPassword';
+import { gql, useMutation } from '@apollo/client';
+
+
+const UPDATE_USER_PASSWORD = gql`
+    mutation Mutation($id: String!, $oldPassword: String!, $newPassword: String!, $confirmedPassword: String!) {
+    updatePassword(ID: $id, oldPassword: $oldPassword, newPassword: $newPassword, confirmedPassword: $confirmedPassword)
+    }
+`
 
 function Account(props) {
 
@@ -36,9 +44,20 @@ function Account(props) {
         setIsModalOpen(false);
     };
 
+    const [updatePassword] = useMutation(UPDATE_USER_PASSWORD);
     const handlePasswordChangeSubmit = (oldPassword, newPassword) => {
         // Handle password change submit logic here
         console.log(`Password changed from ${oldPassword} to ${newPassword}`);
+
+        updatePassword({
+            variables: {
+                id: user.id,
+                oldPassword: oldPassword,
+                newPassword: newPassword,
+                confirmedPassword: newPassword
+            }
+        })
+
     };
 
     const onLogout = () => {
