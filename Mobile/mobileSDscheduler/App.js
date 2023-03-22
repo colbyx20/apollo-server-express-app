@@ -4,7 +4,8 @@ import WelcomeScreen from "./app/screens/WelcomeScreen";
 import LoginScreen from "./app/screens/LoginScreen";
 import AccountScreen from "./app/screens/AccountScreen";
 import HomeScreen from "./app/screens/HomeScreen";
-import CalendarScreen from "./app/screens/CalendarScreen";
+import CalendarProfessorScreen from "./app/screens/CalendarProfessorScreen";
+import CalendarStudentScreen from "./app/screens/CalendarStudentScreen";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
@@ -22,7 +23,7 @@ export default function App() {
     //<HomeScreen></HomeScreen>
     //<CalendarScreen></CalendarScreen>
     <ApolloProvider client={client}>
-      <CalendarScreen></CalendarScreen>
+      <CalendarProfessorScreen></CalendarProfessorScreen>
     </ApolloProvider>
   );
 }

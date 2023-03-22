@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
 import SwitchButton from "./SwitchButton";
 
-function DayWeekSelect(props) {
+function DayWeekSelect({ dayIndex }) {
   const [days, setDays] = useState([
-    { name: "Sun", isActive: true },
+    { name: "Sun", isActive: false },
     { name: "Mon", isActive: false },
     { name: "Tue", isActive: false },
     { name: "Wed", isActive: false },
@@ -14,7 +14,7 @@ function DayWeekSelect(props) {
   ]);
 
   function handlePress(index) {
-    console.log("handling press ", index);
+    //console.log("handling press ", index);
     const newDays = days.map((item, i) => {
       //console.log(item);
       if (i === index) {
@@ -37,6 +37,9 @@ function DayWeekSelect(props) {
   //   ];
   // var days = [true, false, false, false, false, false, false];
   // var nameDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  useLayoutEffect(() => {
+    handlePress(dayIndex);
+  }, []);
   return (
     <View style={styles.container}>
       {days.map((item, i) => (
@@ -49,10 +52,6 @@ function DayWeekSelect(props) {
       ))}
     </View>
   );
-}
-
-function switchItem(item) {
-  return !item;
 }
 
 export default DayWeekSelect;

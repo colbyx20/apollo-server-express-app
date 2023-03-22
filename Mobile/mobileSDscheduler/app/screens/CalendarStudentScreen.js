@@ -13,13 +13,14 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import Screen from "../components/Screen";
 import AppText from "../components/AppText";
+import AppointmentItem from "../components/AppointmentItem";
 import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
 import TitleBar from "../components/TitleBar";
 
-function CalendarScreen(props) {
+function CalendarStudentScreen(props) {
   //APOLLO CLIENT
   const { data, loading, error } = useQuery(GROUPS);
 
@@ -36,45 +37,63 @@ function CalendarScreen(props) {
   console.log(new Date().toLocaleString().split("T")[0]);
   return (
     <SafeAreaView style={styles.safeArea}>
-      <TitleBar
-        title="Availabilities"
-        // leftButton={
-        //   <MaterialCommunityIcons
-        //     name="chevron-left"
-        //     size={30}
-        //     color={colors.grayLight}
-        //   />
-        // }
-        onPressLeft={() => console.log("goBack")}
-        rightButton={
-          <MaterialCommunityIcons
-            name="plus"
-            size={30}
-            color={colors.grayLight}
-          />
-        }
-        onPressRight={() => console.log("add")}
-      />
+      <TitleBar title="Availabilities" />
       <Agenda
         // The list of items that have to be displayed in agenda. If you want to render item as empty date
         // the value of date key has to be an empty array []. If there exists no value for date key it is
         // considered that the date in question is not yet loaded
         items={{
-          "2023-03-14": [{ name: "item 1 - any js object" }],
-          "2023-03-23": [
+          // "2023-03-14": [{ name: "item 1 - any js object" }],
+          // "2023-03-23": [
+          //   {
+          //     name: "item 2 - any js object",
+          //     height: 80,
+          //     groupName: "SD Scheduler",
+          //     projectField: "IT",
+          //     groupNumber: "1",
+          //   },
+          // ],
+          "2023-03-16": [
             {
-              name: "item 2 - any js object",
-              height: 80,
-              groupName: "SD Scheduler",
-              projectField: "IT",
-              groupNumber: "1",
+              _id: "1234567890",
+              arrayLength: 3,
+              pId: [
+                { _id: 123, name: "abc" },
+                { _id: 223, name: "bbc" },
+                { _id: 323, name: "cbc" },
+              ],
+            },
+            {
+              _id: "0987654321",
+              arrayLength: 5,
+              pId: [
+                { _id: 123, name: "abc" },
+                { _id: 223, name: "bbc" },
+                { _id: 323, name: "cbc" },
+                { _id: 233, name: "bbc" },
+                { _id: 333, name: "cbc" },
+              ],
             },
           ],
-          "2023-03-24": [],
-          "2023-03-25": [
-            { name: "item 3 - any js object" },
-            { name: "any js object" },
-          ],
+          // "2023-03-22": [
+          //   {
+          //     _id: "1234567890",
+          //     arrayLength: 5,
+          //     pId: [
+          //       { _id: 123, name: "abc" },
+          //       { _id: 223, name: "bbc" },
+          //       { _id: 323, name: "cbc" },
+          //       { _id: 233, name: "bbc" },
+          //       { _id: 333, name: "cbc" },
+          //     ],
+          //   },
+          // ],
+
+          // "2023-03-24": [],
+          // "2023-03-25": [
+          //   { name: "item 3 - any js object" },
+          //   { name: "any js object" },
+          // ],
         }}
         // Callback that gets called when items for a certain month should be loaded (month became visible)
         loadItemsForMonth={(month) => {
@@ -107,22 +126,28 @@ function CalendarScreen(props) {
         renderItem={(item, firstItemInDay) => {
           return (
             <View style={styles.titleContainer}>
-              <GroupItem
-                image={require("../assets/TheTab_KGrgb_300ppi.png")}
-                title={item.groupName}
-                subTitle={item.projectField}
-                number={item.groupNumber}
+              <AppointmentItem
+                time={item._id}
+                canSelect={true}
+                prof1={item.pId[0].name}
+                prof2={item.pId[1].name}
+                prof3={item.pId[2].name}
+                numProf={item.arrayLength}
                 onPress={() => console.log("Group selected", item)}
-                renderRightActions={(itemObject) => (
-                  <GroupItemDeleteAction
-                    onPress={(itemOBject) => console.log("deleted", item)}
-                  />
-                )}
-                renderLeftActions={(itemObject) => (
-                  <GroupItemEditAction
-                    onPress={(itemObject) => console.log("edited", item)}
-                  />
-                )}
+                // renderRightActions={(itemObject) => (
+                //   <GroupItemDeleteAction
+                //     onPress={(itemOBject) =>
+                //       console.log("ADD TO MY AVAILABILITY", item)
+                //     }
+                //   />
+                // )}
+                // renderLeftActions={(itemObject) => (
+                //   <GroupItemEditAction
+                //     onPress={(itemObject) =>
+                //       console.log("ADD TO MY AVAILABILITY", item)
+                //     }
+                //   />
+                // )}
                 style={styles.item}
               />
             </View>
@@ -264,4 +289,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CalendarScreen;
+export default CalendarStudentScreen;

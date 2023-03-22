@@ -13,7 +13,7 @@ import DayWeekSelect from "./DayWeekSelect";
 import defaultStyles from "../config/styles";
 import TimePickerButton from "./TimePickerButton";
 
-function AvailabilityModal({ modalVisible, onPress }) {
+function AvailabilityModal({ modalVisible, onPress, dayIndex }) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
@@ -35,6 +35,10 @@ function AvailabilityModal({ modalVisible, onPress }) {
     //console.log(newDate.toISOString());
   };
 
+  const onPressSave = () => {
+    console.log("SAVED");
+  };
+
   return (
     <Modal visible={modalVisible} animationType="slide">
       <Screen style={styles.background}>
@@ -42,7 +46,7 @@ function AvailabilityModal({ modalVisible, onPress }) {
         <AppText style={styles.text}>
           Select days where pattern repeats:
         </AppText>
-        <DayWeekSelect></DayWeekSelect>
+        <DayWeekSelect dayIndex={dayIndex}></DayWeekSelect>
         <AppText style={styles.text}>Select start time:</AppText>
         {startDateVisible && (
           <DateTimePicker
@@ -90,10 +94,16 @@ function AvailabilityModal({ modalVisible, onPress }) {
           </TouchableOpacity>
         </View>
 
-        <AppButton
-          title="Close"
-          onPress={onPress} //{() => setModalVisible(false)}
-        />
+        <View style={styles.buttonContainer}>
+          <AppButton
+            title="Save"
+            onPress={onPressSave} //{() => setModalVisible(false)}
+          />
+          <AppButton
+            title="Close"
+            onPress={onPress} //{() => setModalVisible(false)}
+          />
+        </View>
       </Screen>
     </Modal>
   );
@@ -106,6 +116,10 @@ const styles = StyleSheet.create({
     backgroundColor: defaultStyles.colors.gold,
     borderRadius: 25,
     marginVertical: 10,
+  },
+  buttonContainer: {
+    justifyContent: "flex-end",
+    flex: 1,
   },
   background: {
     padding: 10,
