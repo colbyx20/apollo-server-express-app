@@ -654,8 +654,6 @@ const resolvers = {
                     last = who.coordinatorLName
                 }
 
-
-
                 // set up email 
                 let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
 
@@ -687,6 +685,7 @@ const resolvers = {
             if (newPassword.length < 4) {
                 throw new ApolloError("New Password is too short");
             }
+
             try {
                 const [authUser, encryptedPassword] = await Promise.all([
                     Auth.findOne({ userId: userId }).select('userId password'),
