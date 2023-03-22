@@ -55,7 +55,6 @@ function FileUpload() {
         );
     };
 
-
     return (
         <div className='uploadWrapper'>
             <h2 className='uploadTitle'>Upload Design Projects File</h2>
