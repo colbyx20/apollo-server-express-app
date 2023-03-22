@@ -18,7 +18,6 @@ const CREATE_GROUPS = gql`
 
 function FileUpload() {
     const { user } = useContext(AuthContext);
-    console.log(user)
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
