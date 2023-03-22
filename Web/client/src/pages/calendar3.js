@@ -4,10 +4,9 @@ import { useNavigate} from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { add } from 'date-fns';
-import TimeSelectDisplay from '../components/TimeSelectDisplay';
 import GlobalCalendar from '../components/GlobalCalendar';
 import {Button, Badge, TextField, Typography} from "@mui/material";
-import HourSelectDisplay from '../components/HourSelectDisplay';
+
 
 
 function ProfessorCalendar(props){
@@ -57,8 +56,6 @@ function ProfessorCalendar(props){
                         <div className='selectTimes'>
                             <h2 className='timeTitle'>Create Schedule</h2>
                             <div className='timeContainer'>
-                                <TimeSelectDisplay onDateChange={handleDateChange}/>
-                                <HourSelectDisplay onTimeChange={handleTimeChange}/>
                                 <Button variant="contained" color="primary" type="submit"
                             style={{ width: "50%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
                             >Submit</Button>

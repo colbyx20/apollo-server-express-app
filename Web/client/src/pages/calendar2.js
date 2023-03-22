@@ -4,67 +4,30 @@ import { useNavigate} from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { add } from 'date-fns';
-import TimeSelectDisplay from '../components/TimeSelectDisplay';
 import GlobalCalendar from '../components/GlobalCalendar';
 import {Button, Badge, TextField, Typography} from "@mui/material";
 import { LocalizationProvider, DatePicker, PickersDay} from '@mui/x-date-pickers';
 import { CalendarPickerSkeleton } from '@mui/x-date-pickers/CalendarPickerSkeleton';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import DisplayDesignWeek from '../components/DisplayDesignWeek';
 import "../components/css/calendar2.css"
-import HourSelectDisplay from '../components/HourSelectDisplay';
 
 function Calendar(props){
     const requestAbortController = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [secondPickerEnabled, setSecondPickerEnabled] = useState(false);
     const [isValid, setIsValid] = useState(false);
+    const [isEmpty, setIsEmpty] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState([0]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const initialValue = dayjs(currentDate);
     const [value, setValue] = useState(initialValue);
     const [endValue, setEndValue] = useState(null);
     const maxDate = add(new Date(), { months: 2 });
-    const [selectedDate, setSelectedDate] = useState([]);
-    const [selectedTime, setSelectedTime] = useState([]);
-
-
+    const [selectedWeek, setSelectedWeek] = useState([])
     // user data lives in here  
     const {user, logout} = useContext(AuthContext);
     let navigate = useNavigate();
-
-    function fakeFetch(date, { signal }) {
-        return new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            const daysInMonth = date.daysInMonth();
-            const daysToHighlight = [0, 1, 2, 3, 4, 5];
-      
-            resolve({ daysToHighlight });
-          }, 500);
-      
-          signal.onabort = () => {
-            clearTimeout(timeout);
-            reject(new DOMException('aborted', 'AbortError'));
-          };
-        });
-      }
-
-    const fetchHighlightedDays = (date) => {
-        const controller = new AbortController();
-        fakeFetch(date, {
-          signal: controller.signal,
-        })
-          .then(({ daysToHighlight }) => {
-            setHighlightedDays(daysToHighlight);
-            setIsLoading(false);
-          })
-          .catch((error) => {
-            // ignore the error if it's caused by `controller.abort`
-            if (error.name !== 'AbortError') {
-              throw error;
-            }
-          });
-        requestAbortController.current = controller;
-    }
 
 
     const onLogout = () => {
@@ -72,8 +35,11 @@ function Calendar(props){
         navigate('/');
     }
 
+    const handleListChange = (newList) => {
+        setSelectedWeek(newList);
+    };
+
     useEffect(() => {
-        fetchHighlightedDays(initialValue);
         // abort request on unmount
         return () => requestAbortController.current?.abort();
     }, []);
@@ -87,16 +53,9 @@ function Calendar(props){
 
     setIsLoading(true);
     setHighlightedDays([]);
-    fetchHighlightedDays(date);
+    
     };
 
-    const handleDateChange = (newDate) => {
-        setSelectedDate(newDate);
-    };
-    
-      const handleTimeChange = (newHour) => {
-        setSelectedTime(newHour);
-    };
 
     const shouldDisableDate = (date) => {
         const day = dayjs(date).day();
@@ -107,12 +66,28 @@ function Calendar(props){
 
     const handleSubmit = () => {
       // Perform form submission logic here
+      getDaysBetweenDates(value, endValue);
       setIsSubmitted(true);
+      setIsEmpty(true);
     }
 
-    const handleSaveScheduel = () => {
-        console.log(selectedDate);
-        console.log(selectedTime);
+    function getDaysBetweenDates(date1, date2) {
+        const dayList = [];
+        const currentDate = new Date(date1);
+        currentDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(date2);
+        endDate.setHours(0, 0, 0, 0);
+      
+        while (currentDate <= endDate) {
+            const dayOfWeek = currentDate.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip Sunday (0) and Saturday (6)
+            dayList.push(new Date(currentDate));
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+         
+      
+        setSelectedWeek(dayList);
     }
 
     return(
@@ -140,13 +115,13 @@ function Calendar(props){
                                             setSecondPickerEnabled(true);
                                         }}
                                         shouldDisableDate={shouldDisableDate}
-                                        onMonthChange={handleMonthChange}
                                         renderInput={(params) => <TextField {...params} />}
                                         renderLoading={() => <CalendarPickerSkeleton />}
                                         renderDay={(day, _value, DayComponentProps) => {
                                         const isSelected =
                                             !DayComponentProps.outsideCurrentMonth &&
                                             highlightedDays.indexOf(day.date()) > 0;
+                                            
 
                                         return (
                                             <Badge>
@@ -170,7 +145,6 @@ function Calendar(props){
                                             setIsValid(true);
                                         }}
                                         shouldDisableDate={shouldDisableDate}
-                                        onMonthChange={handleMonthChange}
                                         renderInput={(params) => 
                                         <TextField {...params} />}
                                         renderLoading={() => <CalendarPickerSkeleton />}
@@ -202,6 +176,7 @@ function Calendar(props){
                             <div className='calendar-container'>
                             <h2 className='calendar-Title'>Calendar</h2>
                                 <GlobalCalendar
+                                daysList={selectedWeek}
                                 minDate = {value}
                                 maxDate = {maxDate}/>
                             </div>
@@ -210,11 +185,7 @@ function Calendar(props){
                             <div className='selectTimes'>
                                 <h2 className='timeTitle'>Create Schedule</h2>
                                 <div className='timeContainer'>
-                                    <TimeSelectDisplay onDateChange={handleDateChange}/>
-                                    <HourSelectDisplay onTimeChange={handleTimeChange}/>
-                                    <Button variant="contained" color="primary" type="submit"
-                                style={{ width: "50%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
-                                >Submit</Button>
+                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} />
                                 </div>
                                 <h2 className='timeTitle'>View Schedule</h2>
                                 <div className='viewSchedule'>
