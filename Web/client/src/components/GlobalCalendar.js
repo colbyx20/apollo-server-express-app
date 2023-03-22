@@ -20,11 +20,16 @@ const GlobalCalendar = (props) => {
     };
 
     function checkIfExists(date){
-      console.log(highlightedDays)
+      
       for(let i = 0; i<highlightedDays.length; i++){
+        if(highlightedDays[i].getMonth() != date.getMonth())
+          continue;
+
         if(highlightedDays[i].getMonth() === date.getMonth() && 
-        highlightedDays[i].getDate() === date.getDate())
+        highlightedDays[i].getDate() === date.getDate()){
             return true;
+        }
+            
       }
       return false;
     }

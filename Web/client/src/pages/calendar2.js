@@ -24,7 +24,10 @@ function Calendar(props){
     const [value, setValue] = useState(initialValue);
     const [endValue, setEndValue] = useState(null);
     const maxDate = add(new Date(), { months: 2 });
-    const [selectedWeek, setSelectedWeek] = useState([])
+    const [selectedWeek, setSelectedWeek] = useState([]);
+    const [getScheduleDate, setScheduleDate] = useState([]);
+    const [getTimeRange, setTimeRange] = useState([]);
+
     // user data lives in here  
     const {user, logout} = useContext(AuthContext);
     let navigate = useNavigate();
@@ -90,6 +93,14 @@ function Calendar(props){
         setSelectedWeek(dayList);
     }
 
+    const addDateList = (item) => {
+        setScheduleDate(item);
+    };
+
+    const addTimeList = (item) =>{
+        setTimeRange(item);
+    }
+    console.log(getScheduleDate);
     return(
         <>
         <div className='calendar2Page'>
@@ -185,7 +196,8 @@ function Calendar(props){
                             <div className='selectTimes'>
                                 <h2 className='timeTitle'>Create Schedule</h2>
                                 <div className='timeContainer'>
-                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} />
+                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
+                                    onScheduleDate={addDateList} onTimeRange={addTimeList}/>
                                 </div>
                                 <h2 className='timeTitle'>View Schedule</h2>
                                 <div className='viewSchedule'>

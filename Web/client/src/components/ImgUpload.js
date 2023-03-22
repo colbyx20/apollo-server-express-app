@@ -3,8 +3,7 @@ import { Button } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Upload from './images/upload.svg'
-import Check from './images/check.svg'
-import Trash from './images/trash.svg'
+
 
 function ImgUpload() {
     const ref = useRef();
