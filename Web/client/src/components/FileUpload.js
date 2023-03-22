@@ -22,7 +22,6 @@ function FileUpload() {
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [jsonData, setJsonData] = useState([]);
     const [createGroup] = useMutation(CREATE_GROUPS)
 
     const reset = () => {
