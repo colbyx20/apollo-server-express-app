@@ -68,7 +68,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         setIsHeld(false);
         if (holdTimeout !== null) {
             clearTimeout(holdTimeout);
-            // Call API delete
         }
         }
     };
