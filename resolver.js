@@ -785,11 +785,14 @@ const resolvers = {
                 throw new ApolloError("Please fill all Fields!");
             }
 
+
             let inputStream = Fs.createReadStream('./csv/group.csv', 'utf8');
 
             inputStream
                 .pipe(new CsvReadableStream({ parseNumbers: true, parseBooleans: true, trim: true }))
                 .on('data', async function (row) {
+
+                    // console.log(row);
 
                     const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: parseInt(row[0]) }).count();
                     // if group doesn't exist, make one
