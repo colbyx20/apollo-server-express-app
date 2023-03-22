@@ -23,6 +23,8 @@ export const GetUserInfo = (props) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
+    console.log(data);
+
     return (
         <div>
             <div className='user-styleBox'>
