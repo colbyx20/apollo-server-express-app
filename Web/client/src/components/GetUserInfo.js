@@ -8,7 +8,6 @@ const GET_USER = gql`
         getUserInfo(ID: $id) {
             email
             notificationEmail
-            coordinator
         }
     }
 `

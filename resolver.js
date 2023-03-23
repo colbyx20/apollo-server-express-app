@@ -38,7 +38,7 @@ const resolvers = {
             return {
                 email: userInfo.email,
                 notificationEmail: userInfo.notificationEmail,
-                coordinator: User.coordinatorId
+                coordinator: User?.coordinatorId
             }
         },
         getCoordinatorEmail: async (_, { ID }) => {
