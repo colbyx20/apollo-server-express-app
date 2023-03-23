@@ -8,7 +8,7 @@ const GET_USER = gql`
         getUserInfo(ID: $id) {
             email
             notificationEmail
-            userId
+            coordinator
         }
     }
 `
@@ -23,24 +23,25 @@ export const GetUserInfo = (props) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
+
     return (
         <div>
             <div className='user-styleBox'>
                 <p className='user-data'>Name:</p>
                 <p className='user-data'>{user.firstname} {user.lastname}</p>
             </div>
-            
+
             <div className='user-styleBox'>
-            <p className='user-data'>Account Email:</p>
+                <p className='user-data'>Account Email:</p>
                 <p className='user-data'>{data.getUserInfo.email}</p>
             </div>
 
             <div className='user-styleBox'>
-            <p className='user-data'>Notification Email:</p>
-                <p className='user-data'>{ data.getUserInfo.notificationEmail}</p>
+                <p className='user-data'>Notification Email:</p>
+                <p className='user-data'>{data.getUserInfo.notificationEmail}</p>
             </div>
-            
-            
+
+
         </div>
     )
 }

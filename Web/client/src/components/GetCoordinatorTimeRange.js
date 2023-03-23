@@ -11,7 +11,6 @@ const GET_TIME_RANGE = gql`
 
 export const GetCoordinatorTimeRange = ({ ID }) => {
 
-
     const { loading, error, data } = useQuery(GET_TIME_RANGE, {
         variables: { cid: ID }
     })

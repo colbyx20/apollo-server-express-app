@@ -15,9 +15,10 @@ scalar DateTime
     }
 
     type UserInfo {
-        userId: ID!
+        userId: ID
         notificationEmail: String
         email: String
+        coordinator: ID
     }
 
     type Users {
@@ -26,6 +27,7 @@ scalar DateTime
         userLName: String
         groupNumber:Int
         role: String
+        coordinatorId:ID
     }
 
     type UserLogin {

@@ -32,13 +32,14 @@ function Calendar(props) {
     const [selectedWeek, setSelectedWeek] = useState([]);
     const [getScheduleDate, setScheduleDate] = useState([]);
     const [getTimeRange, setTimeRange] = useState([]);
-    const timeRangeData = GetCoordinatorTimeRange({ ID: user.id });
-    
-    if(timeRangeData[0]){
+    const timeRangeData = GetCoordinatorTimeRange({ ID: user.coordinator });
+
+    console.log(timeRangeData)
+    if (timeRangeData[0]) {
         currentDate = new Date(timeRangeData[0].time);
         value = new Date(timeRangeData[0].time);
     }
-    
+
 
     const onLogout = () => {
         logout();
@@ -104,67 +105,67 @@ function Calendar(props) {
         setScheduleDate(item);
     };
 
-    const addTimeList = (item) =>{
+    const addTimeList = (item) => {
         setTimeRange(item);
     }
 
     let dateIndexs = [];
 
     // Create string from Date() obtained from api
-    for(let i = 0; i< timeRangeData.length; i++){
-        if(timeRangeData[i].time === undefined)
+    for (let i = 0; i < timeRangeData.length; i++) {
+        if (timeRangeData[i].time === undefined)
             continue;
         dateIndexs.push(timeRangeData[i].time);
     }
 
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
 
-    
-    return(
+
+    return (
         <>
             <div className='calendar2Page'>
-            {user !== null?
-                <>
-                    <CustomSidebar/>
-                    <div className='calendar2Wrapper'>
-                        <div className='userInfo'>
-                            <p className='accountHeader'>Calendar</p>
-                        </div>
-                        <div className='leftContainer'>
-                            <div className='calendar-container'>
+                {user !== null ?
+                    <>
+                        <CustomSidebar />
+                        <div className='calendar2Wrapper'>
+                            <div className='userInfo'>
+                                <p className='accountHeader'>Calendar</p>
+                            </div>
+                            <div className='leftContainer'>
+                                <div className='calendar-container'>
                                     <h2 className='calendar-Title'>Calendar</h2>
                                     <GlobalCalendar
                                         daysList={selectedWeek}
                                         minDate={currentDate}
                                         maxDate={maxDate} />
                                 </div>
-                        </div>
-                        <div className='rightContainer'>
-                            <div className='selectTimes'>
-                                <h2 className='timeTitle'>Create Schedule</h2>
-                                <div className='timeContainer'>
-                                <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
-                                onScheduleDate={addDateList} onTimeRange={addTimeList}/>
-                                </div>
-                                <h2 className='timeTitle'>View Schedule</h2>
-                                <div className='viewSchedule'>
-                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} 
-                                    dateList={selectedWeek}/>
+                            </div>
+                            <div className='rightContainer'>
+                                <div className='selectTimes'>
+                                    <h2 className='timeTitle'>Create Schedule</h2>
+                                    <div className='timeContainer'>
+                                        <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty}
+                                            onScheduleDate={addDateList} onTimeRange={addTimeList} />
+                                    </div>
+                                    <h2 className='timeTitle'>View Schedule</h2>
+                                    <div className='viewSchedule'>
+                                        <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange}
+                                            dateList={selectedWeek} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                                
-                        
-                </>
-                :
-                <>
-                    <div className='noUser'>
-                        <h3>No Page Found</h3>
-                        <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
-                    </div>
-                </>
-            }
+
+
+                    </>
+                    :
+                    <>
+                        <div className='noUser'>
+                            <h3>No Page Found</h3>
+                            <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
+                        </div>
+                    </>
+                }
             </div>
         </>
     )

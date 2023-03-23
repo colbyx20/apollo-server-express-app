@@ -30,7 +30,16 @@ const resolvers = {
         },
         getUserInfo: async (_, { ID }) => {
             const userId = Mongoose.Types.ObjectId(ID)
-            return await UserInfo.findOne({ userId: userId });
+            const [userInfo, User] = await Promise.all([
+                UserInfo.findOne({ userId: userId }),
+                Users.findOne({ _id: ID })
+            ])
+
+            return {
+                email: userInfo.email,
+                notificationEmail: userInfo.notificationEmail,
+                coordinator: User.coordinatorId
+            }
         },
         getCoordinatorEmail: async (_, { ID }) => {
             const CID = Mongoose.Types.ObjectId(ID);
@@ -545,6 +554,7 @@ const resolvers = {
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
+            const user = await Users.findOne({ _id: userInfo.userId });
 
             if (!userInfo) {
                 throw new Error("User not found");
@@ -594,7 +604,8 @@ const resolvers = {
                             firstname: firstname,
                             lastname: lastname,
                             privilege: userInfo.privilege,
-                            notificationEmail: userInfo.notificationEmail
+                            notificationEmail: userInfo.notificationEmail,
+                            coordinator: user.coordinatorId
                         },
                         "UNSAFE_STRING", // stored in a secret file 
                         { expiresIn: "1m" }
@@ -1175,14 +1186,13 @@ const resolvers = {
                                 ${scheduleTableRows}
                             </tbody>
                         </table>
-    
-                            
-    
                             `,
                             //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
 
                     }
+
+                } else if (privilege === 'student') {
 
                 }
                 // const getNotificationEmail = await UserInfo.findOne({ userId: CID });
