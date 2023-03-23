@@ -59,9 +59,8 @@ function Student(props) {
                                 </div>
                                 <div className='displayNotification'>
                                     <p className='notificationTitle'>Design Meeting <NotificationsNoneIcon /></p>
-                                    <div><GetGroupAppointment SID={user.id} /></div>
+                                    <div className='getAppContainer'><GetGroupAppointment SID={user.id} /></div>
                                 </div>
-
                             </div>
 
                             <div className='emailContainer'>

@@ -47,5 +47,19 @@
     border-radius: 5px;
     background-color: #D0A300;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
+.getAppContainer{
+    background-color: #231F20;
+    color: white;
+    width: 50%;
+    height: 100px;
+    margin: auto;
+    display: flex;
+    justify-content: centers;
+    align-items: center;
+    border-radius: 5px;
+
+}
