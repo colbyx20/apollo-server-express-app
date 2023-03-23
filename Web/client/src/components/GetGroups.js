@@ -15,11 +15,7 @@ query Query($coordinatorId: String) {
     }
 }
 `
-const DELETE_GROUP= gql `
-    mutation DeleteGroup($groupid:ID){
-        deleteGroup(groupId:$groupid)
-}
-`
+
 const getFilteredData = (query, items) => {
     if (!query) {
         return items;
@@ -31,25 +27,17 @@ export const GetGroups = (props) => {
 
     const ID = localStorage.getItem('_id');
 
-    const { loading, error, data,refetch } = useQuery(GET_GROUPS, {
+    const { loading, error, data } = useQuery(GET_GROUPS, {
         variables: { coordinatorId: ID }
     });
-    
+
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
-    
+
     const search = props.data;
     const { getGroupsByCoordinator } = data;
     const filterItems = getFilteredData(search, getGroupsByCoordinator);
-    const [deleteGroup] = useMutation(DELETE_GROUP,{
-        refetchQueries:[{query:GET_GROUPS}]
-    })
-    function handleDeletion(GID){
-        deleteGroup({
-            variables:{groupid:GID}
-        })
-        console.log("done")
-    }
+
     return (
         <>
             <div className='Sticky'>
@@ -66,7 +54,7 @@ export const GetGroups = (props) => {
                                         {group.groupName} <br />
                                         Group Number: {group.groupNumber} <br />
                                         <div className='optionsContainer'>
-                                            <Button size="small" sx={{backgroundColor: 'red', color: 'white'}} onClick={handleDeletion(group._id)}><DeleteIcon /></Button>
+                                            <Button size="small" sx={{backgroundColor: 'red', color: 'white'}}><DeleteIcon /></Button>
                                         </div>
                                     </div>
                                 </td>

@@ -47,19 +47,31 @@ function DisplaySchedule(props){
 
     // Create string from Date() obtained from api
     for(let i = 0; i< apiDates.length; i++){
-        dateIndexs.push(i);
+        if(apiDates[i].time === undefined)
+            continue;
+        dateIndexs.push(apiDates[i].time);
     }
 
-    const dateObjects = Date.map((timestamp) => new Date(timestamp));
+    //console.log(apiDates)
+    const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
+    //console.log(dateObjects);
 
     return(
         <>
             <div className="showSchedulerContainer">
-            {dateIndexs.map((item) => (
-                
-                <p key={item}>{}</p>
+                <div className='stickyButton'>
+                    <Button>Submit</Button>
+                </div>
+            {dateObjects.map((date, index) => (
+            <p className='datesShown' key={date.getTime()+date.getFullYear()+date.getDate()}>
+                {date.toLocaleDateString('en-US', { month: 'numeric'})+"/"+
+                date.toLocaleDateString('en-us',{day: 'numeric'})+"/"+ date.toLocaleDateString('en-us',{year:'numeric'} )
+                +" "+date.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
+            </p>
             ))}
+            
             </div>
+            
         </>
     )
 
