@@ -1105,7 +1105,7 @@ const resolvers = {
 
                         return true;
                     }
-                    return false;
+                    return true;
                 } catch (e) {
                     return false;
                 }
