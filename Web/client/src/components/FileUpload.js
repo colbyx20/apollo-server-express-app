@@ -11,7 +11,7 @@ import Papa from "papaparse";
 
 
 const CREATE_CLASS = gql`
-    mutation Mutation($cid: ID!, $groupNumber: String, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String) {
+    mutation Mutation($cid: ID!, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String) {
     createClass(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname)
     }
 `
@@ -43,7 +43,7 @@ function FileUpload() {
                     createClass({
                         variables: {
                             cid: user.id,
-                            groupNumber: row[0],
+                            groupNumber: parseInt(row[0]),
                             groupName: row[1],
                             userLogin: row[2],
                             password: row[3],

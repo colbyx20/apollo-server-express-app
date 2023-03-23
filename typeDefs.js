@@ -278,6 +278,7 @@ scalar DateTime
         getProfessorsAppointments (profId: String ) : [userAppointments]
         getGroupAppointment(studentId: String) : CoordSchedule2
         getCoordinatorTimeRange(CID: String) : [DateTime]
+        getAllGroups : [Group]
     }
 
     type Mutation {
@@ -295,7 +296,7 @@ scalar DateTime
         loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createClass(CID:ID!, groupNumber: String, groupName: String, userLogin: String, password: String, firstname: String, lastname: String): Boolean
+        createClass(CID:ID!, groupNumber: Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
