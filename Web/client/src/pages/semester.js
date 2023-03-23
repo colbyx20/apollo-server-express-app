@@ -26,10 +26,11 @@ function Semester(props) {
         navigate('/');
     }
     function deleteGroups(){
-        deleteAllG()
+        deleteAllG();
     }
     const [deleteAllG, {loading}] = useMutation(DELETE_ALL_GROUP,{
-        variables:{cid:localStorage.getItem("_id")}
+        variables:{cid:localStorage.getItem("_id")},
+        refetchQueries:[{query:GetGroups}]
     })
 
     const [searchInput, setSearchInput] = useState("");
@@ -58,6 +59,7 @@ function Semester(props) {
                                         onChange={handleChange}
                                         value={searchInput}
                                     />
+
                                 </div>
                                 <div className='searchResults'>
                                     <GetGroups
