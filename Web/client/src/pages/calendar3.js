@@ -5,10 +5,7 @@ import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { add } from 'date-fns';
 import GlobalCalendar from '../components/GlobalCalendar';
-import { Button, Badge, TextField, Typography } from "@mui/material";
-import { LocalizationProvider, DatePicker, PickersDay } from '@mui/x-date-pickers';
-import { CalendarPickerSkeleton } from '@mui/x-date-pickers/CalendarPickerSkeleton';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Button} from "@mui/material";
 import DisplayDesignWeek from '../components/DisplayDesignWeek';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 import DisplaySchedule from '../components/DisplaySchedule';
@@ -97,7 +94,7 @@ function Calendar(props) {
         }
 
 
-        setSelectedWeek(dayList);
+        return dayList;
     }
 
     const addDateList = (item) => {
@@ -117,8 +114,9 @@ function Calendar(props) {
         dateIndexs.push(timeRangeData[i].time);
     }
 
-    const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-
+    const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp));
+    let tempRange = getDaysBetweenDates(dateObjects[0], dateObjects[dateObjects.length-1]);
+    console.log(timeRangeData)
     
     return(
         <>
