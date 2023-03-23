@@ -20,39 +20,39 @@ const DELETE_APPOINTMENT = gql`
 `;
 
 export const GetProfessorsAppointments = () => {
-    const PID = localStorage.getItem('_id');
-    const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
+  const PID = localStorage.getItem('_id');
+  const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
 
-    const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
-        variables: { profId: PID },
-    });
+  const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
+    variables: { profId: PID },
+  });
 
-    if (loading) return 'Loading...';
-    if (error) return `Error! ${error.message}`;
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`;
 
-    const schedule = data.getProfessorsAppointments;
+  const schedule = data.getProfessorsAppointments;
 
-    function handleCancelAppointment(professorId, scheduleId) {
-        deleteAppointment({
-            variables: { professorId, scheduleId },
-        }).then(() => refetch());
-    }
+  function handleCancelAppointment(professorId, scheduleId) {
+    deleteAppointment({
+      variables: { professorId, scheduleId },
+    }).then(() => refetch());
+  }
 
-    return (
-        <table style={{ color: 'white' }}>
-            {schedule.map((s) => (
-                <tbody key={s._id}>
-                    <tr style={{ color: 'black' }}>
-                        <td>{s.time}</td>
-                        <td>{s.room}</td>
-                        <td>{s.groupName}</td>
-                        <td>{s.groupNumber}</td>
-                        <td>
-                            <button onClick={() => handleCancelAppointment(PID, s._id)}>Cancel Meeting</button>
-                        </td>
-                    </tr>
-                </tbody>
-            ))}
-        </table>
-    );
+  return (
+    <table style={{ color: 'white' }}>
+      {schedule.map((s) => (
+        <tbody key={s._id}>
+          <tr style={{ color: 'black' }}>
+            <td>{s.time}</td>
+            <td>{s.room}</td>
+            <td>{s.groupName}</td>
+            <td>{s.groupNumber}</td>
+            <td>
+              <button onClick={() => handleCancelAppointment(PID, s._id)}>Cancel Meeting</button>
+            </td>
+          </tr>
+        </tbody>
+      ))}
+    </table>
+  );
 };

@@ -82,6 +82,9 @@ const resolvers = {
         },
         getProfessorsAppointments: async (_, { profId }) => {
             const PID = Mongoose.Types.ObjectId(profId)
+
+            console.log(PID);
+
             return CoordSchedule.aggregate([
                 { $match: { "attending2._id": PID } },
                 { $project: { _id: 1, groupId: 1, time: 1, room: 1 } },
