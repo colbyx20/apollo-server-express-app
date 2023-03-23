@@ -32,7 +32,7 @@ function DisplayDesignWeek(props){
         sx={{height: '75px', width: '75px', }}
         variant="outlined"
         >
-        {day.getMonth()+"/"+day.getDate()}
+        {(day.getMonth()+1)+"/"+day.getDate()}
         </ToggleButton>
     );
 
@@ -64,7 +64,9 @@ function DisplayDesignWeek(props){
 
     const handleAddItmes = () =>{
         // Add index values to something before clearing
-
+        
+        props.onScheduleDate(selected);
+        props.onTimeRange(selectedTime);
         setSelected([]);
         setSelectedTime([]);
     }

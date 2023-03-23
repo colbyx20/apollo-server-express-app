@@ -58,7 +58,6 @@ function Semester(props) {
                                         onChange={handleChange}
                                         value={searchInput}
                                     />
-
                                 </div>
                                 <div className='searchResults'>
                                     <GetGroups

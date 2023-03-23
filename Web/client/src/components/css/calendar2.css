@@ -100,8 +100,11 @@
     margin-top: 2%;
     border-radius: 10px;
     width: 82%;
-    height: 31%;
+    height: 38%;
     background-color: bisque;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .designWeekContainer{
@@ -113,4 +116,10 @@
     display: flex;
     flex-wrap: wrap;
     overflow-x: none;
+}
+
+.showSchedulerContainer{
+    background-color: white;
+    width: 82%;
+    height: 65%;
 }

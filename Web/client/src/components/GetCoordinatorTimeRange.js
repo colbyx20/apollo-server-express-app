@@ -20,5 +20,5 @@ export const GetCoordinatorTimeRange = ({ ID }) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
     const { getCoordinatorTimeRange } = data;
-    console.log(getCoordinatorTimeRange);
+    return getCoordinatorTimeRange;
 }
