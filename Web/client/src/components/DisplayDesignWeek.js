@@ -32,7 +32,7 @@ function DisplayDesignWeek(props){
         sx={{height: '75px', width: '75px', }}
         variant="outlined"
         >
-        {day.getMonth()+"/"+day.getDate()}
+        {(day.getMonth()+1)+"/"+day.getDate()}
         </ToggleButton>
     );
 

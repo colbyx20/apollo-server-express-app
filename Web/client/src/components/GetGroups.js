@@ -59,7 +59,6 @@ export const GetGroups = (props) => {
                                     </div>
                                 </td>
                                 <td id='rowName'>
-
                                 </td>
                             </tr>
                         )

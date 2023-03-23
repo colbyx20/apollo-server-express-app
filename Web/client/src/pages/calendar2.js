@@ -11,31 +11,34 @@ import { CalendarPickerSkeleton } from '@mui/x-date-pickers/CalendarPickerSkelet
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DisplayDesignWeek from '../components/DisplayDesignWeek';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
-import { gql, useQuery } from '@apollo/client';
+import DisplaySchedule from '../components/DisplaySchedule';
 import "../components/css/calendar2.css"
 
 function Calendar(props) {
+    // user data lives in here  
+    const { user, logout } = useContext(AuthContext);
+    let navigate = useNavigate();
     const requestAbortController = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [secondPickerEnabled, setSecondPickerEnabled] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState([0]);
-    const [currentDate, setCurrentDate] = useState(new Date());
+    var [currentDate, setCurrentDate] = useState(new Date());
     const initialValue = dayjs(currentDate);
-    const [value, setValue] = useState(initialValue);
-    const [endValue, setEndValue] = useState(null);
+    var [value, setValue] = useState(initialValue);
+    var [endValue, setEndValue] = useState(null);
     const maxDate = add(new Date(), { months: 2 });
     const [selectedWeek, setSelectedWeek] = useState([]);
     const [getScheduleDate, setScheduleDate] = useState([]);
     const [getTimeRange, setTimeRange] = useState([]);
-
-    // user data lives in here  
-    const { user, logout } = useContext(AuthContext);
-    let navigate = useNavigate();
-
-
-
+    const timeRangeData = GetCoordinatorTimeRange({ ID: user.id });
+    
+    if(timeRangeData[0]){
+        currentDate = new Date(timeRangeData[0].time);
+        value = new Date(timeRangeData[0].time);
+    }
+    
 
     const onLogout = () => {
         logout();
@@ -188,30 +191,29 @@ function Calendar(props) {
                                     Dates submitted successfully!
                                     </Typography>
                                 )}
+
                             </div>
                             <div className='calendar-container'>
                                     <h2 className='calendar-Title'>Calendar</h2>
                                     <GlobalCalendar
                                         daysList={selectedWeek}
-                                        minDate={value}
+                                        minDate={currentDate}
                                         maxDate={maxDate} />
                                 </div>
                         </div>
                         <div className='rightContainer'>
-                                <div className='selectTimes'>
-                                    <h2 className='timeTitle'>Create Schedule</h2>
-                                    <div className='timeContainer'>
-                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
-                                    onScheduleDate={addDateList} onTimeRange={addTimeList}/>
-                                    </div>
-                                    <h2 className='timeTitle'>View Schedule</h2>
-                                    <div className='viewSchedule'>
-                                        <GetCoordinatorTimeRange ID={user.id} />
-
-                                    </div>
+                            <div className='selectTimes'>
+                                <h2 className='timeTitle'>Create Schedule</h2>
+                                <div className='timeContainer'>
+                                <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
+                                onScheduleDate={addDateList} onTimeRange={addTimeList}/>
+                                </div>
+                                <h2 className='timeTitle'>View Schedule</h2>
+                                <div className='viewSchedule'>
+                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} dateList={selectedWeek}/>
                                 </div>
                             </div>
-
+                        </div>
                     </div>
                                 
                         
