@@ -210,7 +210,8 @@ function Calendar(props) {
                                 </div>
                                 <h2 className='timeTitle'>View Schedule</h2>
                                 <div className='viewSchedule'>
-                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} dateList={selectedWeek}/>
+                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} 
+                                    dateList={selectedWeek}/>
                                 </div>
                             </div>
                         </div>
