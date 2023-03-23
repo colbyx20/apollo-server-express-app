@@ -36,6 +36,11 @@ const GENERATE_APPOINTMENT = gql`
     }
 
 `
+const CANCEL_APPOINTMENT =gql`
+    mutation CancelAppontment($cancelation:cancelation){
+        cancelAppointment(cancelation:$cancelation){}
+    }
+`
 
 export const GetCoordinatorSchedule = ({ ID }) => {
 
@@ -48,18 +53,21 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const holdTime = 2800;
-
-    const handleMouseDown = () => {
+    const [cancelAppointment]= useMutation(CANCEL_APPOINTMENT)
+    const handleMouseDown = (coordinator) => {//needs to pass coordinator
         setIsHeld(true);
         setHoldTimeout(
         setTimeout(() => {
-            onHoldComplete();
+            onHoldComplete(coordinator);//pass coordinator
             setHoldTimeout(null);
         }, holdTime)
         );
     };
 
-    const onHoldComplete = () => {
+    const onHoldComplete = (appoinment) => {
+        cancelAppointment({
+            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appoinment._id,reason:"Personal"}}
+        })
         console.log('Button was held down for 3 seconds!');
     };
 
@@ -117,9 +125,9 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                         bgcolor: '#8B0000', // On hover
                                         color: 'white',
                                     }}}
-                                    onMouseDown={handleMouseDown}
+                                    onMouseDown={handleMouseDown(coordinator)}
                                     onMouseUp={handleMouseUp}
-                                    onTouchStart={handleMouseDown}
+                                    onTouchStart={handleMouseDown(coordinator)}
                                     onTouchEnd={handleMouseUp} variant="contained">
                                     Hold To Cancel
                                 </Button>
