@@ -10,8 +10,15 @@ import { AuthContext } from '../context/authContext';
 import Papa from "papaparse";
 
 
-const CREATE_GROUPS = gql`
-    mutation Mutation($cid: ID!, $groupNumber: String, $groupName: String) {
+const CREATE_STUDENTS = gql`
+mutation CreateStudentAccounts($cid: ID!, $userLogin: String, $password: String, $firstname: String, $lastname: String, $groupNumber: Int) {
+  createStudentAccounts(CID: $cid, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, groupNumber: $groupNumber)
+}
+`
+
+const CREATE_GROUP = gql`
+
+    mutation Mutation($cid: ID!, $groupNumber: Int, $groupName: String) {
     createGroup(CID: $cid, groupNumber: $groupNumber, groupName: $groupName)
     }
 `
@@ -21,7 +28,8 @@ function FileUpload() {
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [createGroup] = useMutation(CREATE_GROUPS)
+    const [createStudentAccounts] = useMutation(CREATE_STUDENTS)
+    const [createGroup] = useMutation(CREATE_GROUP)
 
     const reset = () => {
         setFileName("No selected file")
@@ -40,10 +48,37 @@ function FileUpload() {
             complete: function (results) {
                 console.log(results.data)
                 results.data.forEach((row) => {
+                    createStudentAccounts({
+                        variables: {
+                            cid: user.id,
+                            userLogin: row[0],
+                            password: row[1],
+                            firstname: row[2],
+                            lastname: row[3],
+                            groupNumber: parseInt(row[4])
+                        }
+                    })
+                })
+            }
+        },
+        );
+    };
+
+    const handleFileUpload2 = () => {
+        const file = ref.current.files[0];
+        if (!file)
+            return;
+
+        Papa.parse(file, {
+            header: false,
+            skipEmptyLines: true,
+            complete: function (results) {
+                console.log(results.data)
+                results.data.forEach((row) => {
                     createGroup({
                         variables: {
                             cid: user.id,
-                            groupNumber: row[0],
+                            groupNumber: parseInt(row[0]),
                             groupName: row[1],
                         }
                     })
@@ -74,8 +109,15 @@ function FileUpload() {
                 }
             </form>
             <div className='currentFile'>
-                <div className='currentName'>{fileName}<br />
+                <div className='currentName'>Import Students<br />
                     <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload}><CheckIcon /></Button>
+                    <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
+                </div>
+            </div>
+
+            <div className='currentFile'>
+                <div className='currentName'>Import Groups<br />
+                    <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload2}><CheckIcon /></Button>
                     <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
                 </div>
             </div>

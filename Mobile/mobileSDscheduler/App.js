@@ -11,7 +11,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 // Initialize Apollo Client
 const client = new ApolloClient({
-  uri: "https://sea-turtle-app-msdsw.ondigitalocean.app/graphql",
+  uri: "https://dolphin-app-djupw.ondigitalocean.app/graphql",
   cache: new InMemoryCache(),
 });
 

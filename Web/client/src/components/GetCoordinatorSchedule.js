@@ -36,11 +36,14 @@ const GENERATE_APPOINTMENT = gql`
     }
 
 `
+<<<<<<< HEAD
 const CANCEL_APPOINTMENT =gql`
     mutation CancelAppontment($cancelation:cancelation){
         cancelAppointment(cancelation:$cancelation)
     }
 `
+=======
+>>>>>>> master
 
 export const GetCoordinatorSchedule = ({ ID }) => {
 
@@ -53,23 +56,27 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const holdTime = 2800;
-    const [cancelAppointment]= useMutation(CANCEL_APPOINTMENT)
-    const handleMouseDown = (coordinator) => {//needs to pass coordinator
+
+    const handleMouseDown = () => {
         setIsHeld(true);
         setHoldTimeout(
         setTimeout(() => {
-            onHoldComplete(coordinator);//pass coordinator
+            onHoldComplete();
             setHoldTimeout(null);
         }, holdTime)
         );
     };
 
+<<<<<<< HEAD
     const onHoldComplete = (appointment) => {
         console.log(localStorage.getItem("_id"))
         console.log(appointment)
         cancelAppointment({
             variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment,reason:"Personal"}}
         })
+=======
+    const onHoldComplete = () => {
+>>>>>>> master
         console.log('Button was held down for 3 seconds!');
     };
 
@@ -100,8 +107,8 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none'}}>
             <div className='StickyHeader'>
-                {/* <Button sx={{ float:'left',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}><RefreshIcon></RefreshIcon></Button>
-                <Button sx={{ float:'right',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button> */}
+                <Button sx={{ float:'left',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}><RefreshIcon></RefreshIcon></Button>
+                <Button sx={{ float:'right',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
             </div>
             <Table>
                 <TableBody>
@@ -129,11 +136,18 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                         bgcolor: '#8B0000', // On hover
                                         color: 'white',
                                     }}}
+<<<<<<< HEAD
                                     onMouseDown={()=>handleMouseDown(coordinator._id)}
                                     onMouseUp={handleMouseUp}
                                     onTouchStart={()=>handleMouseDown(coordinator._id)}
                                     onTouchEnd={handleMouseUp} 
                                     variant="contained">
+=======
+                                    onMouseDown={handleMouseDown}
+                                    onMouseUp={handleMouseUp}
+                                    onTouchStart={handleMouseDown}
+                                    onTouchEnd={handleMouseUp} variant="contained">
+>>>>>>> master
                                     Hold To Cancel
                                 </Button>
                             </TableCell>

@@ -68,7 +68,7 @@
     margin-top: 25px;
     background-color: #231F20;
     border-radius: 15px;
-    overflow: visible;
+    overflow-y: auto;
 }
 
 .currentName{

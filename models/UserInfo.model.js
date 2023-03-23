@@ -18,8 +18,8 @@ const userInfoSchema = new Schema({
             }
         }
     },
-    email: { type: String, required: true, unique: true },  
-    notificationEmail: { type: String, required: true, unique: true },  
+    email: { type: String, required: true, unique: true },
+    notificationEmail: { type: String, unique: true },
     image: { type: String },
     privilege: {
         type: String,

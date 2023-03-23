@@ -10,9 +10,9 @@ import { GetCoordinatorSchedule } from '../components/GetCoordinatorSchedule';
 import '../components/css/coordinator.css';
 
 const GET_NOTIFICATION_EMAIL = gql`
-    mutation Mutation($id: String!, $email: String!) {
-        sendEventEmail(ID: $id, email: $email)
-    }
+mutation Mutation($id: String!, $email: String!, $privilege: String!) {
+  sendEventEmail(ID: $id, email: $email, privilege: $privilege)
+}
 `
 
 function Coordinator(props) {

@@ -103,10 +103,10 @@
 }
 
 .user-data {
-    margin-left: 25px;
+    padding-top: 5px;
     margin-bottom: 5px;
-    text-align: left;
-    color: #000;
+    text-align: center;
+    color: white;
 }
 
 .userData-container {
@@ -115,5 +115,9 @@
     padding-top: 100px;
     width: 85%;
     height: 85%;
-    background-color: beige;
+    background-color: bisque;
+    overflow-x: auto;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
 }
