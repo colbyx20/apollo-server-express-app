@@ -53,18 +53,19 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const holdTime = 2800;
-
-    const handleMouseDown = () => {
+    const [cancelAppointment]=useMutation(CANCEL_APPOINTMENT)
+    const handleMouseDown = (appointment) => {
         setIsHeld(true);
         setHoldTimeout(
         setTimeout(() => {
-            onHoldComplete();
+            onHoldComplete(appointment);
             setHoldTimeout(null);
         }, holdTime)
         );
     };
 
     const onHoldComplete = (appointment) => {
+        console.log(appointment)
         cancelAppointment({
             variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment,reason:"Personal"}}
         })
