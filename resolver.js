@@ -979,29 +979,30 @@ const resolvers = {
             return
         },
         cancelAppointment: async (_, { cancelation: { CancelerID, ApID, reason } }) => {// passes the ID of the person canceling and the appointment being canceled
-            const canceler = await UserInfo.find({ userId: CancelerID });//find out whose canceling
-            const appointment = await CoordSchedule.find({ _id: ApID });//find the information on the appoinment being canceled
+            const canceler = await UserInfo.findOne({ userId: CancelerID });//find out whose canceling
+            const appointment = await CoordSchedule.findOne({ _id: ApID });//find the information on the appoinment being canceled
             //alternative call with time and CID instead
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
             //Professor on a side note for professors the reason flag should be false
+            console.log(canceler.privilege)
             if (canceler.privilege == 'professor')//note for proffs this isnt a deletion
             {
                 time = new Date(appointment.time);
                 const who = await Professors.updateOne({ _id: canceler._id }, { $pull: { appointments: appointment._id } });
                 const group = await Group.findOne({ _id: appointment.groupId });
-                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $dec: { numberOfAttending: 1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $inc : { numberOfAttending: -1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
                 const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
                 const notify = await UserInfo.find({ userId: lead._id });
-                transport.sendMail({
-                    from: "SDSNotifier@gmail.com",
-                    to: notify.notificationEmail,
-                    subject: "A Senior Design final Review has been schedule",
-                    html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
-            <p>Please reschedule a new proffessor</p>
-            </div>`,
+//                transport.sendMail({
+  //                  from: "SDSNotifier@gmail.com",
+    //                to: notify.notificationEmail,
+      //              subject: "A Senior Design final Review has been schedule",
+        //            html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
+          //          <p>Please reschedule a new proffessor</p>
+            //        </div>`,
                     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                })
+              //  })
                 return {
                     Group: group._id,
                     Time: time,
@@ -1010,6 +1011,7 @@ const resolvers = {
             }
             //coordinator
             else if (canceler.privilege == 'coordinator') {
+
                 if (reason == "Group")// cancel on groups behalf
                 {
                     if (appointment.attending.length > 0)//Group had professors
@@ -1038,43 +1040,47 @@ const resolvers = {
                 }
                 else if (reason == "Personal")//cancel for personalreasons
                 {
+                    console.log(appointment)
                     if (appointment.groupId)//Group already claimed it
-                    {
+                    {console.log("herdgffgasdfe")
                         const group = await Group.findOne({ _id: appointment.groupId });
-                        const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
-                        const notify = await UserInfo.find({ userId: lead._id });
-                        transport.sendMail({
-                            from: "SDSNotifier@gmail.com",
-                            to: notify.notificationEmail,
-                            subject: "A Senior Design final Review has been schedule",
-                            html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
-                            <p>Please reschedule a new proffessor</p>
-                            </div>`,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                        })
+                        console.log(group)
+                        //const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
+                        //const notify = await UserInfo.find({ userId: lead._id });
+//                        transport.sendMail({
+  //                          from: "SDSNotifier@gmail.com",
+    //                        to: notify.notificationEmail,
+      //                      subject: "A Senior Design final Review has been schedule",
+        //                    html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
+          //                  <p>Please reschedule a new proffessor</p>
+            //                </div>`,
+              //              //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                //        })
+                        
                     }
                     if (appointment.attending.length > 0)//Group had professors
-                    {
+                    {console.log("here2")
                         for (prof of appointment.attending)//send email and update
-                        {
+                        {                        
                             const profe = await UserInfo.findOne({ userId: prof });
-                            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-                            transport.sendMail({
-                                from: "SDSNotifier@gmail.com",
-                                to: profe.email,
-                                subject: "A Senior Design final Review has been canceled",
-                                html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
-                                 <p>Thank you for your understanding</p>
-                                </div>`,
+//                            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
+  //                          transport.sendMail({
+    //                            from: "SDSNotifier@gmail.com",
+      //                          to: profe.email,
+        //                        subject: "A Senior Design final Review has been canceled",
+          //                      html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
+            //                     <p>Thank you for your understanding</p>
+              //                  </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                            })
+                //            })
                             await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
                         }
+
                     }
                     await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
                 }
             }
-            return
+            return true
         },
         setRole: async (_, { CID, role }) => {
             try {
@@ -1218,9 +1224,10 @@ const resolvers = {
                 throw new ApolloError("Appointment cannot be Deleted");
             }
         },
-        deleteGroup: async (_, { groupId }) => {
-            const findGroup = Users.find({ groupId: groupId })
-            for (member of findGroup) {
+        deleteGroup: async (_, { groupId } ) => {
+            const findGroup = await Users.find({groupId:groupId})
+            for(member of findGroup)
+            {
                 const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
                 const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
             }
