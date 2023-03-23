@@ -65,9 +65,10 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     };
 
     const onHoldComplete = (appointment) => {
-        
+        console.log(localStorage.getItem("_id"))
+        console.log(appointment)
         cancelAppointment({
-            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment._id,reason:"Personal"}}
+            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment,reason:"Personal"}}
         })
         console.log('Button was held down for 3 seconds!');
     };

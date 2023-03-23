@@ -297,7 +297,7 @@ scalar DateTime
         createGroup(CID:ID!, groupNumber: String, groupName: String): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
-        cancelAppointment(cancelation:cancelation):CoordSchedule
+        cancelAppointment(cancelation:cancelation):Boolean
         createStudentAccounts(CID:ID!): Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
