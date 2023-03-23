@@ -38,7 +38,7 @@ const GENERATE_APPOINTMENT = gql`
 `
 const CANCEL_APPOINTMENT =gql`
     mutation CancelAppontment($cancelation:cancelation){
-        cancelAppointment(cancelation:$cancelation){}
+        cancelAppointment(cancelation:$cancelation)
     }
 `
 
@@ -64,9 +64,10 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         );
     };
 
-    const onHoldComplete = (appoinment) => {
+    const onHoldComplete = (appointment) => {
+        
         cancelAppointment({
-            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appoinment._id,reason:"Personal"}}
+            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment._id,reason:"Personal"}}
         })
         console.log('Button was held down for 3 seconds!');
     };
@@ -91,6 +92,8 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         randomlySelectProfessorsToAGroup({
             variables: { cid: ID },
         }).then(() => { refetch() });
+
+
     }
 
     return (
@@ -125,10 +128,11 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                         bgcolor: '#8B0000', // On hover
                                         color: 'white',
                                     }}}
-                                    onMouseDown={handleMouseDown(coordinator)}
+                                    onMouseDown={()=>handleMouseDown(coordinator._id)}
                                     onMouseUp={handleMouseUp}
-                                    onTouchStart={handleMouseDown(coordinator)}
-                                    onTouchEnd={handleMouseUp} variant="contained">
+                                    onTouchStart={()=>handleMouseDown(coordinator._id)}
+                                    onTouchEnd={handleMouseUp} 
+                                    variant="contained">
                                     Hold To Cancel
                                 </Button>
                             </TableCell>

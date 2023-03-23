@@ -977,7 +977,7 @@ const resolvers = {
                 time = new Date(appointment.time);
                 const who = await Professors.updateOne({ _id: canceler._id }, { $pull: { appointments: appointment._id } });
                 const group = await Group.findOne({ _id: appointment.groupId });
-                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $dec: { numberOfAttending: 1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
+                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $inc : { numberOfAttending: -1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
                 const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
                 const notify = await UserInfo.find({ userId: lead._id });
                 transport.sendMail({
@@ -1207,7 +1207,7 @@ const resolvers = {
             }
         },
         deleteGroup: async (_, { groupId } ) => {
-            const findGroup = Users.find({groupId:groupId})
+            const findGroup = await Users.find({groupId:groupId})
             for(member of findGroup)
             {
                 const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
