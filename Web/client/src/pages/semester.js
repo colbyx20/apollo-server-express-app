@@ -83,7 +83,7 @@ function Semester(props) {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
                                         }
-                                    }} variant="contained" onClick={deleteGroups}>Delete Projects</Button> 
+                                    }} variant="contained" onClick={()=>deleteGroups}>Delete Projects</Button> 
                                     <Button sx={{
                                         display: 'block',
                                         backgroundColor: 'red',
