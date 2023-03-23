@@ -1,5 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/authContext';
 
 const GET_PROFESSOR_SCHEDULE = gql`
   query GetProfessorsAppointments($profId: String) {
@@ -20,12 +22,15 @@ const DELETE_APPOINTMENT = gql`
 `;
 
 export const GetProfessorsAppointments = () => {
-  const PID = localStorage.getItem('_id');
+  const { user, logout } = useContext(AuthContext);
+  const PID = user.id
   const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
 
   const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
     variables: { profId: PID },
   });
+
+  console.log(data);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
