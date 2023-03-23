@@ -177,8 +177,8 @@ function Login(props) {
                                 },
                             }}
                         />} label="Remember Email" />
-                    <br />
-                    <span><a href='/'>  Forgot password?</a></span>
+              
+                    <span><a href='/forgot'>  Forgot password?</a></span>
 
 
                 </Container>

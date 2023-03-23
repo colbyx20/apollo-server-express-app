@@ -1,11 +1,20 @@
-import { useState, useEffect } from "react";
+import {  useContext, useState, useRef, useEffect } from 'react';
+import { AuthContext } from '../context/authContext';
+import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
+import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 
 
 function DisplaySchedule(props){
+    // user data lives in here  
+    const { user, logout } = useContext(AuthContext);
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
+    const timeRangeDataObj = GetCoordinatorTimeRange({ ID: user.id });
+    let timeRangeData = useState([]);
+    console.log(timeRangeDataObj);
+    
 
     const staticTimeList = [
         "8:00am",
@@ -27,14 +36,28 @@ function DisplaySchedule(props){
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
+
+        if(timeRangeDataObj.length > 0){
+            for(let i = 0; i < timeRangeDataObj.length; i++){
+                console.log(Date(timeRangeDataObj[i].time))
+                timeRangeData.push(new Date(timeRangeDataObj[i].time));
+            }
+        }
     }, [props.pickList]);
 
-    console.log(dateList);
+
+
+    if(pickList.length === 0 && timeRangeData.length === 0)
+        return <div>No items Schedule Selected.</div>;
 
     return(
-        <div className="showSchedulerContainer">
-
-        </div>
+        <>
+            <div className="showSchedulerContainer">
+            {/* {timeRange.map((item, index) => (
+                <p key={index}>{item.time}</p>
+            ))} */}
+            </div>
+        </>
     )
 
 }
