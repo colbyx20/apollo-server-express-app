@@ -26,11 +26,10 @@ function Semester(props) {
         navigate('/');
     }
     function deleteGroups(){
-        deleteAllG();
+        deleteAllG()
     }
     const [deleteAllG, {loading}] = useMutation(DELETE_ALL_GROUP,{
-        variables:{cid:localStorage.getItem("_id")},
-        refetchQueries:[{query:GetGroups}]
+        variables:{cid:localStorage.getItem("_id")}
     })
 
     const [searchInput, setSearchInput] = useState("");
