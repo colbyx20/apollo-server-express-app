@@ -41,13 +41,13 @@ export const GetGroups = (props) => {
     const search = props.data;
     const { getGroupsByCoordinator } = data;
     const filterItems = getFilteredData(search, getGroupsByCoordinator);
-    const [deleteGroup] = useMutation(DELETE_GROUP,{
-        refetchQueries:[{query:GET_GROUPS}]
-    })
+    // const [deleteGroup] = useMutation(DELETE_GROUP,{
+    //     refetchQueries:[{query:GET_GROUPS}]
+    // })
     function handleDeletion(GID){
-        deleteGroup({
-            variables:{groupid:GID}
-        })
+        // deleteGroup({
+        //     variables:{groupid:GID}
+        // })
         console.log("done")
     }
     return (
