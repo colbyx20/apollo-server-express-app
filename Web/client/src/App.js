@@ -14,6 +14,7 @@ import Calendar2 from "./pages/calendar2";
 import Calendar3 from "./pages/calendar3";
 import Semester from "./pages/semester";
 import Account from "./pages/account";
+import Forgot from "./pages/forgot";
 
 function App() {
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
@@ -50,6 +51,7 @@ function App() {
           <Route path="/calendar3" element={<Calendar3/>} />
           <Route path="/coordinator" element={<Coordinator />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/forgot" element={<Forgot />} />
           <Route path="/semester" element={<Semester />} />
         </Routes>
       </ThemeContext.Provider>

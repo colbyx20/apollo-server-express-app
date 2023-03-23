@@ -119,4 +119,13 @@
 .StickyHeader{
     position: sticky; top: 0;
     width: 100%;
+    
+}
+
+.user-styleBox{
+    margin-top: 35px;
+    background-color: #231F20;
+    height: 18%;
+    width: 350px;
+    border-radius: 10px;
 }
