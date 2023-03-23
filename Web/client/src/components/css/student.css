@@ -35,8 +35,6 @@
     height: 60%;
     border-radius: 5px;
     background-color: #D0A300;
-    overflow-y: auto;
-    color: aliceblue;
 }
 
 .displayNotification{
@@ -46,6 +44,5 @@
     height: 35%;
     border-radius: 5px;
     background-color: #D0A300;
-    overflow-y: auto;
 }
 

@@ -4,11 +4,9 @@
     box-sizing: border-box; 
 }
 
-/* body{
+body{
     background-color: #231F20;
-    background-color: var(--background);
-    color: var(--color);
-} */
+}
 
 h3{
     text-align: center;

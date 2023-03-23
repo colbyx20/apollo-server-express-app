@@ -1,7 +1,4 @@
 import React, { useState, useRef} from 'react';
-import { Button } from "@mui/material";
-import CheckIcon from '@mui/icons-material/Check';
-import DeleteIcon from '@mui/icons-material/Delete';
 import './css/fileupload.css';
 import Upload from './images/upload.svg'
 import Check from './images/check.svg'
@@ -41,10 +38,8 @@ function FileUpload(){
                 </form>
                 <div className='currentFile'>
                     <div className='currentName'>{fileName}<br/>
-                    {/* <button className='confirmButton'><img className='currentIcons' src={Check}></img></button>
-                    <button onClick={reset} className='deleteButton'><img className='currentIcons' src={Trash}></img></button> */}
-                    <Button size='small' sx={{color: 'white', backgroundColor: 'blue'}}><CheckIcon /></Button>
-                    <Button size='small' sx={{color: 'white', backgroundColor: 'red'}} onClick={reset}><DeleteIcon /></Button>
+                    <button className='confirmButton'><img className='currentIcons' src={Check}></img></button>
+                    <button onClick={reset} className='deleteButton'><img className='currentIcons' src={Trash}></img></button>
                     </div>
                 </div>
             </div>

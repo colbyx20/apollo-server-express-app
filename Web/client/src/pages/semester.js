@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../context/authContext';
 import CustomSidebar from '../components/Sidebar';
 import { GetGroups } from '../components/GetGroups';
-import { GetGroupMembers } from '../components/GetGroupMembers';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material";
 import '../components/css/coordinator.css';

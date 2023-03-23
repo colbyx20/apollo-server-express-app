@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import './css/calendar.css';
@@ -44,17 +43,7 @@ const info = [
   }
 ]
 
-
-
-const numOfAppointmentDays = 5
-const profStartDays = {prof: 'leinecker', month: 3, day:20, year: 2023}
-
-export default function ProfCalendar({data}) {
-  // const { loading, error, data } = useQuery(GET_COORD_SCHEDULE);
-  console.log(data)
-
-  const { getAllCoordinatorSchedule } = data;
-
+export default function ProfCalendar() {
   const [value, setValue] = useState(dayjs(new Date()));
 
   const appointmentsOnThatDay = (val, app) => {
@@ -80,13 +69,13 @@ export default function ProfCalendar({data}) {
     setSelectedTimes(newAppointment)
   }
 
-  // const daysArr = [
-  //   { id: 0, data: 'Monday', selected: false },
-  //   { id: 1, data: 'Tuesday', selected: false },
-  //   { id: 2, data: 'Wednesday', selected: false },
-  //   { id: 3, data: 'Thursday', selected: false },
-  //   { id: 4, data: 'Friday', selected: false }
-  // ]
+  const daysArr = [
+    { id: 0, data: 'Monday', selected: false },
+    { id: 1, data: 'Tuesday', selected: false },
+    { id: 2, data: 'Wednesday', selected: false },
+    { id: 3, data: 'Thursday', selected: false },
+    { id: 4, data: 'Friday', selected: false }
+  ]
 
   const timesArr = [
     { id: 0, data: '700', selected: false},
@@ -107,99 +96,25 @@ export default function ProfCalendar({data}) {
     { id: 15, data: '2200', selected: false},
   ]
 
-  
+  const appointmentInfo = [
+    {id: 0, day: 'Monday', times:[] },
+    {id: 1, day: 'Tuesday', times:[] },
+    {id: 2, day: 'Wednesday', times:[] },
+    {id: 3, day: 'Thursday', times:[] },
+    {id: 4, day: 'Friday', times:[] },
+  ]
 
-  const daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday']
-
-  const parseCoordinatorData = () => {
-    let newObj = []
-    let idx = 0
-    newObj = getAllCoordinatorSchedule.map((coordinator) => {
-
-      // this dayjs thing is amazing. you can pop in the JSON string into it and it will create an object with all the info
-      const dataRecieved = dayjs(coordinator.time)
-      const coordDate = dataRecieved.format("YYYY-MM-DD")
-
-      // for some reason when I do this, it gives the hour as 4 hours prior. Not exactly sure why thats the case. Diff timezone maybe?
-        // this error fixed itself the next day. keep a look out but looks like it's good now?
-      const coordTime = dataRecieved.get('hour')
-      const curDay = dataRecieved.get('day') - 1
-
-      // maybe make the time array index become the hour so that it's consistent but not entirely sure. should be fine for now
-      return {...newObj, day_id: curDay, l_name: coordinator.coordinatorInfo.coordinatorLName , time_id: idx++, fulldate: coordDate, dayOfWeek: daysOfWeek[curDay], time: coordTime, times: []}
-    })
-    console.log(newObj)
-    return newObj
-  }
-
-
-  // for professors, have show all days of week and have thing that says that it corresponds to all coordinator weeks
-  // maybe ge rid of days and just click dates on the calendar and then click the times for that day
-  //maybe ditch the calendar and add a button thing where they can click on the day and then they select the available times from the right
-  // make container wider
-
-  const allCoordinatorSchedule = parseCoordinatorData()
-  // const allCoordinatorSchedule = [{id: 1, dayOfWeek: 'Tuesday'},
-  // {id: 2, dayOfWeek: 'Wednesday'},{id: 2, dayOfWeek: 'Wednesday'},{id: 4, dayOfWeek: 'Friday'},{id: 4, dayOfWeek: 'Friday'},]
-
-  // this will create the days array that will be used in the weekdays schedule thing
-  const getDaysToDisplay = () => {
-    const newObj = new Set()
-    allCoordinatorSchedule.map(coord => {
-      newObj.add(coord.day_id)
-    })
-    const temp = [...newObj].map((curDay) => {
-      return {id: curDay, data: daysOfWeek[curDay], selected: false}
-    })
-    return temp
-  }
-
-  const daysArr = getDaysToDisplay()
-
-  // might have to give it an id and give it the theme from there. For text
-
-  // the days and times they select will be for ALL of the senior design weeks. Make that clear. Ignore this
-  // color code the buttons and when a cordinator has it selected, have that button show up in that color. there can be multiple times as long as they're diff colors
-  // leinecker blue and gerber pink
-
-  // only have coords to put in first and last day of presentations and then loop through those days and leave out weekends
-  // then for professors, populate the values using what times and days come back from the api that the professors have set
-  // maybe take advantage of value state and have the confirm work for those
-  // try to somehow stylize that calendar so it will tell which days are for which professor
-    // maybe use the material ui badges
-
-  const createAppointmentDays = () => {
-    let newObj = []
-
-    // i wasn't sure how to make it skip weekends so I created an offset so when it hits a weekend, it increments the counter to skip that day
-    let offset = 0
-    
-    for (let i = 0; i < numOfAppointmentDays; i++){
-
-      let appDate = dayjs(new Date(profStartDays.year, profStartDays.month - 1, profStartDays.day + offset++))
-
-      // when its a weekend, don't increase the count but increase the offset so it knows to skip that day
-      // the weekend will still technically be within the loop so need to add logic to ignore them
-      if(isWeekend(appDate)){
-        i--
-      }
-      else {
-        const curDay = appDate.day()
-
-        const currentDate = appDate.format('YYYY-MM-DD')
-
-        newObj = [...newObj, {id: i, dateTime: currentDate.toString(), coord:profStartDays.prof, day: daysOfWeek[(curDay - 1) % 5], times: []}]
-      }
-    }
-    // console.log(newObj)
-    return newObj
-  }
+  // const appointmentInfo = [
+  //   {id: 0, date: '', day: 'Monday', times:[] },
+  //   {id: 1, date: '', day: 'Tuesday', times:[] },
+  //   {id: 2, date: '', day: 'Wednesday', times:[] },
+  //   {id: 3, date: '', day: 'Thursday', times:[] },
+  //   {id: 4, date: '', day: 'Friday', times:[] },
+  // ]
 
   const [days, setDays] = useState(daysArr)
   const [times, setTimes] = useState(timesArr)
-  const [appAvailability, setAppAvailability] = useState(createAppointmentDays())
-
-  console.log(appAvailability)
+  const [appAvailability, setAppAvailability] = useState(appointmentInfo)
 
 
   const dayClickEvent = (curDay) => {
@@ -219,6 +134,70 @@ export default function ProfCalendar({data}) {
     updateVal.selected = !updateVal.selected
     setTimes(newVal)
   }
+
+  // keep for now in case we need something from it later
+  // const updateAppointmentAvailability = () => {
+    
+  //   // need this when do map so it knows which id to check for
+  //   let selectedDayIdx = 0
+  //   const newObj = [...appAvailability]
+    
+  //   const selectedDays = days.filter((curDay) => {
+  //     return curDay.selected === true;
+  //   })
+
+  //   console.log(newObj)
+
+  //   const prevTimes = newObj.map((prevTime) => {
+  //     return prevTime.times
+  //   })
+
+  //   console.log(prevTimes)
+
+  //   // get it so it will get the previous times that were selected too. not sure how. maybe filter through the appAvail times first and then add an or statement in the selectedTimes
+  //   const selectedTimes = times.filter((curDay) => {
+  //     return curDay.selected === true;
+  //   })
+
+  //   // const selectedTimes = times.filter((curDay) => {
+  //   //   return curDay.selected === true;
+  //   // }).map((curTime) => {return curTime.data})
+
+    
+
+  //   // don't change anything if they don't have a day selected
+  //   // should probably add an error but not sure how
+  //   if(selectedDays.length === 0) {
+  //     return newObj
+  //   }
+
+  //   //only issue now is that when you add a new time, it doesnt keep the old one if its not selected
+
+  //   const updatedObj = newObj.map(curDay => {
+  //     // console.log(`days id is ${selectedDays[selectedDayIdx].id} curday id is ${curDay.id}`)
+  //     if (curDay.id === selectedDays[selectedDayIdx].id) {
+  //       if(selectedDayIdx < selectedDays.length - 1){
+  //         selectedDayIdx++
+  //       }
+  //       console.log("Yo")
+  //       return { ...curDay, times: [...selectedTimes] };
+  //     } else {
+  //       // No changes
+  //       return curDay;
+  //     }
+  //   });
+
+  //   // This sets the days and times selected back to false but doesn't update the theme state so leave out for now
+  //   // maybe just have the user manually deselect the day to update times for now
+
+  //   // setDays(daysArr)
+  //   // setTimes(timesArr)
+
+  //   setAppAvailability(updatedObj)
+  //   // console.log(selectedDays)
+  //   // console.log(selectedTimes)
+  //   // console.log(updatedObj)
+  // }
 
   const updateAppointmentAvailability = () => {
     
