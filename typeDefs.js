@@ -296,11 +296,11 @@ scalar DateTime
         loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createClass(CID:ID!, groupNumber: Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String): Boolean
+        createGroup(CID:ID!, groupNumber: Int, groupName: String): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
         cancelAppointment(cancelation:cancelation):CoordSchedule
-        createStudentAccounts(CID:ID!): Boolean
+        createStudentAccounts(CID:ID!, userLogin: String, password: String, firstname: String, lastname: String, groupNumber: Int ): Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
         editNotificationEmail(ID:String!,email:String!): Boolean

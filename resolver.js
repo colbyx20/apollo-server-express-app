@@ -302,76 +302,65 @@ const resolvers = {
                 token: authCoordinator.token
             }
         },
-        createStudentAccounts: async (_, { CID }) => {
+        createStudentAccounts: async (_, { CID, userLogin, password, firstname, lastname, groupNumber }) => {
 
-            let inputStream = Fs.createReadStream('./csv/useForStudentAccGeneration.csv', 'utf8');
-            inputStream
-                .pipe(new CsvReadableStream({ parseNumbers: true, parseBooleans: true, trim: true }))
-                .on('data', async function (row) {
+            const checkUniqueStudent = await UserInfo.findOne({ email: userLogin }).count();
 
-                    const email = row[0].toLowerCase() + '.' + row[1].toLowerCase() + '@knights.ucf.edu';
-                    // const checkUniqueGroup = await Group.findOne({coordinatorId:CID,groupNumber:parseInt(row[0])}).count();
-                    const checkUniqueStudent = await UserInfo.findOne({ email: email }).count();
+            // if group doesn't exist, make one
+            if (!checkUniqueStudent) {
 
-                    // if group doesn't exist, make one
-                    if (!checkUniqueStudent) {
+                const ID = Mongoose.Types.ObjectId(CID);
+                const encryptedPassword = await bcrypt.hash("password", 10);
 
-                        const ID = Mongoose.Types.ObjectId(CID);
-                        const encryptedPassword = await bcrypt.hash("password", 10);
+                const groupId = await Group.findOne({ coordinatorId: ID, groupNumber: groupNumber });
 
-                        const groupId = await Group.findOne({ coordinatorId: CID, groupNumber: row[2] });
+                // Build out mongoose model 
+                const newStudent = new Users({
+                    userFName: firstname.toLowerCase(),
+                    userLName: lastname.toLowerCase(),
+                    role: "",
+                    groupId: groupId._id,
+                    coordinatorId: ID
+                });
 
-                        // Build out mongoose model 
-                        const newStudent = new Users({
-                            userFName: row[0].toLowerCase(),
-                            userLName: row[1].toLowerCase(),
-                            role: "",
-                            groupId: groupId._id,
-                            coordinatorId: ID
-                        });
+                // Save user in MongoDB
+                const res = await newStudent.save();
 
-                        // Save user in MongoDB
-                        const res = await newStudent.save();
-
-                        // await Group.findOneAndUpdate({ coordinatorId: CID, groupNumber: row[2] }, { $push: { members: newStudent._id } });
-
-                        // create JWT (attach to user model)
-                        const token = jwt.sign(
-                            { id: newStudent._id, email, privilege: "student" },
-                            "UNSAFE_STRING", // stored in a secret file 
-                            {
-                                expiresIn: "2h"
-                            }
-                        );
-
-                        // create professors auth information in separate collection called Auth
-                        const authStudent = new Auth({
-                            userId: res._id,
-                            password: encryptedPassword,
-                            confirm: true,
-                            token: token
-                        })
-
-
-                        // save new professor profile
-                        await authStudent.save();
-
-                        // create model for professors information 
-                        const studentInfo = new UserInfo({
-                            userId: res._id,
-                            email: email,
-                            notificationEmail: email.toLowerCase(),
-                            privilege: "student",
-                            image: '',
-                        })
-
-                        await studentInfo.save();
-
-                        return true;
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    { id: newStudent._id, email: userLogin, privilege: "student" },
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
                     }
+                );
+
+                // create professors auth information in separate collection called Auth
+                const authStudent = new Auth({
+                    userId: res._id,
+                    password: encryptedPassword,
+                    confirm: true,
+                    token: token
                 })
-                .on('end', function () {
+
+
+                // save new professor profile
+                await authStudent.save();
+
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId: res._id,
+                    email: userLogin,
+                    notificationEmail: "",
+                    privilege: "student",
+                    image: '',
                 })
+
+                await studentInfo.save();
+
+                return true;
+            }
+
             return false
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
@@ -812,105 +801,31 @@ const resolvers = {
 
             return true;
         },
-        createClass: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname }) => {
+        createGroup: async (_, { CID, groupNumber, groupName }) => {
 
             if (CID === "") {
-                throw new ApolloError("Please fill all Fields!");
+                throw new ApolloError("UnAuthorized access");
             }
-
-            async function createAllUserCollections(ID, groupNumber, groupName, userLogin, password, firstname, lastname) {
-
-                const encryptedPassword = await bcrypt.hash(password, 10);
-
-                const newGroup = new Group({
-                    coordinatorId: ID,
-                    groupName: groupName.toLowerCase(),
-                    projectField: "",
-                    groupNumber: parseInt(groupNumber),
-                });
-
-                newGroup.save();
-
-                // Build out mongoose model 
-                const newStudent = new Users({
-                    userFName: firstname.toLowerCase(),
-                    userLName: lastname.toLowerCase(),
-                    role: "",
-                    groupId: newGroup._id,
-                    coordinatorId: ID
-                });
-
-                newStudent.save()
-
-                // console.log(newGroup);
-                // console.log(newStudent);
-
-                // const [groupResult, studentResult] = await Promise.all([
-                //     newGroup.save(),
-                //     newStudent.save()
-                // ])
-
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newStudent._id, email, privilege: "student" },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-
-                // create professors auth information in separate collection called Auth
-                const authStudent = new Auth({
-                    userId: newStudent._id,
-                    password: encryptedPassword,
-                    confirm: true,
-                    token: token
-                })
-
-                authStudent.save();
-
-                // create model for professors information 
-                const studentInfo = new UserInfo({
-                    userId: studentResult._id,
-                    email: userLogin.toLowerCase(),
-                    notificationEmail: "",
-                    privilege: "student",
-                    image: '',
-                })
-                studentInfo.save();
-
-                // console.log(authStudent);
-                // console.log(studentInfo);
-
-                // const [auth, info] = await Promise.all([
-                //     authStudent.save(),
-                //     studentInfo.save()
-                // ])
-            }
+            const ID = Mongoose.Types.ObjectId(CID);
+            const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count()
 
             try {
-                const ID = Mongoose.Types.ObjectId(CID);
-                const encryptedPassword = await bcrypt.hash(password, 10);
 
-                const [checkUniqueGroup, isStudentActive] = await Promise.all([
-                    Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count(),
-                    Users.findOne({ email: userLogin }).count()
-                ])
-
-                // console.log(`${checkUniqueGroup} ${isStudentActive}`)
-
-                if (checkUniqueGroup == 1 && isStudentActive == 1) {
+                if (checkUniqueGroup) {
                     return false;
                 } else {
-                    try {
-                        await createAllUserCollections(ID, groupNumber, groupName, userLogin, encryptedPassword, firstname, lastname)
-                        return true;
-                    } catch (error) {
-                        throw new ApolloError("Something Went Wrong");
-                    }
+                    const newGroup = new Group({
+                        coordinatorId: ID,
+                        groupName: groupName.toLowerCase(),
+                        projectField: "",
+                        groupNumber: groupNumber,
+                    });
+
+                    newGroup.save();
+                    return true;
                 }
             } catch (error) {
-                throw new ApolloError("CSV Failed");
+                throw new ApolloError("Group Creation Error");
             }
         },
         deleteUser: async (_, { ID }) => {
