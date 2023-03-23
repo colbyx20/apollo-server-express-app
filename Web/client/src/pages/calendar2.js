@@ -109,41 +109,100 @@ function Calendar(props) {
     return(
         <>
             <div className='calendar2Page'>
-                {user !== null ?
-                    <>
-                        <CustomSidebar />
-                        <div className='calendar2Wrapper'>
-                            <div className='userInfo'>
-                                <p className='accountHeader'>Calendar</p>
+            {user !== null?
+                <>
+                    <CustomSidebar/>
+                    <div className='calendar2Wrapper'>
+                        <div className='userInfo'>
+                            <p className='accountHeader'>Calendar</p>
+                        </div>
+                        <div className='leftContainer'>
+                            <div className='coordWeekContainer'>
+                                <h2 className='calendar-Title'>Set Design Week</h2>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Start Date"
+                                        minDate={currentDate}
+                                        maxDate={maxDate}
+                                        value={value}
+                                        loading={isLoading}
+                                        onChange={(newValue) => {
+                                            setValue(newValue);
+                                            setSecondPickerEnabled(true);
+                                        }}
+                                        shouldDisableDate={shouldDisableDate}
+                                        renderInput={(params) => <TextField {...params} />}
+                                        renderLoading={() => <CalendarPickerSkeleton />}
+                                        renderDay={(day, _value, DayComponentProps) => {
+                                        const isSelected =
+                                            !DayComponentProps.outsideCurrentMonth &&
+                                            highlightedDays.indexOf(day.date()) > 0;
+                                            
+
+                                        return (
+                                            <Badge>
+                                            <PickersDay {...DayComponentProps} />
+                                            </Badge>
+                                        );
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                                <br/>
+                                <LocalizationProvider
+                                dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="End Date"
+                                        minDate={value}   
+                                        maxDate={maxDate}
+                                        loading={isLoading}
+                                        value={endValue}
+                                        onChange={(newValue) => {
+                                            setEndValue(newValue);
+                                            setIsValid(true);
+                                        }}
+                                        shouldDisableDate={shouldDisableDate}
+                                        renderInput={(params) => 
+                                        <TextField {...params} />}
+                                        renderLoading={() => <CalendarPickerSkeleton />}
+                                        renderDay={(day, _value, DayComponentProps) => {
+                                        const isSelected =
+                                            !DayComponentProps.outsideCurrentMonth &&
+                                            highlightedDays.indexOf(day.date()) > 0;
+
+                                        return (
+                                            <Badge>
+                                            <PickersDay {...DayComponentProps} />
+                                            </Badge>
+                                        );
+                                        }}
+                                    />
+                                </LocalizationProvider>
+
+                                <Button variant="contained" color="primary" type="submit"
+                                style={{ width: "236px", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
+                                disabled={!isValid}
+                                onClick={handleSubmit}
+                                >Submit</Button>
+                                 {isSubmitted && (
+                                    <Typography variant="subtitle1" color="success">
+                                    Dates submitted successfully!
+                                    </Typography>
+                                )}
                             </div>
                             <div className='calendar-container'>
-                            <h2 className='calendar-Title'>Calendar</h2>
-                                <GlobalCalendar
-                                daysList={selectedWeek}
-                                minDate = {value}
-                                maxDate = {maxDate}/>
-                            </div>
-                        </div>
-                        <div className='rightContainer'>
-                            <div className='selectTimes'>
-                                <h2 className='timeTitle'>Create Schedule</h2>
-                                <div className='timeContainer'>
-                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
-                                    onScheduleDate={addDateList} onTimeRange={addTimeList}/>
-                                </div>
-                                <div className='calendar-container'>
                                     <h2 className='calendar-Title'>Calendar</h2>
                                     <GlobalCalendar
                                         daysList={selectedWeek}
                                         minDate={value}
                                         maxDate={maxDate} />
                                 </div>
-                            </div>
-                            <div className='rightContainer'>
+                        </div>
+                        <div className='rightContainer'>
                                 <div className='selectTimes'>
                                     <h2 className='timeTitle'>Create Schedule</h2>
                                     <div className='timeContainer'>
-                                        <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} />
+                                    <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty} 
+                                    onScheduleDate={addDateList} onTimeRange={addTimeList}/>
                                     </div>
                                     <h2 className='timeTitle'>View Schedule</h2>
                                     <div className='viewSchedule'>
@@ -152,16 +211,19 @@ function Calendar(props) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </>
-                    :
-                    <>
-                        <div className='noUser'>
-                            <h3>No Page Found</h3>
-                            <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
-                        </div>
-                    </>
-                }
+
+                    </div>
+                                
+                        
+                </>
+                :
+                <>
+                    <div className='noUser'>
+                        <h3>No Page Found</h3>
+                        <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
+                    </div>
+                </>
+            }
             </div>
         </>
     )
