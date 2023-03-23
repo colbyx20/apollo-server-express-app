@@ -123,4 +123,18 @@
     width: 82%;
     height: 65%;
     color: black;
+    overflow-y: auto;
+}
+
+.datesShown{
+    color: black;
+}
+
+.stickyButton{
+    position: sticky; top: 0;
+    width: 100%;
+    height: 35px;
+    background-color: rgb(247, 207, 207);
+    margin: auto;
+    text-align: center;
 }
