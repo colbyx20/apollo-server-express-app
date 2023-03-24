@@ -1,6 +1,6 @@
 import { gql, useQuery, NetworkStatus, useMutation } from '@apollo/client';
 import * as React from 'react';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -36,7 +36,7 @@ const GENERATE_APPOINTMENT = gql`
     }
 
 `
-const CANCEL_APPOINTMENT =gql`
+const CANCEL_APPOINTMENT = gql`
     mutation CancelAppontment($cancelation:cancelation){
         cancelAppointment(cancelation:$cancelation)
     }
@@ -49,49 +49,43 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const holdTime = 2800;
-    
-    const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE,{
+
+    const { loading, error, data, networkStatus } = useQuery(GET_SCHEDULE, {
         variables: { cid: ID },
         notifyOnNetworkStatusChange: true
     });
-    
+
     useEffect(() => {
-        if(data){
+        if (data) {
             setSchedule(data.getCoordinatorSchedule);
         }
-    },[data])
-    
-    console.log("My schedule");
-    console.log(schedule);
-    const [cancelAppointment]=useMutation(CANCEL_APPOINTMENT,{
-        onCompleted: () => {
-            refetch();
-        }
-    })
+    }, [data])
+
+    const [cancelAppointment] = useMutation(CANCEL_APPOINTMENT)
 
     const handleMouseDown = (appointment) => {
         setIsHeld(true);
         setHoldTimeout(
-        setTimeout(() => {
-            onHoldComplete(appointment);
-            setHoldTimeout(null);
-        }, holdTime)
+            setTimeout(() => {
+                onHoldComplete(appointment);
+                setHoldTimeout(null);
+            }, holdTime)
         );
     };
 
     const onHoldComplete = (appointment) => {
         cancelAppointment({
-            variables:{cancelation:{CancelerID:ID,ApID:appointment,reason:"Personal"}}
+            variables: { cancelation: { CancelerID: ID, ApID: appointment, reason: "Personal" } },
+            refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
         })
-        console.log('Button was held down for 3 seconds!');
     };
 
     const handleMouseUp = () => {
         if (isHeld) {
-        setIsHeld(false);
-        if (holdTimeout !== null) {
-            clearTimeout(holdTimeout);
-        }
+            setIsHeld(false);
+            if (holdTimeout !== null) {
+                clearTimeout(holdTimeout);
+            }
         }
     };
 
@@ -101,19 +95,17 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
 
     function handleCreateGenerateViewers(e, ID) {
-        e.preventDefault()
         randomlySelectProfessorsToAGroup({
             variables: { cid: ID },
-        }).then(() => { refetch() });
-
-
+            refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
+        })
     }
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none'}}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none' }}>
             <div className='StickyHeader'>
                 {/* <Button sx={{ float:'left',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}><RefreshIcon></RefreshIcon></Button> */}
-                <Button sx={{ float:'right',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
+                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
             </div>
             <Table>
                 <TableBody>
@@ -124,28 +116,30 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                         >
                             <TableCell sx={{ color: 'white' }} align='center'>
                                 {'Time:'}
-                                <br/>
+                                <br />
                                 {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
                                 {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                                 {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                                 {new Date(coordinator.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                             </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br/>{coordinator.room} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Project:'}<br/>{coordinator.groupId?.groupName}</TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Attending:'}<br/>{coordinator.attending2?.map((e) => {
+                            <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br />{coordinator.room} </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'>{'Project:'}<br />{coordinator.groupId?.groupName}</TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'>{'Attending:'}<br />{coordinator.attending2?.map((e) => {
                                 return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}<br /></span>
                             })}</TableCell>
                             <TableCell>
                                 <Button
-                                    sx={{ backgroundColor: 'red',
-                                    ':hover': {
-                                        bgcolor: '#8B0000', // On hover
-                                        color: 'white',
-                                    }}}
-                                    onMouseDown={()=>handleMouseDown(coordinator._id)}
+                                    sx={{
+                                        backgroundColor: 'red',
+                                        ':hover': {
+                                            bgcolor: '#8B0000', // On hover
+                                            color: 'white',
+                                        }
+                                    }}
+                                    onMouseDown={() => handleMouseDown(coordinator._id)}
                                     onMouseUp={handleMouseUp}
-                                    onTouchStart={()=>handleMouseDown(coordinator._id)}
-                                    onTouchEnd={handleMouseUp} 
+                                    onTouchStart={() => handleMouseDown(coordinator._id)}
+                                    onTouchEnd={handleMouseUp}
                                     variant="contained">
                                     Hold To Cancel
                                 </Button>
