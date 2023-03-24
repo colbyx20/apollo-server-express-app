@@ -107,8 +107,6 @@ function Calendar(props) {
     const addTimeList = (item) =>{
         setTimeRange(item);
     }
-
-    
     return(
         <>
             <div className='calendar2Page'>

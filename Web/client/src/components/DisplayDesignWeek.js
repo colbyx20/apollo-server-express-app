@@ -64,6 +64,10 @@ function DisplayDesignWeek(props){
 
     const handleAddItmes = () =>{
         // Add index values to something before clearing
+        selectedTime.map((t) =>{
+            console.log(timeList[t])
+        })
+        
         
         props.onScheduleDate(selected);
         props.onTimeRange(selectedTime);

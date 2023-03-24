@@ -1,10 +1,19 @@
 import {  useContext, useState, useRef, useEffect } from 'react';
+import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
 import dayjs from 'dayjs';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 import { GetCoordinatorSchedule } from './GetCoordinatorSchedule';
+
+const SEND_SCHEDULE = gql`
+    mutation Mutation($coordinatorSInput: coordinatorSInput) {
+        createCoordinatorSchedule(coordinatorSInput: $coordinatorSInput) {
+        time
+        }
+    }
+`
 
 
 function DisplaySchedule(props){
@@ -14,7 +23,10 @@ function DisplaySchedule(props){
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
+    // const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
     
+    console.log("DisplaySchedule")
+    console.log(props);
 
     const staticTimeList = [
         "8:00am",
@@ -52,15 +64,29 @@ function DisplaySchedule(props){
         dateIndexs.push(apiDates[i].time);
     }
 
-    //console.log(apiDates)
+    // console.log(apiDates)
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    //console.log(dateObjects);
+    // console.log(dateObjects);
+    
+    function handlePickedDates(){
+        console.log("pass to api");
+        console.log(apiDates);
+        // createCoordinatorSchedule({
+        //     variables:{ coordinatorSInput:{
+        //         CID: user.id,
+        //         Room: 'HEC-101',
+        //         Times: apiDates
+        //     }}
+        // })
+    }
 
     return(
         <>
             <div className="showSchedulerContainer">
                 <div className='stickyButton'>
-                    <Button>Submit</Button>
+                    <Button
+                    onClick={handlePickedDates()}
+                    >Submit</Button>
                 </div>
             {dateObjects.map((date, index) => (
             <p className='datesShown' key={date.getTime()+date.getFullYear()+date.getDate()}>
