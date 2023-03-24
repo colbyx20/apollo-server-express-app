@@ -1,4 +1,4 @@
-import {  useContext, useState, useRef, useEffect } from 'react';
+import {  useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
@@ -9,9 +9,7 @@ import { GetCoordinatorSchedule } from './GetCoordinatorSchedule';
 
 const SEND_SCHEDULE = gql`
     mutation Mutation($coordinatorSInput: coordinatorSInput) {
-        createCoordinatorSchedule(coordinatorSInput: $coordinatorSInput) {
-        time
-        }
+        createCoordinatorSchedule(coordinatorSInput: $coordinatorSInput)
     }
 `
 
@@ -23,7 +21,7 @@ function DisplaySchedule(props){
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
-    // const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
+    const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
     
     console.log("DisplaySchedule")
     console.log(props);
@@ -66,18 +64,23 @@ function DisplaySchedule(props){
 
     // console.log(apiDates)
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    // console.log(dateObjects);
+    console.log(dateObjects);
     
     function handlePickedDates(){
         console.log("pass to api");
-        console.log(apiDates);
-        // createCoordinatorSchedule({
-        //     variables:{ coordinatorSInput:{
-        //         CID: user.id,
-        //         Room: 'HEC-101',
-        //         Times: apiDates
-        //     }}
-        // })
+        console.log(apiDates[0]);
+        let sendDates = [];
+        apiDates.map((t) =>{
+            sendDates.push(t.time);
+        })
+
+        createCoordinatorSchedule({
+            variables:{ coordinatorSInput:{
+                CID: user.id,
+                Room: 'HEC-101',
+                Times: sendDates
+            }}
+        })
     }
 
     return(
@@ -85,7 +88,7 @@ function DisplaySchedule(props){
             <div className="showSchedulerContainer">
                 <div className='stickyButton'>
                     <Button
-                    onClick={handlePickedDates()}
+                    onClick={handlePickedDates}
                     >Submit</Button>
                 </div>
             {dateObjects.map((date, index) => (

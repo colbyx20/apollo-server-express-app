@@ -779,50 +779,45 @@ const resolvers = {
         },
         createCoordinatorSchedule: async (_, { coordinatorSInput: { CID, Room, Times } }) => {
 
+            console.log(CID);
+            console.log(Room);
+            console.log(Times);
+            
             if (Room === null || Times === null) {
                 throw new ApolloError("Please Fill Room/Times");
             }
-            // console.log(CID);
-            // console.log(Room);
-            // console.log(Times);
-            // const UniqueTimes = new Set(Times);
-            
-            let dates = [];
             const ID = Mongoose.Types.ObjectId(CID)
-            Times.forEach((d) =>{
-                let t = new Date(d).toISOString();
-                dates.push(t);
-            })
-            console.log("My dates");
-            console.log(dates);
+            const UniqueTimes = new Set(Times);
+            UniqueTimes.forEach(async (time) => {
+                let t = new Date(time).toISOString();
+                let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
-            // UniqueTimes.forEach(async (time) => {
-            //     let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
-
-            //     if (duplicateTime) {
-            //         // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
-            //         return false;
-            //     } else {
-            //         try {
-
-            //             const CoordinatorSchedule = new CoordSchedule({
-            //                 coordinatorID: ID,
-            //                 room: Room,
-            //                 groupId: null,
-            //                 time: t,
-            //                 numberOfAttending: 0, // nessecity debatable
-            //                 attending: [],
-            //                 attending2: []
-            //             });
+                if (duplicateTime) {
+                    // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
+                    console.log("NOOO")
+                    return false;
+                } else {
+                    try {
+                        console.log("HIIII")
+                        const CoordinatorSchedule = new CoordSchedule({
+                            coordinatorID: ID,
+                            room: Room,
+                            groupId: null,
+                            time: t,
+                            numberOfAttending: 0, // nessecity debatable
+                            attending: [],
+                            attending2: []
+                        });
 
 
-            //             await CoordinatorSchedule.save();
+                        await CoordinatorSchedule.save();
+                        return true;
 
-            //         } catch (e) {
-            //             throw new ApolloError("Something Went Wrong!");
-            //         }
-            //     }
-            // });
+                    } catch (e) {
+                        throw new ApolloError("Something Went Wrong!");
+                    }
+                }
+            });
 
             return true;
         },
