@@ -15,7 +15,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
 }
 
 code {
@@ -25,4 +25,8 @@ code {
 
 .app {
   background-color: var(--background);
+}
+
+::-webkit-scrollbar {
+  width: 0px;
 }
