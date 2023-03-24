@@ -52,7 +52,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     
     const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE,{
         variables: { cid: ID },
-        notifyOnNetworkStatusChange: true,
+        notifyOnNetworkStatusChange: true
     });
     
     useEffect(() => {
@@ -80,7 +80,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     };
 
     const onHoldComplete = (appointment) => {
-        console.log(appointment)
         cancelAppointment({
             variables:{cancelation:{CancelerID:ID,ApID:appointment,reason:"Personal"}}
         })
@@ -100,7 +99,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    const { getCoordinatorSchedule } = data;
 
     function handleCreateGenerateViewers(e, ID) {
         e.preventDefault()
@@ -114,7 +112,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none'}}>
             <div className='StickyHeader'>
-                <Button sx={{ float:'left',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}><RefreshIcon></RefreshIcon></Button>
+                {/* <Button sx={{ float:'left',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={() => refetch()}><RefreshIcon></RefreshIcon></Button> */}
                 <Button sx={{ float:'right',color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
             </div>
             <Table>
@@ -128,7 +126,8 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                 {'Time:'}
                                 <br/>
                                 {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
-                                {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}{new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                                {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
+                                {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                                 {new Date(coordinator.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br/>{coordinator.room} </TableCell>
