@@ -1,6 +1,6 @@
 import { gql, useQuery, NetworkStatus, useMutation } from '@apollo/client';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -44,16 +44,31 @@ const CANCEL_APPOINTMENT =gql`
 
 export const GetCoordinatorSchedule = ({ ID }) => {
 
-    const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE, {
-        variables: { cid: ID },
-        notifyOnNetworkStatusChange: true,
-    });
-
+    const [schedule, setSchedule] = useState([]);
     const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const holdTime = 2800;
-    const [cancelAppointment]=useMutation(CANCEL_APPOINTMENT)
+    
+    const { loading, error, data, refetch, networkStatus } = useQuery(GET_SCHEDULE,{
+        variables: { cid: ID },
+        notifyOnNetworkStatusChange: true,
+    });
+    
+    useEffect(() => {
+        if(data){
+            setSchedule(data.getCoordinatorSchedule);
+        }
+    },[data])
+    
+    console.log("My schedule");
+    console.log(schedule);
+    const [cancelAppointment]=useMutation(CANCEL_APPOINTMENT,{
+        onCompleted: () => {
+            refetch();
+        }
+    })
+
     const handleMouseDown = (appointment) => {
         setIsHeld(true);
         setHoldTimeout(
@@ -67,7 +82,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const onHoldComplete = (appointment) => {
         console.log(appointment)
         cancelAppointment({
-            variables:{cancelation:{CancelerID:localStorage.getItem("_id"),ApID:appointment,reason:"Personal"}}
+            variables:{cancelation:{CancelerID:ID,ApID:appointment,reason:"Personal"}}
         })
         console.log('Button was held down for 3 seconds!');
     };
@@ -104,7 +119,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
             </div>
             <Table>
                 <TableBody>
-                    {getCoordinatorSchedule.map((coordinator) => {
+                    {schedule.map((coordinator) => {
                         return (<TableRow
                             key={coordinator._id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
