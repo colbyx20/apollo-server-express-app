@@ -48,6 +48,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
+    const [cancel, setCancel] = useState("HOLD TO CANCEL");
     const holdTime = 2800;
 
     const { loading, error, data, networkStatus } = useQuery(GET_SCHEDULE, {
@@ -140,7 +141,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                     onTouchStart={() => handleMouseDown(coordinator._id)}
                                     onTouchEnd={handleMouseUp}
                                     variant="contained">
-                                    Hold To Cancel
+                                    {cancel}
                                 </Button>
                             </TableCell>
                         </TableRow>
