@@ -321,11 +321,12 @@ const resolvers = {
             const ID = Mongoose.Types.ObjectId(CID);
 
             // check if group exists
-            const isGroup = await Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber');
-            const encryptedPassword = await bcrypt.hash(password, 10)
-
-            console.log(isGroup);
-            console.log(`${CID} ${groupNumber} ${userLogin} ${role}`)
+            const [isGroup, encryptedPassword] = await Promise.all([
+                Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber'),
+                bcrypt.hash(password, 10)
+            ])
+            // const isGroup = Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber');
+            // const encryptedPassword = await bcrypt.hash(password, 10)
 
             if (!isGroup) {
 
