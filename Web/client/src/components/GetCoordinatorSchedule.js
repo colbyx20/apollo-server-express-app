@@ -34,7 +34,6 @@ const GENERATE_APPOINTMENT = gql`
     mutation RandomlySelectProfessorsToAGroup($cid: ID!) {
     RandomlySelectProfessorsToAGroup(CID: $cid)
     }
-
 `
 const CANCEL_APPOINTMENT = gql`
     mutation CancelAppontment($cancelation:cancelation){
