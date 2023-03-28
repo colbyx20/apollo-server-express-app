@@ -24,7 +24,7 @@ function DisplaySchedule(props){
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
     
    
-    console.log(props);
+    //console.log(props);
 
     const staticTimeList = [
         "8:00am",
@@ -46,6 +46,7 @@ function DisplaySchedule(props){
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
+
     }, [props.pickList]);
 
 
@@ -64,11 +65,15 @@ function DisplaySchedule(props){
 
     // console.log(apiDates)
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    console.log(dateObjects);
+    //console.log(dateObjects);
+
+    // Add new dates and time to list
+    if(pickList.length > 0 && timeList.length > 0){
+        
+    }
+            
     
-    function handlePickedDates(){
-        // console.log("pass to api");
-        // console.log(apiDates[0]);
+    function handlePickedDates(){   
         let sendDates = [];
         apiDates.map((t) =>{
             sendDates.push(t.time);
