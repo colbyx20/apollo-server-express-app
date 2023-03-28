@@ -6,20 +6,31 @@ function DisplayDesignWeek(props){
     const [daysList, setDayList] =  useState(props.daysList);
     const [selected, setSelected] = useState([]);
     const [selectedTime, setSelectedTime] = useState([]);
-    const [isEmpty, setIsEmpty] = useState(props.isEmpty);
+    const [isEmpty, setIsEmpty] = useState(false);
 
     const handleSelectedTime = (event, newSelected) => {
       setSelectedTime(newSelected);
+      checkEmptyList();
     };
 
     const handleSelected = (event, newSelected) => {
       setSelected(newSelected);
+      checkEmptyList();
     };
 
     useEffect(() => {
         setDayList(props.daysList);
-        setIsEmpty(props.isEmpty);
-      }, [props.daysList]);
+    }, [props.daysList]);
+
+    useEffect(() => {
+        if(selected.length > 0 && selectedTime.length > 0) {
+          setIsEmpty(true);
+        } else {
+          setIsEmpty(false);
+        }
+    }, [selected, selectedTime]);
+    
+      
 
     if (daysList.length === 0) {
         return <div>No items to display.</div>;
@@ -64,9 +75,9 @@ function DisplayDesignWeek(props){
 
     const handleAddItmes = () =>{
         // Add index values to something before clearing
-        selectedTime.map((t) =>{
-            console.log(timeList[t])
-        })
+        // selectedTime.map((t) =>{
+        //     console.log(timeList[t])
+        // })
         
         
         props.onScheduleDate(selected);
@@ -75,6 +86,11 @@ function DisplayDesignWeek(props){
         setSelectedTime([]);
     }
 
+    const checkEmptyList = () =>{
+        if(selected.length > 0 && selectedTime.length > 0)
+            setIsEmpty(true);
+    } 
+    
 
     return(
         <>

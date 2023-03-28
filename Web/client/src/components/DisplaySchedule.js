@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
-import dayjs from 'dayjs';
+import SaveIcon from '@mui/icons-material/Save';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 import { GetCoordinatorSchedule } from './GetCoordinatorSchedule';
 
@@ -23,7 +23,7 @@ function DisplaySchedule(props){
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
     
-    console.log("DisplaySchedule")
+   
     console.log(props);
 
     const staticTimeList = [
@@ -67,8 +67,8 @@ function DisplaySchedule(props){
     console.log(dateObjects);
     
     function handlePickedDates(){
-        console.log("pass to api");
-        console.log(apiDates[0]);
+        // console.log("pass to api");
+        // console.log(apiDates[0]);
         let sendDates = [];
         apiDates.map((t) =>{
             sendDates.push(t.time);
@@ -89,7 +89,7 @@ function DisplaySchedule(props){
                 <div className='stickyButton'>
                     <Button
                     onClick={handlePickedDates}
-                    >Submit</Button>
+                    ><SaveIcon/></Button>
                 </div>
             {dateObjects.map((date, index) => (
             <p className='datesShown' key={date.getTime()+date.getFullYear()+date.getDate()}>
