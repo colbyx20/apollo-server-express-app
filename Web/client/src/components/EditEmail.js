@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { TextField, Button } from '@mui/material';
 import { AuthContext } from '../context/authContext';
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
+import { GetUserInfo } from '../components/GetUserInfo';
 import '../components/css/editaccout.css'
 
 const NOTIFICATION_EMAIL = gql`
@@ -11,11 +12,24 @@ const NOTIFICATION_EMAIL = gql`
   }
 `
 
+const GET_USER = gql`
+    query GetUserInfo($id: String!) {
+        getUserInfo(ID: $id) {
+            email
+            notificationEmail
+        }
+    }
+`
+
 function EditEmailPopup(props) {
   const { user } = useContext(AuthContext);
   const [newEmail, setNewEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [notificationEmail] = useMutation(NOTIFICATION_EMAIL)
+
+  const { refetch } = useQuery(GET_USER, {
+    variables: { id: user.id }
+  });
 
   const handleInputChange = (event) => {
     const inputEmail = event.target.value;
@@ -30,7 +44,10 @@ function EditEmailPopup(props) {
     event.preventDefault();
     // call function to update username with newUsername value
     notificationEmail({
-      variables: { id: user.id, email: newEmail.toLowerCase() }
+      variables: { id: user.id, email: newEmail.toLowerCase() },
+      onCompleted: () => {
+        refetch()
+      }
     })
     props.onClose();
   };
