@@ -6,9 +6,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './css/fileupload.css';
 import Upload from './images/upload.svg'
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
-import { GetGroups } from '../components/GetGroups';
 import Papa from "papaparse";
 
 
@@ -18,6 +17,18 @@ const CREATE_ACCOUNTS = gql`
     }
 `
 
+const GET_GROUPS = gql`
+query Query($coordinatorId: String) {
+    getGroupsByCoordinator(coordinatorId: $coordinatorId) {
+        _id
+        coordinatorId
+        groupName
+        groupNumber
+        projectField
+    }
+}
+`
+
 function FileUpload(props) {
     const { user } = useContext(AuthContext);
     const ref = useRef();
@@ -25,7 +36,16 @@ function FileUpload(props) {
     const [fileName, setFileName] = useState("No selected file");
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [createAccounts, { error }] = useMutation(CREATE_ACCOUNTS);
+
+    const { refetch } = useQuery(GET_GROUPS, {
+        variables: { coordinatorId: user.id }
+    });
+
+    const [createAccounts] = useMutation(CREATE_ACCOUNTS, {
+        onCompleted: () => {
+            refetch()
+        }
+    });
 
     const reset = () => {
         setFileName("No selected file")
@@ -65,11 +85,9 @@ function FileUpload(props) {
                     setIsLoading(false);
                     setOpen(false);
                 }
-            }
+            },
         });
     };
-
-
 
     return (
         <>{isLoading ?
