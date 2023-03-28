@@ -5,10 +5,7 @@ const UsersSchema = new mongoose.Schema({
     userFName: { type: String },
     userLName: { type: String },
     groupId: { type: mongoose.ObjectId, ref: Group },
-    role: {
-        type: String,
-        enum: ['Leader', 'Front-end', 'Back-end', '']
-    },
+    role: { type: String },
     coordinatorId: { type: mongoose.ObjectId },
 })
 

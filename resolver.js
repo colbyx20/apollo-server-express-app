@@ -312,9 +312,9 @@ const resolvers = {
                 token: authCoordinator.token
             }
         },
-        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname }) => {
+        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname, role }) => {
 
-            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined) {
+            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined || role === undefined) {
                 throw new ApolloError("Missing Data From CSV File");
             }
 
@@ -322,11 +322,13 @@ const resolvers = {
 
             // check if group exists
             const isGroup = await Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber');
+            const encryptedPassword = await bcrypt.hash(password, 10)
 
             console.log(isGroup);
-            const encryptedPassword = await bcrypt.hash(password, 10)
-            // if group does not exists, create a group, and user logins 
+            console.log(`${CID} ${groupNumber} ${userLogin} ${role}`)
+
             if (!isGroup) {
+
                 const group = new Group({
                     coordinatorId: ID,
                     groupName: groupName.toLowerCase(),
@@ -338,12 +340,10 @@ const resolvers = {
                 const student = new Users({
                     userFName: firstname.toLowerCase(),
                     userLName: lastname.toLowerCase(),
-                    role: "Leader",
+                    role: role.toLowerCase(),
                     groupId: group._id,
                     coordinatorID: ID
                 });
-
-                // await Promise.all([group.save(), student.save()])
 
                 // create JWT (attach to user model)
                 const token = jwt.sign(
@@ -367,7 +367,7 @@ const resolvers = {
                     userId: student._id,
                     email: userLogin.toLowerCase(),
                     notificationEmail: "",
-                    privilege: "student",
+                    privilege: 'student',
                     image: '',
                 })
 
@@ -380,7 +380,7 @@ const resolvers = {
                 const student = new Users({
                     userFName: firstname.toLowerCase(),
                     userLName: lastname.toLowerCase(),
-                    role: "Leader",
+                    role: role.toLowerCase(),
                     groupId: isGroup._id,
                     coordinatorID: ID
                 });
@@ -407,76 +407,14 @@ const resolvers = {
                     userId: student._id,
                     email: userLogin.toLowerCase(),
                     notificationEmail: "",
-                    privilege: "student",
+                    privilege: 'student',
                     image: '',
                 })
-                // await studentInfo.save();
 
                 await Promise.all([student.save(), authStudent.save(), studentInfo.save()])
 
                 return true;
             }
-        },
-        createStudentAccounts: async (_, { CID, userLogin, password, firstname, lastname, groupNumber }) => {
-
-            const checkUniqueStudent = await UserInfo.findOne({ email: userLogin }).count();
-
-            // if group doesn't exist, make one
-            if (!checkUniqueStudent) {
-
-                const ID = Mongoose.Types.ObjectId(CID);
-                const encryptedPassword = await bcrypt.hash(password, 10);
-
-                const groupId = await Group.findOne({ coordinatorId: ID, groupNumber: groupNumber });
-
-                // Build out mongoose model 
-                const newStudent = new Users({
-                    userFName: firstname.toLowerCase(),
-                    userLName: lastname.toLowerCase(),
-                    role: "",
-                    groupId: groupId._id,
-                    coordinatorId: ID
-                });
-
-                // Save user in MongoDB
-                const res = await newStudent.save();
-
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newStudent._id, email: userLogin, privilege: "student" },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-
-                // create professors auth information in separate collection called Auth
-                const authStudent = new Auth({
-                    userId: res._id,
-                    password: encryptedPassword,
-                    confirm: true,
-                    token: token
-                })
-
-
-                // save new professor profile
-                await authStudent.save();
-
-                // create model for professors information 
-                const studentInfo = new UserInfo({
-                    userId: res._id,
-                    email: userLogin,
-                    notificationEmail: "",
-                    privilege: "student",
-                    image: '',
-                })
-
-                await studentInfo.save();
-
-                return true;
-            }
-
-            return false
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
 
@@ -925,33 +863,6 @@ const resolvers = {
             });
 
             return true;
-        },
-        createGroup: async (_, { CID, groupNumber, groupName }) => {
-
-            if (CID === "") {
-                throw new ApolloError("UnAuthorized access");
-            }
-            const ID = Mongoose.Types.ObjectId(CID);
-            const checkUniqueGroup = await Group.findOne({ coordinatorId: CID, groupNumber: groupNumber }).count()
-
-            try {
-
-                if (checkUniqueGroup) {
-                    return false;
-                } else {
-                    const newGroup = new Group({
-                        coordinatorId: ID,
-                        groupName: groupName.toLowerCase(),
-                        projectField: "",
-                        groupNumber: groupNumber,
-                    });
-
-                    newGroup.save();
-                    return true;
-                }
-            } catch (error) {
-                throw new ApolloError("Group Creation Error");
-            }
         },
         deleteUser: async (_, { ID }) => {
             const wasDeletedAuth = (await Auth.deleteOne({ userId: ID }))

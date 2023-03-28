@@ -4,28 +4,14 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './css/fileupload.css';
 import Upload from './images/upload.svg'
-import csvtojson from 'csvtojson';
 import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Papa from "papaparse";
 
 
-const CREATE_STUDENTS = gql`
-mutation CreateStudentAccounts($cid: ID!, $userLogin: String, $password: String, $firstname: String, $lastname: String, $groupNumber: Int) {
-  createStudentAccounts(CID: $cid, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, groupNumber: $groupNumber)
-}
-`
-
 const CREATE_ACCOUNTS = gql`
-    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String) {
-    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname)
-    }
-`
-
-const CREATE_GROUP = gql`
-
-    mutation Mutation($cid: ID!, $groupNumber: Int, $groupName: String) {
-    createGroup(CID: $cid, groupNumber: $groupNumber, groupName: $groupName)
+    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String, $role: String) {
+    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role)
     }
 `
 
@@ -34,9 +20,7 @@ function FileUpload() {
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [createStudentAccounts] = useMutation(CREATE_STUDENTS);
     const [createAccounts] = useMutation(CREATE_ACCOUNTS);
-    const [createGroup] = useMutation(CREATE_GROUP)
 
     const reset = () => {
         setFileName("No selected file")
@@ -63,57 +47,11 @@ function FileUpload() {
                             userLogin: row[2],
                             password: row[3],
                             firstname: row[4],
-                            lastname: row[5]
+                            lastname: row[5],
+                            role: row[6]
                         }
                     })
                 }
-                // results.data.forEach((row) => {
-                //     createAccounts({
-                //         variables: {
-                //             cid: user.id,
-                //             groupNumber: parseInt(row[0]),
-                //             groupName: row[1],
-                //             userLogin: row[2],
-                //             password: row[3],
-                //             firstname: row[4],
-                //             lastname: row[5]
-                //         }
-                //     })
-                // createStudentAccounts({
-                //     variables: {
-                //         cid: user.id,
-                //         userLogin: row[0],
-                //         password: row[1],
-                //         firstname: row[2],
-                //         lastname: row[3],
-                //         groupNumber: parseInt(row[4])
-                //     }
-                // })
-                // })
-            }
-        },
-        );
-    };
-
-    const handleFileUpload2 = () => {
-        const file = ref.current.files[0];
-        if (!file)
-            return;
-
-        Papa.parse(file, {
-            header: false,
-            skipEmptyLines: true,
-            complete: function (results) {
-                console.log(results.data)
-                results.data.forEach((row) => {
-                    createGroup({
-                        variables: {
-                            cid: user.id,
-                            groupNumber: parseInt(row[0]),
-                            groupName: row[1],
-                        }
-                    })
-                })
             }
         },
         );
@@ -142,13 +80,6 @@ function FileUpload() {
             <div className='currentFile'>
                 <div className='currentName'>Import Students<br />
                     <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload}><CheckIcon /></Button>
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
-                </div>
-            </div>
-
-            <div className='currentFile'>
-                <div className='currentName'>Import Groups<br />
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload2}><CheckIcon /></Button>
                     <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
                 </div>
             </div>
