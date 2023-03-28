@@ -311,6 +311,7 @@ scalar DateTime
         updatePassword (ID: String!, oldPassword: String!, newPassword: String!, confirmedPassword: String!) : Boolean
         deleteGroup(groupId:ID):Boolean
         deleteAllGroups(CID:ID):Boolean
+        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String) : Boolean
     }
 `
 

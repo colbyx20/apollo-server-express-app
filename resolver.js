@@ -312,6 +312,111 @@ const resolvers = {
                 token: authCoordinator.token
             }
         },
+        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname }) => {
+
+            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined) {
+                throw new ApolloError("Missing Data From CSV File");
+            }
+
+            const ID = Mongoose.Types.ObjectId(CID);
+
+            // check if group exists
+            const isGroup = await Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber');
+
+            console.log(isGroup);
+            const encryptedPassword = await bcrypt.hash(password, 10)
+            // if group does not exists, create a group, and user logins 
+            if (!isGroup) {
+                const group = new Group({
+                    coordinatorId: ID,
+                    groupName: groupName.toLowerCase(),
+                    projectField: "",
+                    groupNumber: groupNumber,
+                });
+
+
+                const student = new Users({
+                    userFName: firstname.toLowerCase(),
+                    userLName: lastname.toLowerCase(),
+                    role: "Leader",
+                    groupId: group._id,
+                    coordinatorID: ID
+                });
+
+                // await Promise.all([group.save(), student.save()])
+
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    { id: student._id, email: userLogin, privilege: "student" },
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+
+                const authStudent = new Auth({
+                    userId: student._id,
+                    password: encryptedPassword,
+                    confirm: true,
+                    token: token,
+                    privilege: 'student'
+                })
+
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId: student._id,
+                    email: userLogin.toLowerCase(),
+                    notificationEmail: "",
+                    privilege: "student",
+                    image: '',
+                })
+
+                await Promise.all([group.save(), student.save(), authStudent.save(), studentInfo.save()])
+
+                return true;
+
+            } else {
+
+                const student = new Users({
+                    userFName: firstname.toLowerCase(),
+                    userLName: lastname.toLowerCase(),
+                    role: "Leader",
+                    groupId: isGroup._id,
+                    coordinatorID: ID
+                });
+
+                // create JWT (attach to user model)
+                const token = jwt.sign(
+                    { id: student._id, email: userLogin, privilege: "student" },
+                    "UNSAFE_STRING", // stored in a secret file 
+                    {
+                        expiresIn: "2h"
+                    }
+                );
+
+                const authStudent = new Auth({
+                    userId: student._id,
+                    password: encryptedPassword,
+                    confirm: true,
+                    token: token,
+                    privilege: 'student'
+                })
+
+                // create model for professors information 
+                const studentInfo = new UserInfo({
+                    userId: student._id,
+                    email: userLogin.toLowerCase(),
+                    notificationEmail: "",
+                    privilege: "student",
+                    image: '',
+                })
+                // await studentInfo.save();
+
+                await Promise.all([student.save(), authStudent.save(), studentInfo.save()])
+
+                return true;
+            }
+        },
         createStudentAccounts: async (_, { CID, userLogin, password, firstname, lastname, groupNumber }) => {
 
             const checkUniqueStudent = await UserInfo.findOne({ email: userLogin }).count();
@@ -320,7 +425,7 @@ const resolvers = {
             if (!checkUniqueStudent) {
 
                 const ID = Mongoose.Types.ObjectId(CID);
-                const encryptedPassword = await bcrypt.hash("password", 10);
+                const encryptedPassword = await bcrypt.hash(password, 10);
 
                 const groupId = await Group.findOne({ coordinatorId: ID, groupNumber: groupNumber });
 
@@ -782,7 +887,7 @@ const resolvers = {
             console.log(CID);
             console.log(Room);
             console.log(Times);
-            
+
             if (Room === null || Times === null) {
                 throw new ApolloError("Please Fill Room/Times");
             }

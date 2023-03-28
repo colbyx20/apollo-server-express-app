@@ -16,6 +16,12 @@ mutation CreateStudentAccounts($cid: ID!, $userLogin: String, $password: String,
 }
 `
 
+const CREATE_ACCOUNTS = gql`
+    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String) {
+    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname)
+    }
+`
+
 const CREATE_GROUP = gql`
 
     mutation Mutation($cid: ID!, $groupNumber: Int, $groupName: String) {
@@ -28,7 +34,8 @@ function FileUpload() {
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [createStudentAccounts] = useMutation(CREATE_STUDENTS)
+    const [createStudentAccounts] = useMutation(CREATE_STUDENTS);
+    const [createAccounts] = useMutation(CREATE_ACCOUNTS);
     const [createGroup] = useMutation(CREATE_GROUP)
 
     const reset = () => {
@@ -45,20 +52,44 @@ function FileUpload() {
         Papa.parse(file, {
             header: false,
             skipEmptyLines: true,
-            complete: function (results) {
+            complete: async function (results) {
                 console.log(results.data)
-                results.data.forEach((row) => {
-                    createStudentAccounts({
+                for (const row of results.data) {
+                    await createAccounts({
                         variables: {
                             cid: user.id,
-                            userLogin: row[0],
-                            password: row[1],
-                            firstname: row[2],
-                            lastname: row[3],
-                            groupNumber: parseInt(row[4])
+                            groupNumber: parseInt(row[0]),
+                            groupName: row[1],
+                            userLogin: row[2],
+                            password: row[3],
+                            firstname: row[4],
+                            lastname: row[5]
                         }
                     })
-                })
+                }
+                // results.data.forEach((row) => {
+                //     createAccounts({
+                //         variables: {
+                //             cid: user.id,
+                //             groupNumber: parseInt(row[0]),
+                //             groupName: row[1],
+                //             userLogin: row[2],
+                //             password: row[3],
+                //             firstname: row[4],
+                //             lastname: row[5]
+                //         }
+                //     })
+                // createStudentAccounts({
+                //     variables: {
+                //         cid: user.id,
+                //         userLogin: row[0],
+                //         password: row[1],
+                //         firstname: row[2],
+                //         lastname: row[3],
+                //         groupNumber: parseInt(row[4])
+                //     }
+                // })
+                // })
             }
         },
         );
