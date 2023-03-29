@@ -112,16 +112,16 @@
     margin-top: 15px;
     height: 76px;
     width: 82%;
-    overflow-y: auto;
+    overflow-y: hidden;
     display: flex;
     flex-wrap: wrap;
-    overflow-x: none;
+    overflow-x: auto;
 }
 
 .showSchedulerContainer{
     background-color: white;
-    width: 82%;
-    height: 65%;
+    width: 90%;
+    height: 85%;
     color: black;
     overflow-y: auto;
 }
@@ -136,5 +136,5 @@
     height: 35px;
     background-color: rgb(247, 207, 207);
     margin: auto;
-    text-align: center;
+    text-align: left;
 }
