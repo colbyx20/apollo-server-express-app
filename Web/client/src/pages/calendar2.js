@@ -17,8 +17,6 @@ import "../components/css/calendar2.css"
 function Calendar(props) {
     // user data lives in here  
     const { user, logout } = useContext(AuthContext);
-    console.log("My USER");
-    console.log(user);
     let navigate = useNavigate();
     const requestAbortController = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -200,22 +198,22 @@ function Calendar(props) {
                                         minDate={currentDate}
                                         maxDate={maxDate} />
                                 </div>
-                        </div>
-                        <div className='rightContainer'>
-                            <div className='selectTimes'>
-                                <h2 className='timeTitle'>Create Schedule</h2>
-                                <div className='timeContainer'>
-                                <DisplayDesignWeek daysList={selectedWeek}
-                                onScheduleDate={addDateList} onTimeRange={addTimeList}/>
-                                </div>
-                                <h2 className='timeTitle'>View Schedule</h2>
-                                <div className='viewSchedule'>
-                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} 
-                                    dateList={selectedWeek}/>
+                            </div>
+                            <div className='rightContainer'>
+                                <div className='selectTimes'>
+                                    <h2 className='timeTitle'>Create Schedule</h2>
+                                    <div className='timeContainer'>
+                                        <DisplayDesignWeek daysList={selectedWeek}
+                                            onScheduleDate={addDateList} onTimeRange={addTimeList} />
+                                    </div>
+                                    <h2 className='timeTitle'>View Schedule</h2>
+                                    <div className='viewSchedule'>
+                                        <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange}
+                                            dateList={selectedWeek} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     </>
                     :

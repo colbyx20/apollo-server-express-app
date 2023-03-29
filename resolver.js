@@ -823,7 +823,7 @@ const resolvers = {
                 let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
-                    throw new ApolloError("Time Splot is Already assigned");
+                    return false;
                 } else {
                     try {
                         const CoordinatorSchedule = new CoordSchedule({
