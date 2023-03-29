@@ -75,10 +75,7 @@ function DisplaySchedule(props){
             for(let timelen = 0; timelen < timeList.length; timelen++){
 
                 const myDate = new Date(dateList[picklen]);
-                console.log(dateList[picklen])
                 myDate.setHours(staticTimeList[timeList[timelen]]);
-                console.log(myDate)
-                console.log(timeList);
                 dateObjects.push(myDate);
             }
         }
