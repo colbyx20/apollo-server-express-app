@@ -10,13 +10,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
-const cookie = require("cookie");
-const Fs = require('fs');
-const CsvReadableStream = require('csv-reader');
-
-
-const { ObjectId, default: mongoose } = require('mongoose');
-const { userInfo } = require('os');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
@@ -764,10 +757,11 @@ const resolvers = {
                 throw new ApolloError("Passwords Do Not Match!");
             }
             try {
-                // encrypt password
-                const encryptedPassword = await bcrypt.hash(password, 10);
-                //find Auth
-                const finduser = UserInfo.findOne({ email: email })
+
+                const [encryptedPassword, finduser] = await Promise.all([
+                    bcrypt.hash(password, 10),
+                    UserInfo.findOne({ email: email })
+                ])
 
                 // set password from user 
                 const setNewPassword = await Auth.findOneAndUpdate({ userId: finduser.userId }, { password: encryptedPassword, confirmpassword: encryptedPassword });
@@ -780,9 +774,6 @@ const resolvers = {
             }
             return true
         },
-
-        // might take out if statement to differ between professor and coordinator
-        // depends if we will have a separate register for coordinator
         createProfessorSchedule: async (_, { ID, privilege, professorScheduleInput: { time } }) => {
 
             if (ID === null || privilege === null) {
@@ -821,32 +812,26 @@ const resolvers = {
         },
         createCoordinatorSchedule: async (_, { coordinatorSInput: { CID, Room, Times } }) => {
 
-            console.log(CID);
-            console.log(Room);
-            console.log(Times);
-
             if (Room === null || Times === null) {
                 throw new ApolloError("Please Fill Room/Times");
             }
             const ID = Mongoose.Types.ObjectId(CID)
             const UniqueTimes = new Set(Times);
+
             UniqueTimes.forEach(async (time) => {
                 let t = new Date(time).toISOString();
                 let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
-                    // throw new ApolloError("Time Splot is Already assigned"); <-- break server if thrown
-                    console.log("NOOO")
-                    return false;
+                    throw new ApolloError("Time Splot is Already assigned");
                 } else {
                     try {
-                        console.log("HIIII")
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID: ID,
                             room: Room,
                             groupId: null,
                             time: t,
-                            numberOfAttending: 0, // nessecity debatable
+                            numberOfAttending: 0,
                             attending: [],
                             attending2: []
                         });
@@ -1118,8 +1103,11 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
             const MAX_APPOINTMENTS = 3;
 
-            while (true) {
-                try {
+            // grab # of appointments without at least 3 attending.
+            const numAttending = await CoordSchedule.find().count();
+
+            try {
+                for (let counter = 0; counter < numAttending; counter++) {
                     const coordinatorInfo = await CoordSchedule.findOne(
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
                         { coordinatorID: 1, attending: 1, attending2: 1, time: 1, numberOfAttending: 1 });
@@ -1142,14 +1130,13 @@ const resolvers = {
                             CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
                             Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                         ]);
-
-                        return true;
                     }
-                    return true;
-                } catch (e) {
-                    return false;
                 }
+
+            } catch (e) {
+                return false;
             }
+            return true;
         },
         updateProfilePic: async (_, { ID, ppURL }) => {
             await UserInfo.updateOne({ _id: ID }, { $set: { image: ppURL } });//change ppInfo
@@ -1250,11 +1237,19 @@ const resolvers = {
         deleteGroup: async (_, { groupId }) => {
             const findGroup = await Users.find({ groupId: groupId })
             for (member of findGroup) {
-                const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
-                const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
+                await Promise.all([
+                    Auth.deleteOne({ userId: member._id }),
+                    UserInfo.deleteOne({ userId: member._id })
+                ])
+                // const wasDeletedAuth = (await Auth.deleteOne({ userId: member._id }))
+                // const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
             }
-            const deleteMebers = await Users.deleteMany({ groupId: groupId })
-            const deleteGroup = await Group.deleteOne({ _id: groupId })
+            await Promise.all([
+                Users.deleteMany({ groupId: groupId }),
+                Group.deleteOne({ _id: groupId })
+            ])
+            // const deleteMebers = await Users.deleteMany({ groupId: groupId })
+            // const deleteGroup = await Group.deleteOne({ _id: groupId })
             return true
         },
         deleteAllGroups: async (_, { CID }) => {
@@ -1262,8 +1257,10 @@ const resolvers = {
             for (group of relevantGroups) {
                 const findGroup = await Users.find({ groupId: group._id })
                 for (member of findGroup) {
-                    await Auth.deleteOne({ userId: member._id })
-                    await UserInfo.deleteOne({ userId: member._id })
+                    await Promise.all([
+                        Auth.deleteOne({ userId: member._id }),
+                        UserInfo.deleteOne({ userId: member._id })
+                    ])
                 }
                 await Users.deleteMany({ groupId: group._id })
             }
