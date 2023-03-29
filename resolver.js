@@ -1110,7 +1110,7 @@ const resolvers = {
                 for (let counter = 0; counter < numAttending; counter++) {
                     const coordinatorInfo = await CoordSchedule.findOne(
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
-                        { coordinatorID: 1, attending: 1, attending2: 1, time: 1, numberOfAttending: 1 });
+                        { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
                     const date = new Date(coordinatorInfo.time);
 
