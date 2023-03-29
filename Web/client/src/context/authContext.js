@@ -40,7 +40,6 @@ function AuthProvider(props) {
 
     const login = (userData) => {
 
-        // this does nothing for some reason
         localStorage.setItem("token", userData.token);
 
         dispatch({
@@ -50,7 +49,7 @@ function AuthProvider(props) {
     }
 
     function logout() {
-        localStorage.clear();
+        localStorage.removeItem('token');
 
         dispatch({ type: 'LOGOUT' });
     }

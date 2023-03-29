@@ -325,8 +325,6 @@ const resolvers = {
                 Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber'),
                 bcrypt.hash(password, 10)
             ])
-            // const isGroup = Group.findOne({ coordinatorId: ID, groupNumber: parseInt(groupNumber) }).select('_id groupNumber');
-            // const encryptedPassword = await bcrypt.hash(password, 10)
 
             if (!isGroup) {
 

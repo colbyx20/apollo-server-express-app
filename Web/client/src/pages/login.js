@@ -51,8 +51,8 @@ function Login(props) {
         setChecked(event.target.checked);
     };
 
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
+    // const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
+    // const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
     function loginUserCallback() {
@@ -70,13 +70,6 @@ function Login(props) {
             if (checked === true)
                 window.localStorage.setItem('...', JSON.stringify(userData.email));
 
-            localStorage.setItem("_id", userData._id);
-            localStorage.setItem("firstname", userData.firstname);
-            localStorage.setItem("lastname", userData.lastname);
-            localStorage.setItem("privilege", userData.privilege);
-            localStorage.setItem("token", userData.token);
-            localStorage.setItem("image",userData.image);
-            localStorage.setItem("notificationEmail",userData.notification);
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
             } else if (userData.privilege === 'coordinator') {
@@ -92,6 +85,7 @@ function Login(props) {
         },
         variables: { loginInput: values }
     });
+
 
 
     return (
@@ -177,7 +171,7 @@ function Login(props) {
                                 },
                             }}
                         />} label="Remember Email" />
-              
+
                     <span><a href='/forgot'>  Forgot password?</a></span>
 
 

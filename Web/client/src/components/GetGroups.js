@@ -1,8 +1,10 @@
 import { gql, useQuery, useMutation } from '@apollo/client';
 import './css/getgroups.css';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import React, { useContext } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button } from "@mui/material";
+import { AuthContext } from '../context/authContext';
 
 const GET_GROUPS = gql`
 query Query($coordinatorId: String) {
@@ -28,8 +30,8 @@ const getFilteredData = (query, items) => {
 }
 
 export const GetGroups = (props) => {
-
-    const ID = localStorage.getItem('_id');
+    const { user } = useContext(AuthContext);
+    const ID = user.id;
     const [deleteGroup] = useMutation(DELETE_GROUP)
     const { loading, error, data } = useQuery(GET_GROUPS, {
         variables: { coordinatorId: ID }
