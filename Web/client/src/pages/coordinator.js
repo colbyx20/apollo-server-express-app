@@ -35,12 +35,12 @@ function Coordinator(props) {
     }
 
     const onRegister = () => {
-        navigator.clipboard.writeText("http://localhost:3000/register");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/register");
         setRegisterProf("Copied");
     }
 
     const onRegisterCoord = () => {
-        navigator.clipboard.writeText("http://localhost:3000/registerCoordinator");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/registerCoordinator");
         setRegisterCoord("Copied");
     }
 

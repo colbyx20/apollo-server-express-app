@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
-import dayjs from 'dayjs';
+import SaveIcon from '@mui/icons-material/Save';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 import { GetCoordinatorSchedule } from './GetCoordinatorSchedule';
 
@@ -23,29 +23,30 @@ function DisplaySchedule(props){
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
     
-    console.log("DisplaySchedule")
-    console.log(props);
+   
+    //console.log(props);
 
     const staticTimeList = [
-        "8:00am",
-        "9:00am",
-        "10:00am",
-        "11:00am",
-        "12:00pm",
-        "1:00pm",
-        "2:00pm",
-        "3:00pm",
-        "4:00pm",
-        "5:00pm",
-        "6:00pm",
-        "7:00pm",
-        "8:00pm",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
     ]
 
     useEffect(() => {
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
+
     }, [props.pickList]);
 
 
@@ -64,11 +65,29 @@ function DisplaySchedule(props){
 
     // console.log(apiDates)
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    console.log(dateObjects);
+    //console.log(dateObjects);
+
+    // Add new dates and time to list
+    if(pickList.length > 0 && timeList.length > 0){
+        // Iterate thorough each date
+        for(let picklen = 0; picklen < pickList.length; picklen++){
+            // Iterate through each time 
+            for(let timelen = 0; timelen < timeList.length; timelen++){
+
+                const myDate = new Date(dateList[picklen]);
+                console.log(dateList[picklen])
+                myDate.setHours(staticTimeList[timeList[timelen]]);
+                console.log(myDate)
+                console.log(timeList);
+                dateObjects.push(myDate);
+            }
+        }
+
+        
+    }
+            
     
-    function handlePickedDates(){
-        console.log("pass to api");
-        console.log(apiDates[0]);
+    function handlePickedDates(){   
         let sendDates = [];
         apiDates.map((t) =>{
             sendDates.push(t.time);
@@ -89,13 +108,13 @@ function DisplaySchedule(props){
                 <div className='stickyButton'>
                     <Button
                     onClick={handlePickedDates}
-                    >Submit</Button>
+                    ><SaveIcon/></Button>
                 </div>
             {dateObjects.map((date, index) => (
             <p className='datesShown' key={date.getTime()+date.getFullYear()+date.getDate()}>
                 {date.toLocaleDateString('en-US', { month: 'numeric'})+"/"+
                 date.toLocaleDateString('en-us',{day: 'numeric'})+"/"+ date.toLocaleDateString('en-us',{year:'numeric'} )
-                +" "+date.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
+                +" "+date.toLocaleTimeString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true })}
             </p>
             ))}
             
