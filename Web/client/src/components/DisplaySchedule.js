@@ -64,7 +64,17 @@ function DisplaySchedule(props) {
         dateIndexs.push(apiDates[i].time);
     }
 
-    // console.log(apiDates)
+    // Prevent duplicate times 
+    const searchDates = (currDate) => {
+        for(let i = 0; i < dateObjects.length; i ++){
+            if(dateObjects[i].toISOString() === currDate.toISOString())
+                return false;
+        }
+
+        return true;
+    }
+
+    
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
     console.log(dateObjects);
 
@@ -73,41 +83,28 @@ function DisplaySchedule(props) {
         // Iterate thorough each date
         for (let picklen = 0; picklen < pickList.length; picklen++) {
             // Iterate through each time 
-            for (let timelen = 0; timelen < timeList.length; timelen++) {
-
-                const myDate = new Date(dateList[picklen]);
-                // console.log(dateList[picklen])
-                myDate.setHours(staticTimeList[timeList[timelen]]);
-                // console.log(myDate)
-                // console.log(timeList);
-                dateObjects.push(myDate);
+            for(let timelen = 0; timelen < timeList.length; timelen++){
+                
+                const myDate = new Date(dateList[pickList[picklen]]);
+                myDate.setHours(staticTimeList[timeList[timelen]], 0, 0, 0);
+                console.log(dateList[picklen])
+                console.log(pickList)
+                if (searchDates(myDate))
+                    dateObjects.push(myDate);
             }
         }
     }
 
-    //  setDateO(dateObjects);
-    console.log(dateObjects);
-
-    function handlePickedDates() {
-
-        setDateO(...dateObjects)
-
-        console.log("My dateO")
-        console.log(dateO)
-
-        let sendDates = [];
-        apiDates.forEach((t) => {
-            sendDates.push(t.time);
-        })
+            
+    
+    function handlePickedDates(){   
 
         createCoordinatorSchedule({
-            variables: {
-                coordinatorSInput: {
-                    CID: user.id,
-                    Room: 'HEC-101',
-                    Times: sendDates
-                }
-            }
+            variables:{ coordinatorSInput:{
+                CID: user.id,
+                Room: 'HEC-101',
+                Times: dateObjects
+            }}
         })
     }
 

@@ -49,6 +49,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [holdTimeout, setHoldTimeout] = useState(null);
     const [cancel, setCancel] = useState("HOLD TO CANCEL");
     const holdTime = 2800;
+    
 
     const { loading, error, data, networkStatus } = useQuery(GET_SCHEDULE, {
         variables: { cid: ID },
@@ -58,6 +59,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     useEffect(() => {
         if (data) {
             setSchedule(data.getCoordinatorSchedule);
+            console.log(data.getCoordinatorSchedule[0].time);
         }
     }, [data])
 
@@ -101,6 +103,14 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         })
     }
 
+    function returnCurrentDateTime(date1){
+        let date = new Date(date1);
+
+        date.setHours(date.getHours()-4);
+        const edtTime = date.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" });
+        return edtTime;
+    }
+    
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none' }}>
             <div className='StickyHeader'>
@@ -119,7 +129,8 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                 {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
                                 {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                                 {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
-                                {new Date(coordinator.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                                {/* {new Date(coordinator.time).toLocaleTimeString('en-US', {  timeZone: 'America/New_York',hour: 'numeric', minute: 'numeric', hour12: true })} */}
+                                {returnCurrentDateTime(coordinator.time)}
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br />{coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'>{'Project:'}<br />{coordinator.groupId?.groupName}</TableCell>
