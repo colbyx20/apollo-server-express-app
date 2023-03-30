@@ -1,21 +1,22 @@
-import { useEffect , useState} from "react";
+import { useEffect, useState } from "react";
 import "../components/css/calendar2.css"
-import {ToggleButton , Badge, Button, ToggleButtonGroup} from "@mui/material";
+import { ToggleButton, Badge, Button, ToggleButtonGroup } from "@mui/material";
 
-function DisplayDesignWeek(props){
-    const [daysList, setDayList] =  useState(props.daysList);
+function DisplayDesignWeek(props) {
+    const [daysList, setDayList] = useState(props.daysList);
     const [selected, setSelected] = useState([]);
     const [selectedTime, setSelectedTime] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
 
     const handleSelectedTime = (event, newSelected) => {
-      setSelectedTime(newSelected);
-      checkEmptyList();
+        console.log(newSelected);
+        setSelectedTime(newSelected);
+        checkEmptyList();
     };
 
     const handleSelected = (event, newSelected) => {
-      setSelected(newSelected);
-      checkEmptyList();
+        setSelected(newSelected);
+        checkEmptyList();
     };
 
     useEffect(() => {
@@ -23,27 +24,27 @@ function DisplayDesignWeek(props){
     }, [props.daysList]);
 
     useEffect(() => {
-        if(selected.length > 0 && selectedTime.length > 0) {
-          setIsEmpty(true);
+        if (selected.length > 0 && selectedTime.length > 0) {
+            setIsEmpty(true);
         } else {
-          setIsEmpty(false);
+            setIsEmpty(false);
         }
     }, [selected, selectedTime]);
-    
-      
+
+
 
     if (daysList.length === 0) {
         return <div>No items to display.</div>;
     }
-    
+
     const buttonList = daysList.map((day, index) =>
         <ToggleButton
-        key={index}
-        value={index}
-        sx={{height: '75px', width: '75px', }}
-        variant="outlined"
+            key={index}
+            value={index}
+            sx={{ height: '75px', width: '75px', }}
+            variant="outlined"
         >
-        {(day.getMonth()+1)+"/"+day.getDate()}
+            {(day.getMonth() + 1) + "/" + day.getDate()}
         </ToggleButton>
     );
 
@@ -65,55 +66,57 @@ function DisplayDesignWeek(props){
 
     const TimeList = timeList.map((day, index) =>
         <ToggleButton
-        key={index}
-        value={index}
-        sx={{height: '75px', width: '75px', }}
+            key={index}
+            value={index}
+            sx={{ height: '75px', width: '75px', }}
         >
-        {day}
+            {day}
         </ToggleButton>
     );
 
-    const handleAddItmes = () =>{
+    const handleAddItmes = () => {
         // Add index values to something before clearing
-        // selectedTime.map((t) =>{
-        //     console.log(timeList[t])
-        // })
-        
-        
+        let timeIndex = [];
+
+        selectedTime.forEach((t, index) => {
+            timeIndex.push(selectedTime[index])
+        })
+
+
         props.onScheduleDate(selected);
-        props.onTimeRange(selectedTime);
+        props.onTimeRange(timeIndex);
         setSelected([]);
         setSelectedTime([]);
     }
 
-    const checkEmptyList = () =>{
-        if(selected.length > 0 && selectedTime.length > 0)
+    const checkEmptyList = () => {
+        if (selected.length > 0 && selectedTime.length > 0)
             setIsEmpty(true);
-    } 
-    
+    }
 
-    return(
+
+    return (
         <>
             <div className="designWeekContainer">
-                <ToggleButtonGroup 
-                value={selected}
-                onChange={handleSelected}
-                sx={{marginRights: '50px'}}>
+                <ToggleButtonGroup
+                    value={selected}
+                    onChange={handleSelected}
+                    sx={{ marginRights: '50px' }}>
                     {buttonList}
                 </ToggleButtonGroup>
             </div>
             <div className="designWeekContainer">
-                <ToggleButtonGroup 
-                value={selectedTime}
-                onChange={handleSelectedTime}
-                sx={{marginRights: '50px'}}>
+                <ToggleButtonGroup
+                    value={selectedTime}
+                    onChange={handleSelectedTime}
+                    sx={{ marginRights: '50px' }}>
                     {TimeList}
                 </ToggleButtonGroup>
             </div>
             <Button variant="contained" color="primary" type="submit"
-            style={{ width: "82%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
-            disabled={!isEmpty}
-            onClick={handleAddItmes}
+                style={{ width: "82%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
+                disabled={!isEmpty}
+                onClick={handleAddItmes}
             >Add to Schedule</Button>
         </>
     )

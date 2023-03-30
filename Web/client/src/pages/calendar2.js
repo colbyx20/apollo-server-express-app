@@ -203,22 +203,22 @@ function Calendar(props) {
                                         minDate={currentDate}
                                         maxDate={maxDate} />
                                 </div>
-                        </div>
-                        <div className='rightContainer'>
-                            <div className='selectTimes'>
-                                <h2 className='timeTitle'>Create Schedule</h2>
-                                <div className='timeContainer'>
-                                <DisplayDesignWeek daysList={selectedWeek}
-                                onScheduleDate={addDateList} onTimeRange={addTimeList}/>
-                                </div>
-                                <h2 className='timeTitle'>View Schedule</h2>
-                                <div className='viewSchedule'>
-                                    <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange} 
-                                    dateList={selectedWeek}/>
+                            </div>
+                            <div className='rightContainer'>
+                                <div className='selectTimes'>
+                                    <h2 className='timeTitle'>Create Schedule</h2>
+                                    <div className='timeContainer'>
+                                        <DisplayDesignWeek daysList={selectedWeek}
+                                            onScheduleDate={addDateList} onTimeRange={addTimeList} />
+                                    </div>
+                                    <h2 className='timeTitle'>View Schedule</h2>
+                                    <div className='viewSchedule'>
+                                        <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange}
+                                            dateList={selectedWeek} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     </>
                     :
