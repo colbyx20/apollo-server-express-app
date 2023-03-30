@@ -17,8 +17,6 @@ import "../components/css/calendar2.css"
 function Calendar(props) {
     // user data lives in here  
     const { user, logout } = useContext(AuthContext);
-    console.log("My USER");
-    console.log(user);
     let navigate = useNavigate();
     const requestAbortController = useRef(null);
     const [isLoading, setIsLoading] = useState(false);

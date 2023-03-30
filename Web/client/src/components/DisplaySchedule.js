@@ -63,6 +63,16 @@ function DisplaySchedule(props){
         dateIndexs.push(apiDates[i].time);
     }
 
+    // Prevent duplicate times 
+    const searchDates = (currDate) => {
+        for(let i = 0; i < dateObjects.length; i ++){
+            if(dateObjects[i].toISOString() === currDate.toISOString())
+                return false;
+        }
+
+        return true;
+    }
+
     // console.log(apiDates)
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
     //console.log(dateObjects);
@@ -73,28 +83,28 @@ function DisplaySchedule(props){
         for(let picklen = 0; picklen < pickList.length; picklen++){
             // Iterate through each time 
             for(let timelen = 0; timelen < timeList.length; timelen++){
-
-                const myDate = new Date(dateList[picklen]);
-                myDate.setHours(staticTimeList[timeList[timelen]]);
-                dateObjects.push(myDate);
+                
+                const myDate = new Date(dateList[pickList[picklen]]);
+                myDate.setHours(staticTimeList[timeList[timelen]], 0, 0, 0);
+                console.log(dateList[picklen])
+                console.log(pickList)
+                if (searchDates(myDate))
+                    dateObjects.push(myDate);
             }
         }
 
         
     }
+
             
     
     function handlePickedDates(){   
-        let sendDates = [];
-        apiDates.map((t) =>{
-            sendDates.push(t.time);
-        })
 
         createCoordinatorSchedule({
             variables:{ coordinatorSInput:{
                 CID: user.id,
                 Room: 'HEC-101',
-                Times: sendDates
+                Times: dateObjects
             }}
         })
     }
