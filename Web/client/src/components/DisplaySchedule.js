@@ -73,7 +73,7 @@ function DisplaySchedule(props){
         return true;
     }
 
-    // console.log(apiDates)
+    
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
     //console.log(dateObjects);
 

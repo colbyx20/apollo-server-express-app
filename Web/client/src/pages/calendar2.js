@@ -54,6 +54,11 @@ function Calendar(props) {
         return () => requestAbortController.current?.abort();
     }, []);
 
+    // useEffect(() =>{
+    //     let currMax = null;
+        
+    // }, timeRangeData)
+
     const handleMonthChange = (date) => {
         if (requestAbortController.current) {
             // make sure that you are aborting useless requests
