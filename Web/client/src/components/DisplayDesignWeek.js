@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../components/css/calendar2.css"
-import { ToggleButton, Badge, Button, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, Button, ToggleButtonGroup } from "@mui/material";
 
 function DisplayDesignWeek(props) {
     const [daysList, setDayList] = useState(props.daysList);
@@ -9,7 +9,6 @@ function DisplayDesignWeek(props) {
     const [isEmpty, setIsEmpty] = useState(false);
 
     const handleSelectedTime = (event, newSelected) => {
-        console.log(newSelected);
         setSelectedTime(newSelected);
         checkEmptyList();
     };
@@ -93,7 +92,6 @@ function DisplayDesignWeek(props) {
         if (selected.length > 0 && selectedTime.length > 0)
             setIsEmpty(true);
     }
-
 
     return (
         <>

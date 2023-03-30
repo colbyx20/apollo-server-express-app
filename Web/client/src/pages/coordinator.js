@@ -19,8 +19,6 @@ function Coordinator(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
-    console.log("My User");
-    console.log(user);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
     const [registerProf, setRegisterProf] = useState("Add to Clipboard");

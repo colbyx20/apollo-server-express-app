@@ -49,7 +49,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     const [holdTimeout, setHoldTimeout] = useState(null);
     const [cancel, setCancel] = useState("HOLD TO CANCEL");
     const holdTime = 2800;
-    
+
 
     const { loading, error, data, networkStatus } = useQuery(GET_SCHEDULE, {
         variables: { cid: ID },
@@ -59,7 +59,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     useEffect(() => {
         if (data) {
             setSchedule(data.getCoordinatorSchedule);
-            console.log(data.getCoordinatorSchedule[0].time);
         }
     }, [data])
 
@@ -103,14 +102,14 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         })
     }
 
-    function returnCurrentDateTime(date1){
+    function returnCurrentDateTime(date1) {
         let date = new Date(date1);
 
-        date.setHours(date.getHours()-4);
+        date.setHours(date.getHours() - 4);
         const edtTime = date.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" });
         return edtTime;
     }
-    
+
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none' }}>
             <div className='StickyHeader'>
