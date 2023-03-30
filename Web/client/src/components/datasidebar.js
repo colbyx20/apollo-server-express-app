@@ -7,8 +7,6 @@ import Profile from '../components/images/person-circle.svg'
 import Logout from '../components/images/door-open.svg'
 
 
-const firstInitial = localStorage.getItem("firstname");
-const lastname = localStorage.getItem("lastname");
 
 // Check logic if img null then use icon
 // function to return image

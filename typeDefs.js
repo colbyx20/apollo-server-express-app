@@ -11,18 +11,14 @@ scalar DateTime
     }
     type Coordinator {
         _id:ID!
-        
-        firstname: String
-        lastname: String
+        notificationEmail: String
+    }
+
+    type UserInfo {
+        userId: ID
+        notificationEmail: String
         email: String
-        password: String
-        confirmpassword: String
-        privilege: Int
-        confirm: Int
-        token: String
-        image: String
-        groups: [Group]
-        schedule: [DateTime]
+        coordinator: ID
     }
 
     type Users {
@@ -31,6 +27,7 @@ scalar DateTime
         userLName: String
         groupNumber:Int
         role: String
+        coordinatorId:ID
     }
 
     type UserLogin {
@@ -42,8 +39,23 @@ scalar DateTime
         privilege: String
         confirm: String
         password: String
+        notificationEmail: String
     }
 
+    type UserLogin2 {
+        _id:ID
+        firstname: String 
+        lastname: String
+        email: String
+        token:String
+        privilege: String
+        confirm: String
+        password: String
+        image: String
+    }
+    type notificationEmail {
+        newEmail:String
+    }
     type Auth {
         token: String
     }
@@ -81,13 +93,13 @@ scalar DateTime
         groupName: String
         projectField: String
         groupNumber: Int
-        memberCount: Int
     } 
     
     input UserInput {
         name: String
         lastname: String
         email: String
+        notificationEmail: String
         password: String
         group: String
     }
@@ -175,6 +187,13 @@ scalar DateTime
         _id:ID!
         fullName: String
     }
+
+    type coordinatorDetails {
+        _id:ID
+        coordinatorFName: String
+        coordinatorLName: String
+    }
+
     type CoordSchedule2 {
         _id: ID
         room: String
@@ -183,6 +202,17 @@ scalar DateTime
         attending: [String]
         attending2: [profData]
         groupId: groupData
+    }
+
+    type getAllCoordScheduleFormat {
+        _id: ID
+        room: String
+        time: DateTime
+        numberOfAttending: Int
+        attending: [String]
+        attending2: [profData]
+        groupId: groupData
+        coordinatorInfo: coordinatorDetails
     }
 
     input coordinatorSInput {
@@ -213,19 +243,44 @@ scalar DateTime
         coordinatorID: String!
     }
 
+    type groupMembers {
+        _id: ID!
+        userFName: String
+        userLName: String
+        role: String
+    }
+    type groups {
+        _id: ID!
+        groupName: String
+        groupNumber: Int
+        members: [groupMembers]
+        coordinatorId:ID
+    }
+
+    type File {
+        groupNumber: String 
+        groupName: String
+    }
+
     type Query {
         getUser(ID:ID!) : Users
+        getUserInfo(ID: String!): UserInfo
+        getCoordinatorEmail(ID:ID!): Coordinator
         getProfessor(ID:ID!) : Professors
         getAllProfessors : [Professors]
         getAllUsers : [Users]
-        getAllGroups :[Group]
+        getGroupsByCoordinator (coordinatorId: String) :[Group]
+        getGroupMembers (studentId: String): groups
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
-        getAllCoordinatorSchedule:[CoordSchedule2]
+        getAllCoordinatorSchedule:[getAllCoordScheduleFormat]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
+        getGroupAppointment(studentId: String) : CoordSchedule2
+        getCoordinatorTimeRange(CID: String) : [DateTime]
+        getAllGroups : [Group]
     }
 
     type Mutation {
@@ -240,16 +295,21 @@ scalar DateTime
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
-        loginUser(loginInput: loginInput): UserLogin
+        loginUser(loginInput: loginInput): UserLogin2
         confirmEmail(confirmEmail: confirmEmail):Boolean
         resetPassword(resetPassword: resetPassword):Boolean
-        createGroup(CID:ID!): Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
-        createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):CoordSchedule
-        cancelAppointment(cancelation:cancelation):CoordSchedule
-        createStudentAccounts(CID:ID!): Boolean
+        createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):Boolean
+        cancelAppointment(cancelation:cancelation):Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
+        editNotificationEmail(ID:String!,email:String!): Boolean
+        deleteProfessorAppointment(professorId:String, scheduleId:String) : Boolean
+        sendEventEmail(ID: String!, email: String!, privilege: String!) : Boolean
+        updatePassword (ID: String!, oldPassword: String!, newPassword: String!, confirmedPassword: String!) : Boolean
+        deleteGroup(groupId:ID):Boolean
+        deleteAllGroups(CID:ID):Boolean
+        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String) : Boolean
     }
 `
 

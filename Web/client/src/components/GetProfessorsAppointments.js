@@ -1,46 +1,63 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/authContext';
 
 const GET_PROFESSOR_SCHEDULE = gql`
-    query GetProfessorsAppointments($profId: String) {
-        getProfessorsAppointments(profId: $profId) {
-            _id
-            time
-            room
-            groupNumber
-            groupName
-        }
+  query GetProfessorsAppointments($profId: String) {
+    getProfessorsAppointments(profId: $profId) {
+      _id
+      time
+      room
+      groupNumber
+      groupName
     }
-`
+  }
+`;
 
-export const GetProfessorsAppointments = (props) => {
+const DELETE_APPOINTMENT = gql`
+  mutation Mutation($professorId: String, $scheduleId: String) {
+    deleteProfessorAppointment(professorId: $professorId, scheduleId: $scheduleId)
+  }
+`;
 
-    const PID = localStorage.getItem('_id');
+export const GetProfessorsAppointments = () => {
+  const { user, logout } = useContext(AuthContext);
+  const PID = user.id
+  const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
 
-    const { loading, error, data } = useQuery(GET_PROFESSOR_SCHEDULE, {
-        variables: { profId: PID }
-    })
+  const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
+    variables: { profId: PID },
+  });
 
-    if (loading) return 'Loading...';
-    if (error) return `Error! ${error.message}`
+  console.log(data);
 
-    const schedule = data.getProfessorsAppointments;
-    console.log(schedule);
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`;
 
-    return (
-        <table style={{ color: "white" }}>{
-            schedule.map((s) => {
-                return <tbody>
-                    <tr
-                        style={{ color: "black" }}
-                        key={s._id}>
-                        <td>{s.time}</td>
-                        <td>{s.room}</td>
-                        <td>{s.groupName}</td>
-                        <td>{s.groupNumber}</td>
-                    </tr>
-                </tbody>
-            })
-        }  </table>
-    )
-}
+  const schedule = data.getProfessorsAppointments;
+
+  function handleCancelAppointment(professorId, scheduleId) {
+    deleteAppointment({
+      variables: { professorId, scheduleId },
+    }).then(() => refetch());
+  }
+
+  return (
+    <table style={{ color: 'white' }}>
+      {schedule.map((s) => (
+        <tbody key={s._id}>
+          <tr style={{ color: 'black' }}>
+            <td>{s.time}</td>
+            <td>{s.room}</td>
+            <td>{s.groupName}</td>
+            <td>{s.groupNumber}</td>
+            <td>
+              <button onClick={() => handleCancelAppointment(PID, s._id)}>Cancel Meeting</button>
+            </td>
+          </tr>
+        </tbody>
+      ))}
+    </table>
+  );
+};

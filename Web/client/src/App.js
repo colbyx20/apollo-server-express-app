@@ -10,6 +10,7 @@ import Coordinator from "./pages/coordinator"
 import Calendar from "./pages/calendar";
 import Semester from "./pages/semester";
 import Account from "./pages/account";
+import Forgot from "./pages/forgot";
 
 const ThemeContext = createContext(null)
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/calendar" element={<Calendar lightMode={false} />} />
           <Route path="/coordinator" element={<Coordinator />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/forgot" element={<Forgot />} />
           <Route path="/semester" element={<Semester />} />
         </Routes>
       </ThemeContext.Provider>

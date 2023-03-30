@@ -1,31 +1,31 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-.coordiantorGroups{
+.coordiantorGroups {
     margin: auto;
     width: 100%;
     overflow: scroll;
 }
 
-.coordTableHeading{
+.coordTableHeading {
     height: 35px;
     font-size: 1.3em;
     text-align: center;
     background-color: rgb(232, 199, 138);
 }
 
-.coordTableItems{
+.coordTableItems {
     font-size: 1.2em;
     overflow-y: scroll;
 }
 
-.coordTableItems #rowNumber{
+.coordTableItems #rowNumber {
     text-align: left;
 }
 
-.groupContainer{
+.groupContainer {
     height: 110px;
     margin-top: 1px;
     padding-top: 15px;
@@ -35,11 +35,11 @@
     background-color: #231F20;
 }
 
-.coordTableItems #rowName{
+.coordTableItems #rowName {
     text-align: center;
 }
 
-.optionsContainer #edit{
+.optionsContainer #edit {
     height: 50px;
     width: 50px;
     font-size: 1em;
@@ -50,11 +50,11 @@
     margin-right: 5px;
 }
 
-.optionsContainer #edit:hover{
+.optionsContainer #edit:hover {
     background-color: blueviolet;
 }
 
-.optionsContainer #delete{
+.optionsContainer #delete {
     height: 50px;
     width: 50px;
     font-size: 1em;
@@ -64,8 +64,80 @@
     border-radius: 10px;
 }
 
-.optionsContainer #delete:hover{
+.optionsContainer #delete:hover {
     background-color: rgb(250, 30, 30);
 }
 
+.Sticky {
+    position: sticky;
+    top: 0;
+    width: auto;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 2px;
+    background-color: bisque;
+    border-radius: 5px;
+    z-index: 9;
+}
 
+.group-container {
+    width: 85%;
+    height: 250px;
+    background-color: #231F20;
+    margin: auto;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.group-heading {
+    height: 50px;
+    border: 2px dotted;
+    border-color: #231F20;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.group-title {
+    display: inline-block;
+    width: 50%;
+    height: 100%;
+    padding-top: 8px;
+    font-weight: normal;
+    color: white;
+}
+
+.group-table {
+    margin: auto;
+}
+
+.members {
+    text-align: center;
+    padding-bottom: 5px;
+    font-weight: normal;
+    font-size: large;
+}
+
+.StickyHeader {
+    position: sticky;
+    top: 0;
+    width: 100%;
+
+}
+
+.user-styleBox {
+    margin-top: 35px;
+    background-color: #231F20;
+    height: 18%;
+    width: 350px;
+    border-radius: 10px;
+}
+
+.getappInfo {
+    margin-right: 25px;
+    margin-left: 100px;
+}
+
+.noAppointmentMessage {
+    margin: auto;
+    text-align: center;
+}

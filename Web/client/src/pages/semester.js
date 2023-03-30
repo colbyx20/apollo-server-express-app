@@ -4,11 +4,18 @@ import CustomSidebar from '../components/Sidebar';
 import { GetGroups } from '../components/GetGroups';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material";
+import { useMutation } from "@apollo/react-hooks";
+import { gql } from 'graphql-tag';
 import '../components/css/coordinator.css';
 import FileUpload from '../components/FileUpload';
 
+const DELETE_ALL_GROUP = gql`
+    mutation DeleteAllGroups($cid: ID) {
+        deleteAllGroups(CID: $cid)
+  }`
+
 function Semester(props) {
-    // user data lives in here 
+    const [searchInput, setSearchInput] = useState("");
     const { user, logout } = useContext(AuthContext);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
@@ -19,7 +26,14 @@ function Semester(props) {
         navigate('/');
     }
 
-    const [searchInput, setSearchInput] = useState("");
+    function deleteGroups() {
+        deleteAllG();
+    }
+    const [deleteAllG] = useMutation(DELETE_ALL_GROUP, {
+        variables: { cid: user.id },
+        refetchQueries: [{ query: GetGroups }]
+    })
+
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -69,7 +83,7 @@ function Semester(props) {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
                                         }
-                                    }} variant="contained">Delete Projects</Button>
+                                    }} variant="contained" onClick={() => deleteGroups}>Delete Projects</Button>
                                     <Button sx={{
                                         display: 'block',
                                         backgroundColor: 'red',
@@ -81,7 +95,7 @@ function Semester(props) {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
                                         }
-                                    }} variant="contained">Delete All</Button>
+                                    }} variant="contained" >Delete All</Button>
                                 </div>
 
                             </div>
