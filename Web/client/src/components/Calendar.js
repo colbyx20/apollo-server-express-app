@@ -44,7 +44,6 @@ export default function Calendar() {
 
   const appointmentsOnThatDay = (val, app) => {
     const retVal = app.filter((date) => {
-      // console.log((val.$d.toLocaleDateString() === date.date) ? "Yes" : "No")
       return val.$d.toLocaleDateString() === date.date
     })
     return retVal
@@ -65,10 +64,6 @@ export default function Calendar() {
     setSelectedTimes(newAppointment)
   }
 
-  // console.log("The cur App is " + curDayApp)
-
-  // console.log(Object.values(selectedTimes))
-  // console.log({ value })
   return (
     <div className="calendarMundo">
       <div className='leftSideDisplay'>

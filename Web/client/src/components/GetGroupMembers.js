@@ -28,8 +28,7 @@ export const GetGroupMembers = ({ SID }) => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
     const myData = data.getGroupMembers
-    // <td>Group Name: {myData.groupName}</td>
-    //  <td>Group Number: {myData.groupNumber}</td>
+
     return (
         <div className='group-container'>
             <div className='group-heading'>

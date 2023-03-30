@@ -44,7 +44,6 @@ export const GetAllCoordinatorSchedule = (props) => {
 
     const search = props.data;
     const { getAllCoordinatorSchedule } = data;
-    console.log(getAllCoordinatorSchedule);
 
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20' }}>

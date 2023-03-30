@@ -31,7 +31,6 @@ function Calendar(props) {
     const [getTimeRange, setTimeRange] = useState([]);
     const timeRangeData = GetCoordinatorTimeRange({ ID: user.coordinator });
 
-    console.log(timeRangeData)
     if (timeRangeData[0]) {
         currentDate = new Date(timeRangeData[0].time);
         value = new Date(timeRangeData[0].time);
@@ -117,7 +116,6 @@ function Calendar(props) {
 
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp));
     let tempRange = getDaysBetweenDates(dateObjects[0], dateObjects[dateObjects.length - 1]);
-    console.log(timeRangeData)
 
     return (
         <>

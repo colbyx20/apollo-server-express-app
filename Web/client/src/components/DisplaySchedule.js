@@ -1,4 +1,4 @@
-import { useContext, useState, useRef, useEffect, useCallback } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
@@ -19,11 +19,9 @@ function DisplaySchedule(props) {
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
-    const [dateO, setDateO] = useState([])
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
 
-    //console.log(props);
 
     const staticTimeList = [
         "8",
@@ -48,10 +46,6 @@ function DisplaySchedule(props) {
 
     }, [props.pickList, props.timeList, props.dateList]);
 
-    console.log('datelist');
-    console.log(timeList)
-
-    // console.log(timeRangeDataObj)  
     if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
 
@@ -66,45 +60,44 @@ function DisplaySchedule(props) {
 
     // Prevent duplicate times 
     const searchDates = (currDate) => {
-        for(let i = 0; i < dateObjects.length; i ++){
-            if(dateObjects[i].toISOString() === currDate.toISOString())
+        for (let i = 0; i < dateObjects.length; i++) {
+            if (dateObjects[i].toISOString() === currDate.toISOString())
                 return false;
         }
-
         return true;
     }
 
-    
+
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    console.log(dateObjects);
 
     // Add new dates and time to list
     if (pickList.length > 0 && timeList.length > 0) {
         // Iterate thorough each date
         for (let picklen = 0; picklen < pickList.length; picklen++) {
             // Iterate through each time 
-            for(let timelen = 0; timelen < timeList.length; timelen++){
-                
+            for (let timelen = 0; timelen < timeList.length; timelen++) {
+
                 const myDate = new Date(dateList[pickList[picklen]]);
                 myDate.setHours(staticTimeList[timeList[timelen]], 0, 0, 0);
-                console.log(dateList[picklen])
-                console.log(pickList)
+
                 if (searchDates(myDate))
                     dateObjects.push(myDate);
             }
         }
     }
 
-            
-    
-    function handlePickedDates(){   
+
+
+    function handlePickedDates() {
 
         createCoordinatorSchedule({
-            variables:{ coordinatorSInput:{
-                CID: user.id,
-                Room: 'HEC-101',
-                Times: dateObjects
-            }}
+            variables: {
+                coordinatorSInput: {
+                    CID: user.id,
+                    Room: 'HEC-101',
+                    Times: dateObjects
+                }
+            }
         })
     }
 

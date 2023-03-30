@@ -49,9 +49,6 @@ function Account(props) {
     const handlePasswordChangeSubmit = async (oldPassword, newPassword) => {
 
         try {
-            // Handle password change submit logic here
-            console.log(`Password changed from ${oldPassword} to ${newPassword}`);
-
             await updatePassword({
                 variables: {
                     id: user.id,

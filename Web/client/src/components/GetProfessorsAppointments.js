@@ -22,15 +22,13 @@ const DELETE_APPOINTMENT = gql`
 `;
 
 export const GetProfessorsAppointments = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const PID = user.id
   const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
 
   const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
     variables: { profId: PID },
   });
-
-  console.log(data);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;

@@ -1,13 +1,12 @@
-import {gql, useQuery} from '@apollo/client';
-import {useState} from 'react';
-import {useContext} from 'react';
-import { AuthContext } from '../context/authContext'; 
+import { gql, useQuery } from '@apollo/client';
+import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/authContext';
 
-export const Refresh = ({id, privilege}) =>{
+export const Refresh = ({ id, privilege }) => {
 
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
-    console.log(user);
 
     const CHECK_AUTH = gql`
         query RefreshToken($id: ID!, $privilege: String) {
@@ -18,31 +17,26 @@ export const Refresh = ({id, privilege}) =>{
 
     const [errors, setErrors] = useState([]);
 
-     const {data} = useQuery(CHECK_AUTH,{
+    const { data } = useQuery(CHECK_AUTH, {
         // update(proxy,{data:{id, privilege}}){
         //     localStorage.setItem("token",data);
 
         // },
-        onError({graphQLErrors}){
+        onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
-        variables:{id:id, privilege: privilege}
-     });
+        variables: { id: id, privilege: privilege }
+    });
 
     //  if(loading) return 'Loading...';
     //  if(error) return `Error! ${error.message}`
 
-     console.log("Data from Refresh!!!");
-     console.log(data);
-
-    
-
-     return (
+    return (
         <>
-        <h1>{data}</h1>
-        <h1>{errors}</h1>
+            <h1>{data}</h1>
+            <h1>{errors}</h1>
         </>
-     )
+    )
 
 
 

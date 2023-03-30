@@ -991,7 +991,6 @@ const resolvers = {
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
             //Professor on a side note for professors the reason flag should be false
-            console.log(canceler.privilege)
             if (canceler.privilege == 'professor')//note for proffs this isnt a deletion
             {
                 time = new Date(appointment.time);
@@ -1046,12 +1045,9 @@ const resolvers = {
                 }
                 else if (reason == "Personal")//cancel for personalreasons
                 {
-                    console.log(appointment)
                     if (appointment.groupId)//Group already claimed it
                     {
-                        console.log("herdgffgasdfe")
                         const group = await Group.findOne({ _id: appointment.groupId });
-                        console.log(group)
                         //const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
                         //const notify = await UserInfo.find({ userId: lead._id });
                         //                        transport.sendMail({
@@ -1067,7 +1063,6 @@ const resolvers = {
                     }
                     if (appointment.attending.length > 0)//Group had professors
                     {
-                        console.log("here2")
                         for (prof of appointment.attending)//send email and update
                         {
                             const profe = await UserInfo.findOne({ userId: prof });
@@ -1163,8 +1158,6 @@ const resolvers = {
                     ])
 
                     if (getNotificationEmail.notificationEmail === email) {
-                        console.log(getNotificationEmail);
-                        console.log(getCoordinatorSchedule);
 
                         let transport = nodemailer.createTransport({
                             service: "Gmail",
