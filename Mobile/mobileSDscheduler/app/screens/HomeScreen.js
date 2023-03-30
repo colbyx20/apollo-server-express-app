@@ -22,8 +22,8 @@ function HomeScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  console.log(data.getAllGroups[0].groupName);
-  console.log(data);
+  // console.log(data.getAllGroups[0].groupName);
+  // console.log(data);
   return (
     <Screen style={styles.screen}>
       <AppText style={styles.title}>Upcoming Events</AppText>

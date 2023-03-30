@@ -20,7 +20,7 @@ import AppointmentItemAddAction from "../components/AppointmentItemAddAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
 import TitleBar from "../components/TitleBar";
-import NavBar from "../components/NavBar";
+// import NavBar from "../components/NavBar";
 
 function CalendarProfessorScreen(props) {
   //APOLLO CLIENT
@@ -280,11 +280,11 @@ function CalendarProfessorScreen(props) {
         //THIS (appmtmdl) SHOULD BE DELETED, OTHERWISE CYCLE OCCURS
         modalVisible={modalVisible}
       ></AvailabilityModal>
-      <NavBar
+      {/* <NavBar
         onPressLeft={() => console.log("left")}
         onPressCenter={() => console.log("center")}
         onPressRight={() => console.log("right")}
-      ></NavBar>
+      ></NavBar> */}
       {/* <View>
         <AppText style={styles.title}>
           Just imagine this is a NavBar lol

@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: "blue",
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: colors.secondaryDark,
+    borderColor: "red",
   },
   highlight: {
     borderRadius: 25,

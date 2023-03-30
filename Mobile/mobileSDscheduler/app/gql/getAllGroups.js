@@ -7,7 +7,6 @@ export const GROUPS = gql`
       coordinatorId
       groupName
       groupNumber
-      memberCount
       projectField
     }
   }
