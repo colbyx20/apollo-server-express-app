@@ -19,7 +19,7 @@
 .leftContainer {
     width: 50%;
     height: 91.5%;
-    float: left;
+    float: left;    
 }
 
 .rightContainer {
@@ -144,4 +144,27 @@
 
 .coordinator-schedule {
     color: white
+}
+
+.timeListContainer{
+    margin-left: 5%;
+    width: 90%;
+    height: 95.5%;
+    border-radius: 10px;
+    background-color: #D0A300;
+    overflow-y: auto;
+    
+}
+
+.listContainer{
+    margin: auto;
+    width: 90%;
+    background-color: antiquewhite;
+}
+
+.timeListTitle{
+    text-align: center;
+    padding-top: 5px;
+    color: black;
+    margin-bottom: 5px;
 }
