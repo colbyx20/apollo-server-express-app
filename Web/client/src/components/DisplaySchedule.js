@@ -19,9 +19,14 @@ function DisplaySchedule(props) {
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
-    const [fullDates, setFullDates] = useState([]);
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
-    const fullApiDates = GetFullTimeRange({});
+
+    let fullApiDates;
+    if (user.privilege === 'professor') {
+        fullApiDates = GetFullTimeRange({});
+    } else {
+        fullApiDates = [];
+    }
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
 
     const staticTimeList = [
@@ -44,12 +49,9 @@ function DisplaySchedule(props) {
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
-        setFullDates(fullApiDates)
 
-    }, [props.pickList, props.timeList, props.dateList, fullApiDates]);
+    }, [props.pickList, props.timeList, props.dateList]);
 
-    console.log("fullDates State");
-    console.log(fullDates)
     if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
 
