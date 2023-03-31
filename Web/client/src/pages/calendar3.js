@@ -81,6 +81,7 @@ function Calendar(props) {
 
     function getDaysBetweenDates(date1, date2) {
         const dayList = [];
+        console.log(date1)
         const currentDate = new Date(date1);
         currentDate.setHours(0, 0, 0, 0);
         const endDate = new Date(date2);
@@ -117,7 +118,7 @@ function Calendar(props) {
 
     const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp));
     let tempRange = getDaysBetweenDates(dateObjects[0], dateObjects[dateObjects.length - 1]);
-    console.log(timeRangeData)
+    
 
     return (
         <>
@@ -142,7 +143,7 @@ function Calendar(props) {
                                 <div className='selectTimes'>
                                     <h2 className='timeTitle'>Create Schedule</h2>
                                     <div className='timeContainer'>
-                                        <DisplayDesignWeek daysList={selectedWeek} isEmpty={isEmpty}
+                                        <DisplayDesignWeek daysList={selectedWeek}
                                             onScheduleDate={addDateList} onTimeRange={addTimeList} />
                                     </div>
                                     <h2 className='timeTitle'>View Schedule</h2>
@@ -153,8 +154,6 @@ function Calendar(props) {
                                 </div>
                             </div>
                         </div>
-
-
                     </>
                     :
                     <>
