@@ -31,15 +31,17 @@ function Calendar(props) {
                                 <p className='accountHeader'>Calendar</p>
                             </div>
                             <div className='leftContainer'>
-                                <div>
-                                    <h2 style={{ color: "white" }}>Pick time</h2>
-                                    <div>
+                                <div className='timeListContainer'>
+                                    <h2 className='timeListTitle'>Pick time</h2>
+                                    <div className='listContainer'>
                                         <GetAllCoordinatorSchedule />
                                     </div>
                                 </div>
                             </div>
                             <div className='rightContainer'>
-                                
+                                <div className='timeListContainer'>
+
+                                </div>
                             </div>
                         </div>
                     </>
