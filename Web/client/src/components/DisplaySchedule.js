@@ -54,6 +54,10 @@ function DisplaySchedule(props) {
 
     }, [props.pickList, props.timeList, props.dateList]);
 
+    // console.log('datelist');
+    // console.log(timeList)
+
+    // console.log(timeRangeDataObj)  
     if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
 
