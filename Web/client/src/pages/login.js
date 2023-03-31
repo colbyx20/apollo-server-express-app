@@ -51,9 +51,6 @@ function Login(props) {
         setChecked(event.target.checked);
     };
 
-    // const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
-    // const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
-
 
     function loginUserCallback() {
         loginUser();

@@ -153,7 +153,8 @@
 }
 
 .semesterHeader {
-    padding: 0%;
+    text-align: left;
+    padding: 0 0 0 28px;
     font-size: 3em;
     padding-top: 5px;
     color: var(--color)
@@ -176,7 +177,7 @@
     margin-left: 30px;
     margin-bottom: 15px;
     box-shadow: 0 0 15px -1px;
-    border-radius: 5px;
+    border-radius: 15px;
 }
 
 .searchInput {

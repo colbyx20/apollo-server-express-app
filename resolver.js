@@ -170,6 +170,15 @@ const resolvers = {
 
             return user;
         },
+        getFullTimeRange: async () => {
+            const dates = await CoordSchedule.aggregate([
+                { $match: { numberOfAttending: { $lt: 3 } } },
+                { $group: { _id: null, times: { $push: "$time" } } },
+                { $sort: { time: 1 } }
+            ])
+
+            return dates;
+        },
         getCoordinatorSchedule: async (_, { CID }) => {
             const coordCID = Mongoose.Types.ObjectId(CID)
             return await CoordSchedule.aggregate([
@@ -790,6 +799,7 @@ const resolvers = {
                         dates.push(new Date(times));
                     })
 
+
                     if (privilege === "professor") {
                         const isScheduled = (await Professors.find({ _id: ID, availSchedule: { $in: dates } }).count());
 
@@ -819,7 +829,7 @@ const resolvers = {
             const UniqueTimes = new Set(Times);
 
             UniqueTimes.forEach(async (time) => {
-                let t = new Date(time).toISOString();
+                let t = new Date(time);
                 let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
@@ -991,7 +1001,6 @@ const resolvers = {
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
             //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
             //Professor on a side note for professors the reason flag should be false
-            console.log(canceler.privilege)
             if (canceler.privilege == 'professor')//note for proffs this isnt a deletion
             {
                 time = new Date(appointment.time);
@@ -1046,12 +1055,9 @@ const resolvers = {
                 }
                 else if (reason == "Personal")//cancel for personalreasons
                 {
-                    console.log(appointment)
                     if (appointment.groupId)//Group already claimed it
                     {
-                        console.log("herdgffgasdfe")
                         const group = await Group.findOne({ _id: appointment.groupId });
-                        console.log(group)
                         //const lead = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber, role: "Leader" });
                         //const notify = await UserInfo.find({ userId: lead._id });
                         //                        transport.sendMail({
@@ -1067,7 +1073,6 @@ const resolvers = {
                     }
                     if (appointment.attending.length > 0)//Group had professors
                     {
-                        console.log("here2")
                         for (prof of appointment.attending)//send email and update
                         {
                             const profe = await UserInfo.findOne({ userId: prof });
@@ -1107,11 +1112,13 @@ const resolvers = {
             const numAttending = await CoordSchedule.find().count();
 
             try {
+
                 for (let counter = 0; counter < numAttending; counter++) {
                     const coordinatorInfo = await CoordSchedule.findOne(
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
                         { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
+                    console.log(coordinatorInfo);
                     const date = new Date(coordinatorInfo.time);
 
                     const matchProfessors = await Professors.aggregate([
@@ -1119,6 +1126,8 @@ const resolvers = {
                         { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
+
+                    console.log(matchProfessors);
 
                     if (matchProfessors) {
                         const professorInfo = matchProfessors.map((professor) => ({
@@ -1163,8 +1172,6 @@ const resolvers = {
                     ])
 
                     if (getNotificationEmail.notificationEmail === email) {
-                        console.log(getNotificationEmail);
-                        console.log(getCoordinatorSchedule);
 
                         let transport = nodemailer.createTransport({
                             service: "Gmail",

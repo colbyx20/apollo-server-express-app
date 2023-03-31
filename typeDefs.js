@@ -215,6 +215,15 @@ scalar DateTime
         coordinatorInfo: coordinatorDetails
     }
 
+    type coordData {
+        time: DateTime
+    }
+
+    type getAllCoordScheduleFormat2 {
+        _id:ID
+        times: [DateTime]
+    }
+
     input coordinatorSInput {
         CID:ID
         Room:String
@@ -281,6 +290,7 @@ scalar DateTime
         getGroupAppointment(studentId: String) : CoordSchedule2
         getCoordinatorTimeRange(CID: String) : [DateTime]
         getAllGroups : [Group]
+        getFullTimeRange: [getAllCoordScheduleFormat2]
     }
 
     type Mutation {

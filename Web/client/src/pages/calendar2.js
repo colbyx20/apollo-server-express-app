@@ -56,7 +56,7 @@ function Calendar(props) {
 
     // useEffect(() =>{
     //     let currMax = null;
-        
+
     // }, timeRangeData)
 
     const handleMonthChange = (date) => {
@@ -100,7 +100,6 @@ function Calendar(props) {
             }
             currentDate.setDate(currentDate.getDate() + 1);
         }
-
 
         setSelectedWeek(dayList);
     }

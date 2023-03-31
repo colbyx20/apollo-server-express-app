@@ -20,8 +20,6 @@ function Professors(props) {
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
     let navigate = useNavigate();
-    console.log(user);
-    // let navigate = useNavigate();
     var year = new Date().getFullYear()
 
     const onLogout = () => {
