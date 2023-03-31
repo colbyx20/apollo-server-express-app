@@ -1,10 +1,11 @@
 import { useContext, useState, useEffect } from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
 import SaveIcon from '@mui/icons-material/Save';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
+import { GetFullTimeRange } from '../components/GetFullTimeRange';
 
 const SEND_SCHEDULE = gql`
     mutation Mutation($coordinatorSInput: coordinatorSInput) {
@@ -12,16 +13,16 @@ const SEND_SCHEDULE = gql`
     }
 `
 
-
 function DisplaySchedule(props) {
     // user data lives in here  
     const { user } = useContext(AuthContext);
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
+    const [fullDates, setFullDates] = useState([]);
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
+    const fullApiDates = GetFullTimeRange({});
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
-
 
     const staticTimeList = [
         "8",
@@ -43,9 +44,12 @@ function DisplaySchedule(props) {
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
+        setFullDates(fullApiDates)
 
-    }, [props.pickList, props.timeList, props.dateList]);
+    }, [props.pickList, props.timeList, props.dateList, fullApiDates]);
 
+    console.log("fullDates State");
+    console.log(fullDates)
     if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
 
@@ -85,8 +89,6 @@ function DisplaySchedule(props) {
             }
         }
     }
-
-
 
     function handlePickedDates() {
 

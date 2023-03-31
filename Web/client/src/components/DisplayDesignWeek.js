@@ -1,12 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { gql, useQuery } from '@apollo/client';
+import { AuthContext } from '../context/authContext';
 import "../components/css/calendar2.css"
 import { ToggleButton, Button, ToggleButtonGroup } from "@mui/material";
 
+const GET_All_COORDINATOR_SCHEDULE = gql`
+query Query {
+  getFullTimeRange {
+    _id
+    times
+  }
+}
+`
+
 function DisplayDesignWeek(props) {
+    const { user } = useContext(AuthContext);
+    console.log(user);
     const [daysList, setDayList] = useState(props.daysList);
     const [selected, setSelected] = useState([]);
     const [selectedTime, setSelectedTime] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
+    // const { data } = useQuery(GET_All_COORDINATOR_SCHEDULE)
+    // console.log(data);
 
     const handleSelectedTime = (event, newSelected) => {
         setSelectedTime(newSelected);
@@ -95,22 +110,31 @@ function DisplayDesignWeek(props) {
 
     return (
         <>
-            <div className="designWeekContainer">
-                <ToggleButtonGroup
-                    value={selected}
-                    onChange={handleSelected}
-                    sx={{ marginRights: '50px' }}>
-                    {buttonList}
-                </ToggleButtonGroup>
-            </div>
-            <div className="designWeekContainer">
-                <ToggleButtonGroup
-                    value={selectedTime}
-                    onChange={handleSelectedTime}
-                    sx={{ marginRights: '50px' }}>
-                    {TimeList}
-                </ToggleButtonGroup>
-            </div>
+            {user.privilege === 'coordinator' ?
+                <>
+                    <div className="designWeekContainer">
+                        <ToggleButtonGroup
+                            value={selected}
+                            onChange={handleSelected}
+                            sx={{ marginRights: '50px' }}>
+                            {buttonList}
+                        </ToggleButtonGroup>
+                    </div>
+                    <div className="designWeekContainer">
+                        <ToggleButtonGroup
+                            value={selectedTime}
+                            onChange={handleSelectedTime}
+                            sx={{ marginRights: '50px' }}>
+                            {TimeList}
+                        </ToggleButtonGroup>
+                    </div>
+                </>
+                :
+                <>
+                    <span style={{ color: 'red' }}>HIDSLKFJS:DLKFJS:DLKJSDF</span>
+                </>
+
+            }
             <Button variant="contained" color="primary" type="submit"
                 style={{ width: "82%", margin: "auto", marginTop: '4px', display: "flex", alignItems: "center" }}
                 disabled={!isEmpty}

@@ -170,6 +170,15 @@ const resolvers = {
 
             return user;
         },
+        getFullTimeRange: async () => {
+            const dates = await CoordSchedule.aggregate([
+                { $match: { numberOfAttending: { $lt: 3 } } },
+                { $group: { _id: null, times: { $push: "$time" } } },
+                { $sort: { time: 1 } }
+            ])
+
+            return dates;
+        },
         getCoordinatorSchedule: async (_, { CID }) => {
             const coordCID = Mongoose.Types.ObjectId(CID)
             return await CoordSchedule.aggregate([
@@ -790,6 +799,7 @@ const resolvers = {
                         dates.push(new Date(times));
                     })
 
+
                     if (privilege === "professor") {
                         const isScheduled = (await Professors.find({ _id: ID, availSchedule: { $in: dates } }).count());
 
@@ -819,7 +829,7 @@ const resolvers = {
             const UniqueTimes = new Set(Times);
 
             UniqueTimes.forEach(async (time) => {
-                let t = new Date(time).toISOString();
+                let t = new Date(time);
                 let duplicateTime = (await CoordSchedule.findOne({ coordinatorID: ID, time: t }).count());
 
                 if (duplicateTime) {
@@ -1102,11 +1112,13 @@ const resolvers = {
             const numAttending = await CoordSchedule.find().count();
 
             try {
+
                 for (let counter = 0; counter < numAttending; counter++) {
                     const coordinatorInfo = await CoordSchedule.findOne(
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
                         { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
+                    console.log(coordinatorInfo);
                     const date = new Date(coordinatorInfo.time);
 
                     const matchProfessors = await Professors.aggregate([
@@ -1114,6 +1126,8 @@ const resolvers = {
                         { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
+
+                    console.log(matchProfessors);
 
                     if (matchProfessors) {
                         const professorInfo = matchProfessors.map((professor) => ({

@@ -9,6 +9,7 @@ import { Button } from "@mui/material";
 import DisplayDesignWeek from '../components/DisplayDesignWeek';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
 import DisplaySchedule from '../components/DisplaySchedule';
+import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
 import "../components/css/calendar2.css"
 
 function Calendar(props) {
@@ -93,7 +94,6 @@ function Calendar(props) {
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
-
         return dayList;
     }
 
@@ -134,6 +134,12 @@ function Calendar(props) {
                                         daysList={selectedWeek}
                                         minDate={currentDate}
                                         maxDate={maxDate} />
+                                </div>
+                                <div>
+                                    <h2 style={{ color: "white" }}>Pick time</h2>
+                                    <div>
+                                        <GetAllCoordinatorSchedule />
+                                    </div>
                                 </div>
                             </div>
                             <div className='rightContainer'>
