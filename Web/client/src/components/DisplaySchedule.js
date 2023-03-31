@@ -29,6 +29,8 @@ function DisplaySchedule(props) {
     }
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
 
+    console.log(fullApiDates);
+
     const staticTimeList = [
         "8",
         "9",
