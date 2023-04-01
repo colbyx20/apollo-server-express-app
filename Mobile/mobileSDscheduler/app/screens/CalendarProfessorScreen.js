@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Constants from "expo-constants";
 import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
 import { useQuery } from "@apollo/client";
-import { GROUPS } from "../gql/getAllGroups";
+import { GROUPS } from "../gql/queries/getAllGroups";
 import {
   CalendarList,
   Calendar,
