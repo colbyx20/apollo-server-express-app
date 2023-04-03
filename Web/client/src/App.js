@@ -15,6 +15,7 @@ import Calendar3 from "./pages/calendar3";
 import Semester from "./pages/semester";
 import Account from "./pages/account";
 import Forgot from "./pages/forgot";
+import RegisterCoord from "./pages/registerCoord";
 
 function App() {
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
@@ -44,6 +45,7 @@ function App() {
           <Route path="/login" element={<Loginpath />} />
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/registerCoord" element={<RegisterCoord />} />
           <Route path="/student" element={<Student />} />
           <Route path="/professor" element={<Professors />} />
           <Route path="/calendar" element={<Calendar lightMode={theme === 'dark' ? false : true} />} />
