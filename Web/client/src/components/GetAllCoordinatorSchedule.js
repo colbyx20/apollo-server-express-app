@@ -39,10 +39,10 @@ export const GetAllCoordinatorSchedule = (props) => {
 
 
     const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE);
-    const [checked, setChecked] = React.useState(true);
+    const [checkedStates, setCheckedStates] = React.useState([]);
 
     const handleChange = (event) => {
-        setChecked(event.target.checked);
+        checkedStates.push(event)
     };
 
     if (loading) return 'Loading...';
@@ -72,7 +72,7 @@ export const GetAllCoordinatorSchedule = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {getAllCoordinatorSchedule.map((coordinator) => {
+                    {getAllCoordinatorSchedule.map((coordinator, index) => {
                         return (<TableRow
                             key={coordinator._id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
@@ -85,10 +85,7 @@ export const GetAllCoordinatorSchedule = (props) => {
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo.coordinatorFName + " " + coordinator.coordinatorInfo.coordinatorLName} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox
-                                checked={checked}
-                                onChange={handleChange}
-                                inputProps={{ 'aria-label': 'controlled' }}/>
+                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)}/>
                             </TableCell>
                             
                         </TableRow>
