@@ -428,9 +428,8 @@ const resolvers = {
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
             const oldProfessor = await UserInfo.findOne({ email: email });
-            const oldUser = await UserInfo.findOne({ email: email });
 
-            if (oldProfessor || oldUser) {
+            if (oldProfessor ) {
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
@@ -444,155 +443,76 @@ const resolvers = {
                     pass: process.env.EMAIL_PASSWORD
                 },
             });
+            // Encrypt password using bcryptjs
+            const encryptedPassword = await bcrypt.hash(password, 10);
 
-            if (STUDENT_EMAIL.test(email)) {
+            // Build out mongoose model 
+            const newProfessor = new Professors({
+                professorFName: firstname.toLowerCase(),
+                professorLName: lastname.toLowerCase()
+            });
 
-
-                // Encrypt password using bcryptjs
-                var encryptedPassword = await bcrypt.hash(password, 10);
-
-                // Build out mongoose model 
-                const newStudent = new Users({
-                    userFName: firstname.toLowerCase(),
-                    userLName: lastname.toLowerCase(),
-                    role: "",
-                    groupNumber: 0,
-                });
-
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newStudent._id, email },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-
-                // Save user in MongoDB
-                const res = await newStudent.save();
-
-                // create professors auth information in separate collection called Auth
-                const authStudent = new Auth({
-                    userId: res._id,
-                    password: encryptedPassword,
-                    confirm: false,
-                    privilege: "student",
-                    token: token
-                })
-
-                // save new professor profile
-                await authStudent.save();
-
-                // create model for professors information 
-                const studentInfo = new UserInfo({
-                    userId: res._id,
-                    email: email.toLowerCase(),
-                    notificationEmail: email.toLowerCase(),
-                    image: ''
-                })
-
-                await studentInfo.save();
-
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: email,
-                    subject: "mySDSchedule - Please Confirm Your Account",
-                    html: `<h1>Email Confirmation</h1>
-                    <h2>Hello ${firstname}</h2>
-                    <p>Thank you for Registering!</p>
-                    <p>To activate your account please click on the link below.</p>
-                    
-                    <p>Please Check you Junk/Spam folder</p>
-                    </div>`,
-                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                })
-
-                return {
-                    firstname: res.userFName,
-                    lastname: res.userLName,
-                    email: studentInfo.email,
-                    privilege: studentInfo.privilege,
-                    password: authStudent.password,
-                    confirm: authStudent.confirm,
-                    token: authStudent.token
-
+            // create JWT (attach to user model)
+            const token = jwt.sign(
+                { id: newProfessor._id, email },
+                "UNSAFE_STRING", // stored in a secret file 
+                {
+                    expiresIn: "2h"
                 }
+            );
 
-            } else if (!STUDENT_EMAIL.test(email)) {
+            // Save user in MongoDB
+            const res = await newProfessor.save();
 
+            // create professors auth information in separate collection called Auth
+            const authProfessor = new Auth({
+                userId: res._id,
+                password: encryptedPassword,
+                confirm: false,
+                token: token
+            })
 
-                // Encrypt password using bcryptjs
-                var encryptedPassword = await bcrypt.hash(password, 10);
+            // save new professor profile
+            await authProfessor.save();
 
-                // Build out mongoose model 
-                const newProfessor = new Professors({
-                    professorFName: firstname.toLowerCase(),
-                    professorLName: lastname.toLowerCase()
-                });
+            // create model for professors information 
+            const professorInfo = new UserInfo({
+                userId: res._id,
+                email: email.toLowerCase(),
+                notificationEmail: email.toLowerCase(),
+                image: '',
+                privilege: "professor"
+            })
 
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newProfessor._id, email },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
+            await professorInfo.save();
 
-                // Save user in MongoDB
-                const res = await newProfessor.save();
+            transport.sendMail({
+                from: "group13confirmation@gmail.com",
+                to: email,
+                subject: "mySDSchedule - Please Confirm Your Account",
+                html: `<h1>Email Confirmation</h1>
+                <h2>Hello ${firstname}</h2>
+                <p>Thank you for Registering!</p>
+                <p>To activate your account please click on the link below.</p>
+                
+                <p>Please Check you Junk/Spam folder</p>
+                </div>`,
+                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+            })
 
-                // create professors auth information in separate collection called Auth
-                const authProfessor = new Auth({
-                    userId: res._id,
-                    password: encryptedPassword,
-                    confirm: false,
-                    token: token
-                })
+            return {
+                id: res._id,
+                firstname: res.professorFName,
+                lastname: res.professorLName,
+                email: professorInfo.email,
+                privilege: professorInfo.privilege,
+                password: authProfessor.password,
+                confirm: authProfessor.confirm,
+                token: authProfessor.token
 
-                // save new professor profile
-                await authProfessor.save();
-
-                // create model for professors information 
-                const professorInfo = new UserInfo({
-                    userId: res._id,
-                    email: email.toLowerCase(),
-                    notificationEmail: email.toLowerCase(),
-                    image: '',
-                    privilege: "professor"
-                })
-
-                await professorInfo.save();
-
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: email,
-                    subject: "mySDSchedule - Please Confirm Your Account",
-                    html: `<h1>Email Confirmation</h1>
-                    <h2>Hello ${firstname}</h2>
-                    <p>Thank you for Registering!</p>
-                    <p>To activate your account please click on the link below.</p>
-                    
-                    <p>Please Check you Junk/Spam folder</p>
-                    </div>`,
-                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                })
-
-                return {
-                    id: res._id,
-                    firstname: res.professorFName,
-                    lastname: res.professorLName,
-                    email: professorInfo.email,
-                    privilege: professorInfo.privilege,
-                    password: authProfessor.password,
-                    confirm: authProfessor.confirm,
-                    token: authProfessor.token
-
-                }
-
-            } else {
-                throw new ApolloError("Invalid Email " + email, " EMAIL IS NOT VALID");
             }
+
+            } 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
