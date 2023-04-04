@@ -176,7 +176,6 @@
     margin-top: 20px;
     margin-left: 30px;
     margin-bottom: 15px;
-    box-shadow: 0 0 15px -1px;
     border-radius: 15px;
 }
 
@@ -195,7 +194,6 @@
 .searchInput:focus {
     outline: 10px black;
     border: 1px solid red;
-    box-shadow: 0 0 5px #030303;
 }
 
 .searchResults {
@@ -222,7 +220,6 @@
     margin-top: 20px;
     margin-left: 10px;
     margin-bottom: 15px;
-    box-shadow: 0 0 15px -1px;
     border-radius: 15px;
 }
 
@@ -232,7 +229,6 @@
     margin-left: 10px;
     background-color: #D0A300;
     border-radius: 15px;
-    box-shadow: 0 0 15px -1px;
     overflow-y: auto;
 }
 
