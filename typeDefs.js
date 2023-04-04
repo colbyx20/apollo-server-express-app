@@ -219,9 +219,15 @@ scalar DateTime
         time: DateTime
     }
 
+    type something {
+        room: String
+        CID: ID
+        name: String
+    }
+
     type getAllCoordScheduleFormat2 {
         _id:ID
-        times: [DateTime]
+        coordinator:[something]
     }
 
     input coordinatorSInput {
