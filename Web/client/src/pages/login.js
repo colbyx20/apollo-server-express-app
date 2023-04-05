@@ -28,22 +28,26 @@ function Login(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
-    const [log, setLog] = useState(() => {
-        // getting stored value
+    const [log, setLog] = useState("");
+
+    // Get Log from local storage
+    useEffect(() =>{
         const saved = window.localStorage.getItem('...')
         const initialValue = JSON.parse(saved);
-        return initialValue || "";
-    });
+        setLog(initialValue);
+    }, []);
 
     // Get checkbox state
     useEffect(() => {
         const data = window.localStorage.getItem('checkbox')
         if (data !== null) setChecked(JSON.parse(data))
+        if (JSON.parse(data) === false) window.localStorage.clear();   
     }, [])
 
     // Save checkbox state
     useEffect(() => {
-        window.localStorage.setItem('checkbox', JSON.stringify(checked))
+        window.localStorage.setItem('checkbox', JSON.stringify(checked));
+
     }, [checked])
 
 
@@ -64,11 +68,13 @@ function Login(props) {
     const [loginUser] = useMutation(LOGIN_USER, {
         update(proxy, { data: { loginUser: userData } }) {
             context.login(userData)
-            if (checked === true)
+            if (checked === true){
                 window.localStorage.setItem('...', JSON.stringify(userData.email));
+            }
+                
 
             if (userData.privilege === 'student') {
-                window.location.href = '/student';
+                window.location.href = '/';
             } else if (userData.privilege === 'coordinator') {
                 window.location.href = '/coordinator';
             } else if (userData.privilege === 'professor') {
@@ -83,7 +89,7 @@ function Login(props) {
         variables: { loginInput: values }
     });
 
-
+    console.log(log)
 
     return (
 
