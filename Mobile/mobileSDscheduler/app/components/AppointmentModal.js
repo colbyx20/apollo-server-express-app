@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Modal, FlatList, View } from "react-native";
 import { useQuery } from "@apollo/client";
-import { GROUPS } from "../gql/getAllGroups";
+import { GROUPS } from "../gql/queries/getAllGroups";
 
 import AppButton from "./AppButton";
 import AppText from "./AppText";

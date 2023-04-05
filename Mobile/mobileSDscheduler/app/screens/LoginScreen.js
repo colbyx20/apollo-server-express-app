@@ -14,7 +14,7 @@ import AppText from "../components/AppText";
 import Constants from "expo-constants";
 import apiClient from "../api/client";
 import { useQuery } from "@apollo/client";
-import { GROUPS } from "../gql/getAllGroups";
+import { GROUPS } from "../gql/queries/getAllGroups";
 
 import Screen from "../components/Screen";
 import colors from "../config/colors";
@@ -78,6 +78,13 @@ function LoginScreen(props) {
   console.log(data.getAllGroups[0].groupName);
   console.log(data);
 
+  // const handleSubmit = async ({ email, password }) => {
+  //   const result = await authApi.login(email, password);
+  //   if (!result.ok) return setLoginFailed(true);
+  //   setLoginFailed(false);
+  //   auth.logIn(result.data);
+  // };
+
   return (
     <ImageBackground
       blurRadius={1.5}
@@ -95,13 +102,7 @@ function LoginScreen(props) {
           onSubmit={(values) => console.log(values)}
           validationSchema={validationSchema}
         >
-          {({
-            handleChange,
-            handleSubmit,
-            errors,
-            setFieldTouched,
-            touched,
-          }) => (
+          {({ handleChange, errors, setFieldTouched, touched }) => (
             <>
               <AppTextInput
                 autoCapitalize="none"
@@ -111,7 +112,7 @@ function LoginScreen(props) {
                 onBlur={() => setFieldTouched("email")}
                 onChangeText={handleChange("email")}
                 placeholder="UCF Email"
-                textContectType="emailAddress" //might need to remove
+                textContextType="emailAddress" //might need to remove
               />
               <ErrorMessage error={errors.email} visible={touched.email} />
               <AppTextInput
@@ -122,7 +123,7 @@ function LoginScreen(props) {
                 onChangeText={handleChange("password")}
                 placeholder="Password"
                 secureTextEntry
-                textContectType="password" //might need to remove
+                textContextType="password" //might need to remove
               />
               <ErrorMessage
                 error={errors.password}

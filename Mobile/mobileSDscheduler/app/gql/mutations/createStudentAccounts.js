@@ -1,5 +1,14 @@
 import { gql } from "@apollo/client";
 
+// Variables:
+// {
+//   "cid": null,
+//   "userLogin": null,
+//   "password": null,
+//   "firstname": null,
+//   "groupNumber": null,
+//   "lastname": null
+// }
 export const GROUPS = gql`
   mutation Mutation(
     $cid: ID!

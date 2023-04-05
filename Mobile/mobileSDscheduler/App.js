@@ -2,8 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
 import LoginScreen from "./app/screens/LoginScreen";
-import AccountScreen from "./app/screens/AccountScreen";
-import HomeScreen from "./app/screens/HomeScreen";
+import AccountScreen from "./app/screens/AccountProfessorScreen";
+import HomeScreen from "./app/screens/HomeProfessorScreen";
 import CalendarProfessorScreen from "./app/screens/CalendarProfessorScreen";
 import CalendarStudentScreen from "./app/screens/CalendarStudentScreen";
 

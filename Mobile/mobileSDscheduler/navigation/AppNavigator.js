@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import AccountScreen from "../app/screens/AccountScreen";
+import AccountScreen from "../app/screens/AccountProfessorScreen";
 import CalendarProfessorScreen from "../app/screens/CalendarProfessorScreen";
-import HomeScreen from "../app/screens/HomeScreen";
+import HomeScreen from "../app/screens/HomeProfessorScreen";
 import styles from "../app/config/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
