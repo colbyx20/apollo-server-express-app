@@ -35,7 +35,7 @@ function Professors(props) {
                         <CustomSidebar />
                         <div className='professorWrapper'>
                             <div className="userInfo">
-                                <p className='studentHeader'>Home Page</p>
+                                <p className='profHeader'>Home Page</p>
                             </div>
 
                             <div className='professorContainer'>
