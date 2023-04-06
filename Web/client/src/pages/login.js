@@ -70,11 +70,10 @@ function Login(props) {
             context.login(userData)
             if (checked === true){
                 window.localStorage.setItem('...', JSON.stringify(userData.email));
-            }
-                
+            } 
 
             if (userData.privilege === 'student') {
-                window.location.href = '/';
+                window.location.href = '/student';
             } else if (userData.privilege === 'coordinator') {
                 window.location.href = '/coordinator';
             } else if (userData.privilege === 'professor') {

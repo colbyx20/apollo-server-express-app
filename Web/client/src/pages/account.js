@@ -105,9 +105,9 @@ function Account(props) {
                                     <span className='passwordUpdate'>{profileUpdate}</span>
                                 </div>
 
-                                <div className='accountImporter'>
+                                {/* <div className='accountImporter'>
                                     <ImgUpload />
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className='otherContainer'>
