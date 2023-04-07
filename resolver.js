@@ -1285,7 +1285,6 @@ const resolvers = {
 
             const remainder = groupCount - scheduleCount;
 
-
             if (scheduleCount < groupCount) {
                 throw new ApolloError(`Please create ${remainder} more appointments to Generate your group Appointments`)
             } else {
