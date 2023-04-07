@@ -320,6 +320,7 @@ scalar DateTime
         deleteGroup(groupId:ID):Boolean
         deleteAllGroups(CID:ID):Boolean
         createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String) : Boolean
+        generateGroupAppointment (CID:ID): Boolean
     }
 `
 

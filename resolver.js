@@ -1118,7 +1118,6 @@ const resolvers = {
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
                         { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
-                    console.log(coordinatorInfo);
                     const date = new Date(coordinatorInfo.time);
 
                     const matchProfessors = await Professors.aggregate([
@@ -1126,8 +1125,6 @@ const resolvers = {
                         { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
-
-                    console.log(matchProfessors);
 
                     if (matchProfessors) {
                         const professorInfo = matchProfessors.map((professor) => ({
@@ -1273,7 +1270,52 @@ const resolvers = {
             }
             await Group.deleteMany({ coordinatorId: CID })
             return true
+        },
+        generateGroupAppointment: async (_, { CID }) => {
+            const ID = Mongoose.Types.ObjectId(CID);
+
+            const [scheduleCount, groupCount] = await Promise.all([
+                CoordSchedule.find({ coordinatorID: ID, groupId: null }).count(),
+                Group.find({ coordinatorId: ID, appointment: { $size: 0 } }).count()
+            ])
+
+            if (groupCount === 0 || scheduleCount === 0) {
+                throw new ApolloError("Please create your Groups or Add Appointment Times")
+            }
+
+            const remainder = groupCount - scheduleCount;
+
+
+            if (scheduleCount < groupCount) {
+                throw new ApolloError(`Please create ${remainder} more appointments to Generate your group Appointments`)
+            } else {
+                for (let count = 0; count < groupCount; count++) {
+
+                    const coordinatorGroup = await Group.aggregate([
+                        { $match: { coordinatorId: ID, appointment: { $size: 0 } } },
+                        { $sample: { size: 1 } },
+                        { $project: { _id: 1 } }
+                    ])
+
+                    const coordinatorSchedule = await CoordSchedule.aggregate([
+                        { $match: { coordinatorID: ID, groupId: null } },
+                        { $sample: { size: 1 } },
+                        { $project: { _id: 1 } }
+                    ])
+
+                    if (coordinatorGroup) {
+                        await Promise.all([
+                            CoordSchedule.findOneAndUpdate({ _id: coordinatorSchedule[0]._id }, { $set: { groupId: coordinatorGroup[0]._id } }),
+                            Group.findOneAndUpdate({ _id: coordinatorGroup[0]._id }, { $push: { appointment: coordinatorSchedule[0]._id } })
+                        ])
+                    } else {
+                        console.log("something went wrong");
+                    }
+                }
+            }
+            return true;
         }
+
     }
 }
 
