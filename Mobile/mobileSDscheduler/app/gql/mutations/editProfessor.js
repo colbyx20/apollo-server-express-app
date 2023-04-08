@@ -12,20 +12,16 @@ import { gql } from "@apollo/client";
 //     "password": null
 //   }
 // }
-export const GROUPS = gql`
-  mutation Mutation($id: ID!, $professorInput: ProfessorInput) {
-    editProfessor(ID: $id, professorInput: $professorInput) {
+export const PROFESSOR_EMAIL = gql`
+  mutation Mutation(
+    $professorInput: ProfessorInput
+    $editNotificationEmailId2: String!
+    $email: String!
+    $id: ID!
+  ) {
+    editProfessor(professorInput: $professorInput, ID: $id) {
       _id
-      appointments {
-        _id
-        time
-        room
-        groupName
-        groupNumber
-      }
-      availSchedule
-      professorFName
-      professorLName
     }
+    editNotificationEmail(ID: $editNotificationEmailId2, email: $email)
   }
 `;

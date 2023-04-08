@@ -3,24 +3,31 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Image, StyleSheet, Dimensions, View } from "react-native";
 import Constants from "expo-constants";
 
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { PROFESSOR } from "../gql/queries/getProfessor";
+import { PROFESSOR_EMAIL } from "../gql/mutations/editProfessor";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
 import ErrorMessage from "../components/ErrorMessage";
 import AppButton from "../components/AppButton";
+import AppFormButton from "../components/AppFormButton";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import Screen from "../components/Screen";
 import colors from "../config/colors";
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .email()
-    .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
-    .label("Email"),
+  // email: Yup.string()
+  //   .email()
+  //   .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
+  //   .label("Email"),
   notifEmail: Yup.string().email().label("Email"),
+  password: Yup.string().min(7).label("Password"),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref("password"), null],
+    "Passwords must match"
+  ),
 });
 
 function AccountScreen(props) {
@@ -31,6 +38,8 @@ function AccountScreen(props) {
       getProfessorId2: "6414996286c77fadcb080900",
     },
   });
+
+  const [notificationEmail] = useMutation(PROFESSOR_EMAIL);
 
   useFocusEffect(() => {
     console.log("Refetch accnt");
@@ -53,27 +62,49 @@ function AccountScreen(props) {
   var curEmail = data.getUserInfo.email;
   var curNotifEmail = data.getUserInfo.notificationEmail;
 
-  const handleSubmit = ({ email, notifEmail }) => {
+  // const handleSubmit = ({ email, notifEmail }) => {
+  //   console.log("Submit! " + email + " " + notifEmail);
+  //   notificationEmail({
+  //     variables: { id: "6414996286c77fadcb080900", email: notifEmail },
+  //     onCompleted: () => {
+  //       refetch()
+  //     }
+  //   });
+  // };
+
+  const handleSubmit = ({ notifEmail }) => {
+    //email,
     console.log("Submit! " + email + " " + notifEmail);
+    notificationEmail({
+      variables: {
+        // id: "6414996286c77fadcb080900",
+        // professorInput: {
+        //   email: email,
+        // },
+        editNotificationEmailId2: "6414996286c77fadcb080900",
+        email: notifEmail,
+      },
+    });
   };
 
   return (
     <Screen style={styles.background}>
-      <Image
-        style={styles.pfp}
-        source={require("../assets/TheTab_KGrgb_300ppi.png")}
-      />
+      <Image style={styles.pfp} source={require("../assets/knightro.png")} />
       <AppText style={styles.text}>
         Hello {fname} {lname}!
       </AppText>
       <Formik
-        initialValues={{ email: curEmail, notifEmail: curNotifEmail }}
-        onSubmit={(values) => console.log(values)}
+        initialValues={{
+          notifEmail: curNotifEmail,
+          password: "",
+          confirmPassword: "",
+        }} // email: curEmail,
+        onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
         {({ handleChange, errors, setFieldTouched, touched, values }) => (
           <>
-            <AppText style={styles.subtitle}>Change Login email:</AppText>
+            {/* <AppText style={styles.subtitle}>Change Login email:</AppText>
             <AppTextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -84,7 +115,7 @@ function AccountScreen(props) {
               placeholder={curEmail}
               textContextType="emailAddress" //might need to remove
             />
-            <ErrorMessage error={errors.email} visible={touched.email} />
+            <ErrorMessage error={errors.email} visible={touched.email} /> */}
             {curNotifEmail == "" ? (
               <AppText style={styles.subtitle}>Add Notification email:</AppText>
             ) : (
@@ -106,11 +137,37 @@ function AccountScreen(props) {
               error={errors.notifEmail}
               visible={touched.notifEmail}
             />
-            <AppButton
+            <AppText style={styles.subtitle}>Change password:</AppText>
+            <AppTextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="lock"
+              onBlur={() => setFieldTouched("password")}
+              onChangeText={handleChange("password")}
+              placeholder="Password"
+              secureTextEntry
+              textContextType="password" //might need to remove
+            />
+            <ErrorMessage error={errors.password} visible={touched.password} />
+            <AppTextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="lock"
+              onBlur={() => setFieldTouched("confirmPassword")}
+              onChangeText={handleChange("confirmPassword")}
+              placeholder="Confirm Password"
+              secureTextEntry
+              textContextType="password" //might need to remove
+            />
+            <ErrorMessage
+              error={errors.confirmPassword}
+              visible={touched.confirmPassword}
+            />
+            <AppFormButton
               title="Save"
               color="gold"
               onPress={handleSubmit}
-            ></AppButton>
+            ></AppFormButton>
           </>
         )}
       </Formik>

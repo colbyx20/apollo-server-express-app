@@ -1,13 +1,15 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, Text, View, Button } from "react-native";
+import { useFormikContext } from "formik";
 
 import colors from "../config/colors";
 
-function AppButton({ title, onPress, color = "gold" }) {
+function AppButton({ title, color = "gold" }) {
+  const { handleSubmit } = useFormikContext();
   return (
     <TouchableOpacity
       style={[styles.button, { backgroundColor: colors[color] }]}
-      onPress={onPress}
+      onPress={handleSubmit}
     >
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
