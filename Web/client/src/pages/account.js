@@ -49,9 +49,6 @@ function Account(props) {
     const handlePasswordChangeSubmit = async (oldPassword, newPassword) => {
 
         try {
-            // Handle password change submit logic here
-            console.log(`Password changed from ${oldPassword} to ${newPassword}`);
-
             await updatePassword({
                 variables: {
                     id: user.id,
@@ -108,9 +105,9 @@ function Account(props) {
                                     <span className='passwordUpdate'>{profileUpdate}</span>
                                 </div>
 
-                                <div className='accountImporter'>
+                                {/* <div className='accountImporter'>
                                     <ImgUpload />
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className='otherContainer'>

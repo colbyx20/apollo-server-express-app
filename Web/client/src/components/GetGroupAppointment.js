@@ -27,8 +27,6 @@ export const GetGroupAppointment = ({ SID }) => {
     if (error) return `Error! ${error.message}`
     const myData = data.getGroupAppointment
 
-    console.log(myData);
-
     return (
         <>
             {myData === null ?

@@ -41,8 +41,6 @@ export const GetGroups = (props) => {
             variables: { groupid: GID },
             refetchQuery: [{ query: GET_GROUPS, variables: { coordinatorId: ID } }]
         })
-        console.log("done")
-        // refetch()
 
     }
     if (loading) return 'Loading...';
@@ -80,7 +78,6 @@ export const GetGroups = (props) => {
                         )
                     })}
                 </tbody>
-
             </table>
         </>
     )

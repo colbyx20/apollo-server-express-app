@@ -1,78 +1,61 @@
-import CalendarComp from '../components/Calendar'
-import ProfCal from '../components/ProfCalendar'
+import { useContext, useState, useRef, useEffect } from 'react';
+import { AuthContext } from '../context/authContext';
+import { useNavigate } from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
-import CssBaseline from '@mui/material/CssBaseline';
+import dayjs from 'dayjs';
+import { Button } from "@mui/material";
+import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
+import "../components/css/calendar2.css"
 
-import { useState } from 'react';
-import { ThemeProvider, createTheme, colors } from '@mui/material';
-import Button from '@mui/material/Button';
-import { amber, deepOrange, grey, purple, yellow } from '@mui/material/colors';
+function Calendar(props) {
+    // user data lives in here  
+    const { user, logout } = useContext(AuthContext);
+    let navigate = useNavigate();
+   
+    var [currentDate, setCurrentDate] = useState(new Date());
+    const initialValue = dayjs(currentDate);
+  
+    const onLogout = () => {
+        logout();
+        navigate('/');
+    }
 
-const getDesignTokens = (mode) => ({
-  typography: {
-    body1: {
-      color: grey[900],
-    },
-    caption: {
-      fontSize: 14,
-    },
-    ...(!mode && {
-      body1: {
-        color: grey[50],
-      },
-      caption: {
-        fontSize: 14,
-      },
-    })
-  },
-  palette: {
-    primary: {
-      // ...grey[900],
-      main: "#FFC904",
-      dark: "#FFC904",
-      
-      ...(!mode && {
-        main: "#FFC904",
-        dark: "#FFC904",
-      }),
-    },
-    ...(!mode && {
-      background: {
-        // default: "#231F20",
-        // paper: "#211F20",
-        paper: "#000",
+    return (
+        <>
+            <div className='calendar2Page'>
+                {user !== null ?
+                    <>
+                        <CustomSidebar />
+                        <div className='calendar2Wrapper'>
+                            <div className='userInfo'>
+                                <p className='accountHeader'>Calendar</p>
+                            </div>
+                            <div className='leftContainer'>
+                                <div className='timeListContainer'>
+                                    <h2 className='timeListTitle'>Pick time</h2>
+                                    <div className='listContainer'>
+                                        <GetAllCoordinatorSchedule />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='rightContainer'>
+                                <div className='timeListContainer'>
 
-      },
-    }),
-    text: {
-      ...(mode
-        ? {
-          primary: grey[900],
-          secondary: grey[800],
-        }
-        : {
-          secondary: grey[500],
-        }),
-    },
-  },
-});
-
-export default function Calendar( { lightMode } ) {
-
-  const theme = createTheme(getDesignTokens(lightMode))
-  return (
-    <>
-      <div className='calendarPage'>
-          <CustomSidebar />
-          <div className='calendarWrapper'>
-            {/* <div className='userInfo'>
-              <p className='calendarHeader'>Calendar</p>
-            </div> */}
-            <ThemeProvider theme={theme}>
-                <ProfCal className="calendarComponent" />
-            </ThemeProvider>
-          </div>
-      </div>
-    </>
-  );
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                    :
+                    <>
+                        <div className='noUser'>
+                            <h3>No Page Found</h3>
+                            <Button style={{ color: 'white' }} onClick={onLogout}>Redirect to Login</Button>
+                        </div>
+                    </>
+                }
+            </div>
+        </>
+    )
 }
+
+export default Calendar;
