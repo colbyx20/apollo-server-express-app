@@ -16,6 +16,7 @@ import Semester from "./pages/semester";
 import Account from "./pages/account";
 import Forgot from "./pages/forgot";
 import RegisterCoord from "./pages/registerCoord";
+// update master 
 
 function App() {
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
