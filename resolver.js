@@ -147,8 +147,6 @@ const resolvers = {
 
             const availSchedule = getUser.availSchedule.map(date => new Date(date));
 
-            console.log(availSchedule);
-
             const user = await CoordSchedule.aggregate([
                 { $match: { time: { $nin: availSchedule } } },
                 {
@@ -177,8 +175,6 @@ const resolvers = {
                 { $unwind: "$coordinatorInfo" },
                 { $sort: { time: 1 } }
             ])
-
-            console.log(user.length)
 
             return user;
         },
