@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/authContext';
-import { ThemeContext } from '../context/themeContext'
+// import { ThemeContext } from '../context/themeContext'
 import { GetUserInfo } from '../components/GetUserInfo';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ function Account(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
-    const theme = useContext(ThemeContext)
+    // const theme = useContext(ThemeContext)
     let navigate = useNavigate();
 
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -118,9 +118,9 @@ function Account(props) {
                                         <Grid item>
                                             <Switch
                                                 value="checkedA"
-                                                checked={theme.theme === 'light' ? true : false}
+                                                // checked={theme.theme === 'light' ? true : false}
                                                 onChange={() => {
-                                                    theme.setTheme((curTheme) => curTheme === 'dark' ? 'light' : 'dark')
+                                                    // theme.setTheme((curTheme) => curTheme === 'dark' ? 'light' : 'dark')
                                                 }}
                                             />
                                         </Grid>

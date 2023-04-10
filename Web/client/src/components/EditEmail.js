@@ -4,7 +4,7 @@ import { AuthContext } from '../context/authContext';
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
 import { GetUserInfo } from '../components/GetUserInfo';
-import '../components/css/editaccout.css'
+// import '../components/css/editaccout.css'
 
 const NOTIFICATION_EMAIL = gql`
   mutation EditNotificationEmail($id: String!, $email: String!) {
