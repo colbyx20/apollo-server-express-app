@@ -90,7 +90,7 @@ export const GetAllCoordinatorSchedule = (props) => {
                                 {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                                 {returnCurrentDateTime(coordinator.time)}
                             </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo?.room} </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo?.coordinatorFName + ' ' + coordinator.coordinatorInfo?.coordinatorLName} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)} />
                             </TableCell>
