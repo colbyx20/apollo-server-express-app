@@ -10,16 +10,15 @@ import { GetCoordinatorSchedule } from '../components/GetCoordinatorSchedule';
 import '../components/css/coordinator.css';
 
 const GET_NOTIFICATION_EMAIL = gql`
-mutation Mutation($id: String!, $email: String!, $privilege: String!) {
-  sendEventEmail(ID: $id, email: $email, privilege: $privilege)
-}
+    mutation Mutation($id: String!, $email: String!, $privilege: String!) {
+    sendEventEmail(ID: $id, email: $email, privilege: $privilege)
+    }
 `
 
 function Coordinator(props) {
 
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
-    console.log(user);
     let navigate = useNavigate();
     var year = new Date().getFullYear()
     const [registerProf, setRegisterProf] = useState("Add to Clipboard");
@@ -34,16 +33,17 @@ function Coordinator(props) {
     }
 
     const onRegister = () => {
-        navigator.clipboard.writeText("http://localhost:3000/register");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/register");
         setRegisterProf("Copied");
     }
 
     const onRegisterCoord = () => {
-        navigator.clipboard.writeText("http://localhost:3000/registerCoordinator");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/registerCoordinator");
         setRegisterCoord("Copied");
     }
 
     function sendEmail() {
+
         sendEventEmail({
             variables: { id: user.id, email: emailInput.toLocaleLowerCase(), privilege: user.privilege }
         })
@@ -92,9 +92,9 @@ function Coordinator(props) {
                             <div className='notificationContainer'>
                                 <div className='notificationBox'>
                                     <p className='notificationTitle'>Upcoming Events<NotificationsNoneIcon /> </p>
-                                    <div className='appointmentContainer'>
-                                        <GetCoordinatorSchedule ID={user.id} />
-                                    </div>
+                                    {/* <div className='appointmentContainer'> */}
+                                    <GetCoordinatorSchedule ID={user.id} />
+                                    {/* </div> */}
                                 </div>
                             </div>
                             <div className='emailContainer'>

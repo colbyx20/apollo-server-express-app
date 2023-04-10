@@ -35,7 +35,7 @@ const GlobalCalendar = (props) => {
         maxDate={props.maxDate}
         shouldDisableDate={shouldDisableDate}
         displayStaticWrapperAs="desktop"
-        value={selectedDate}
+        value={props.minDate}
         onChange={(date) => setSelectedDate(date)}
         renderInput={(props) => null}
         renderDay={(day, _value, DayComponentProps) => {

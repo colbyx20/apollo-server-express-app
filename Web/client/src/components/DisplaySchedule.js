@@ -1,77 +1,134 @@
-import {  useContext, useState, useRef, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Button from '@mui/material/Button';
 import "../components/css/calendar2.css"
-import dayjs from 'dayjs';
+import SaveIcon from '@mui/icons-material/Save';
 import { GetCoordinatorTimeRange } from '../components/GetCoordinatorTimeRange';
-import { GetCoordinatorSchedule } from './GetCoordinatorSchedule';
+import { GetFullTimeRange } from '../components/GetFullTimeRange';
 
+const SEND_SCHEDULE = gql`
+    mutation Mutation($coordinatorSInput: coordinatorSInput) {
+        createCoordinatorSchedule(coordinatorSInput: $coordinatorSInput)
+    }
+`
 
-function DisplaySchedule(props){
+function DisplaySchedule(props) {
     // user data lives in here  
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
-    
+
+    let fullApiDates;
+    if (user.privilege === 'professor') {
+        fullApiDates = GetFullTimeRange({});
+    } else {
+        fullApiDates = [];
+    }
+    const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
+
+    console.log(fullApiDates);
 
     const staticTimeList = [
-        "8:00am",
-        "9:00am",
-        "10:00am",
-        "11:00am",
-        "12:00pm",
-        "1:00pm",
-        "2:00pm",
-        "3:00pm",
-        "4:00pm",
-        "5:00pm",
-        "6:00pm",
-        "7:00pm",
-        "8:00pm",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
     ]
 
     useEffect(() => {
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
-    }, [props.pickList]);
 
+    }, [props.pickList, props.timeList, props.dateList]);
+
+    // console.log('datelist');
+    // console.log(timeList)
 
     // console.log(timeRangeDataObj)  
-    if(pickList.length === 0 && apiDates.length === 0)
+    if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
-    
+
     let dateIndexs = [];
 
     // Create string from Date() obtained from api
-    for(let i = 0; i< apiDates.length; i++){
-        if(apiDates[i].time === undefined)
+    for (let i = 0; i < apiDates.length; i++) {
+        if (apiDates[i].time === undefined)
             continue;
         dateIndexs.push(apiDates[i].time);
     }
 
-    //console.log(apiDates)
-    const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
-    //console.log(dateObjects);
+    // Prevent duplicate times 
+    const searchDates = (currDate) => {
+        for (let i = 0; i < dateObjects.length; i++) {
+            if (dateObjects[i].toISOString() === currDate.toISOString())
+                return false;
+        }
+        return true;
+    }
 
-    return(
+
+    const dateObjects = dateIndexs.map((timestamp) => new Date(timestamp))
+
+    // Add new dates and time to list
+    if (pickList.length > 0 && timeList.length > 0) {
+        // Iterate thorough each date
+        for (let picklen = 0; picklen < pickList.length; picklen++) {
+            // Iterate through each time 
+            for (let timelen = 0; timelen < timeList.length; timelen++) {
+
+                const myDate = new Date(dateList[pickList[picklen]]);
+                myDate.setHours(staticTimeList[timeList[timelen]], 0, 0, 0);
+
+                if (searchDates(myDate))
+                    dateObjects.push(myDate);
+            }
+        }
+    }
+
+    function handlePickedDates() {
+
+        createCoordinatorSchedule({
+            variables: {
+                coordinatorSInput: {
+                    CID: user.id,
+                    Room: 'HEC-101',
+                    Times: dateObjects
+                }
+            }
+        })
+    }
+
+    return (
         <>
             <div className="showSchedulerContainer">
                 <div className='stickyButton'>
-                    <Button>Submit</Button>
+                    <Button
+                        onClick={handlePickedDates}
+                    ><SaveIcon /></Button>
                 </div>
-            {dateObjects.map((date, index) => (
-            <p className='datesShown' key={date.getTime()+date.getFullYear()+date.getDate()}>
-                {date.toLocaleDateString('en-US', { month: 'numeric'})+"/"+
-                date.toLocaleDateString('en-us',{day: 'numeric'})+"/"+ date.toLocaleDateString('en-us',{year:'numeric'} )
-                +" "+date.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
-            </p>
-            ))}
-            
+                {dateObjects.map((date, index) => (
+                    <p className='datesShown' key={date.getTime() + date.getFullYear() + date.getDate()}>
+                        {date.toLocaleDateString('en-US', { month: 'numeric' }) + "/" +
+                            date.toLocaleDateString('en-us', { day: 'numeric' }) + "/" + date.toLocaleDateString('en-us', { year: 'numeric' })
+                            + " " + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                    </p>
+                ))}
+
             </div>
-            
+
         </>
     )
 

@@ -15,7 +15,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
 }
 
 code {
@@ -25,4 +25,23 @@ code {
 
 .app {
   background-color: var(--background);
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #333;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #505050;
+  border-radius: 0px;
+  border: 1px solid black;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6f6f6f;
 }

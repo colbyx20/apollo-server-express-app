@@ -73,7 +73,7 @@ function Register(props) {
             <div className='registerContainer'>
                 <Container>
                     <h3>Create an account</h3>
-                    <p>Welcome, complete the form to create a Senior Design Scheduler account</p>
+                    <p>Welcome, complete the form to create a Coordinator account</p>
                     <Stack spacing={2} paddingBottom={1}>
                         <TextField sx={textBoxStyle}
                             InputLabelProps={{ className: 'mylabel' }}

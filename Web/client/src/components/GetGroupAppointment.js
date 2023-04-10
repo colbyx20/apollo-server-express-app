@@ -28,26 +28,32 @@ export const GetGroupAppointment = ({ SID }) => {
     const myData = data.getGroupAppointment
 
     return (
-        <table>
-            <tbody>
-                <tr >
-                    <div className='getappInfo'>
-                        {
-                        new Date(myData.time).toLocaleDateString('en-us',{month: 'numeric'})+"/"+
-                        new Date(myData.time).toLocaleDateString('en-us',{day: 'numeric'})+"/"+
-                        new Date(myData.time).toLocaleDateString('en-us',{year: 'numeric'})
-                        }<br/>
-                        {myData.room}<br/>
-                        {new Date(myData.time).toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
-                        
-                        
-                        
-                    </div>
-                    <td>Attending Professors: {myData?.attending2.map((member) => {
-                        return (<tr key={member._id}>{member.fullName}</tr>)
-                    })}</td>
-                </tr>
-            </tbody>
-        </table>
+        <>
+            {myData === null ?
+                <span className='noAppointmentMessage'>Appointment has not been Set</span>
+                :
+                <table>
+                    <tbody>
+                        <tr >
+                            <div className='getappInfo'>
+                                {
+                                    new Date(myData?.time).toLocaleDateString('en-us', { month: 'numeric' }) + "/" +
+                                    new Date(myData?.time).toLocaleDateString('en-us', { day: 'numeric' }) + "/" +
+                                    new Date(myData?.time).toLocaleDateString('en-us', { year: 'numeric' })
+                                }<br />
+                                {myData?.room}<br />
+                                {new Date(myData?.time).toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
+
+                            </div>
+                            <td>Attending Professors: {myData?.attending2.map((member) => {
+                                return (<tr key={member?._id}>{member?.fullName}</tr>)
+                            })}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            }
+        </>
     )
 }

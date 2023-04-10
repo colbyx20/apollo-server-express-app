@@ -1,35 +1,51 @@
 import React, { useState, useRef, useContext } from 'react';
 import { Button } from "@mui/material";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './css/fileupload.css';
 import Upload from './images/upload.svg'
-import csvtojson from 'csvtojson';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import Papa from "papaparse";
 
 
-const CREATE_STUDENTS = gql`
-mutation CreateStudentAccounts($cid: ID!, $userLogin: String, $password: String, $firstname: String, $lastname: String, $groupNumber: Int) {
-  createStudentAccounts(CID: $cid, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, groupNumber: $groupNumber)
-}
-`
-
-const CREATE_GROUP = gql`
-
-    mutation Mutation($cid: ID!, $groupNumber: Int, $groupName: String) {
-    createGroup(CID: $cid, groupNumber: $groupNumber, groupName: $groupName)
+const CREATE_ACCOUNTS = gql`
+    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String, $role: String) {
+    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role)
     }
 `
 
-function FileUpload() {
+const GET_GROUPS = gql`
+query Query($coordinatorId: String) {
+    getGroupsByCoordinator(coordinatorId: $coordinatorId) {
+        _id
+        coordinatorId
+        groupName
+        groupNumber
+        projectField
+    }
+}
+`
+
+function FileUpload(props) {
     const { user } = useContext(AuthContext);
     const ref = useRef();
     const [image, setImage] = useState(null);
     const [fileName, setFileName] = useState("No selected file");
-    const [createStudentAccounts] = useMutation(CREATE_STUDENTS)
-    const [createGroup] = useMutation(CREATE_GROUP)
+    const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    const { refetch } = useQuery(GET_GROUPS, {
+        variables: { coordinatorId: user.id }
+    });
+
+    const [createAccounts] = useMutation(CREATE_ACCOUNTS, {
+        onCompleted: () => {
+            refetch()
+        }
+    });
 
     const reset = () => {
         setFileName("No selected file")
@@ -45,83 +61,73 @@ function FileUpload() {
         Papa.parse(file, {
             header: false,
             skipEmptyLines: true,
-            complete: function (results) {
-                console.log(results.data)
-                results.data.forEach((row) => {
-                    createStudentAccounts({
-                        variables: {
-                            cid: user.id,
-                            userLogin: row[0],
-                            password: row[1],
-                            firstname: row[2],
-                            lastname: row[3],
-                            groupNumber: parseInt(row[4])
-                        }
-                    })
-                })
-            }
-        },
-        );
-    };
+            complete: async function (results) {
+                for (const row of results.data) {
+                    setIsLoading(true);
+                    setOpen(true);
 
-    const handleFileUpload2 = () => {
-        const file = ref.current.files[0];
-        if (!file)
-            return;
-
-        Papa.parse(file, {
-            header: false,
-            skipEmptyLines: true,
-            complete: function (results) {
-                console.log(results.data)
-                results.data.forEach((row) => {
-                    createGroup({
-                        variables: {
-                            cid: user.id,
-                            groupNumber: parseInt(row[0]),
-                            groupName: row[1],
-                        }
-                    })
-                })
-            }
-        },
-        );
+                    try {
+                        await createAccounts({
+                            variables: {
+                                cid: user.id,
+                                groupNumber: parseInt(row[0]),
+                                groupName: row[1],
+                                userLogin: row[2],
+                                password: row[3],
+                                firstname: row[4],
+                                lastname: row[5],
+                                role: row[6]
+                            },
+                        });
+                    } catch (error) {
+                        console.error(`ERROR!! ${error}`);
+                    }
+                    setIsLoading(false);
+                    setOpen(false);
+                }
+            },
+        });
     };
 
     return (
-        <div className='uploadWrapper'>
-            <h2 className='uploadTitle'>Upload Design Projects File</h2>
-            <form className='uploadedForm'
-                onClick={() => document.querySelector(".uploadInput").click()}>
-                <input className='uploadInput' accept='.csv, .xls, xlsx' type='file' ref={ref}
-                    onChange={({ target: { files } }) => {
-                        files[0] && setFileName(files[0].name)
-                        if (files) {
-                            setImage(URL.createObjectURL(files[0]));
-                        }
-                    }} />
+        <>{isLoading ?
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
 
-                {image ?
-                    <img className='uploadImg' src={image} />
-                    :
-                    <img className='uploadIcon' src={Upload} />
+            :
 
-                }
-            </form>
-            <div className='currentFile'>
-                <div className='currentName'>Import Students<br />
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload}><CheckIcon /></Button>
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
+            <div className='uploadWrapper'>
+                <h2 className='uploadTitle'>Upload Design Projects File</h2>
+                <form className='uploadedForm'
+                    onClick={() => document.querySelector(".uploadInput").click()}>
+                    <input className='uploadInput' accept='.csv, .xls, xlsx' type='file' ref={ref}
+                        onChange={({ target: { files } }) => {
+                            files[0] && setFileName(files[0].name)
+                            if (files) {
+                                setImage(URL.createObjectURL(files[0]));
+                            }
+                        }} />
+
+                    {image ?
+                        <img className='uploadImg' src={image} />
+                        :
+                        <img className='uploadIcon' src={Upload} />
+
+                    }
+                </form>
+                <div className='currentFile'>
+                    <div className='currentName'>Import Students<br />
+                        <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload}><CheckIcon /></Button>
+                        <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
+                    </div>
                 </div>
             </div>
-
-            <div className='currentFile'>
-                <div className='currentName'>Import Groups<br />
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'blue' }} onClick={handleFileUpload2}><CheckIcon /></Button>
-                    <Button size='small' sx={{ color: 'white', backgroundColor: 'red' }} onClick={reset}><DeleteIcon /></Button>
-                </div>
-            </div>
-        </div>
+        }
+        </>
     )
 }
 

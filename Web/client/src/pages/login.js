@@ -28,31 +28,32 @@ function Login(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
-    const [log, setLog] = useState(() => {
-        // getting stored value
+    const [log, setLog] = useState("");
+
+    // Get Log from local storage
+    useEffect(() =>{
         const saved = window.localStorage.getItem('...')
         const initialValue = JSON.parse(saved);
-        return initialValue || "";
-    });
+        setLog(initialValue);
+    }, []);
 
     // Get checkbox state
     useEffect(() => {
         const data = window.localStorage.getItem('checkbox')
         if (data !== null) setChecked(JSON.parse(data))
+        if (JSON.parse(data) === false) window.localStorage.clear();   
     }, [])
 
     // Save checkbox state
     useEffect(() => {
-        window.localStorage.setItem('checkbox', JSON.stringify(checked))
+        window.localStorage.setItem('checkbox', JSON.stringify(checked));
+
     }, [checked])
 
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
     };
-
-    const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
-    const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
     function loginUserCallback() {
@@ -67,16 +68,10 @@ function Login(props) {
     const [loginUser] = useMutation(LOGIN_USER, {
         update(proxy, { data: { loginUser: userData } }) {
             context.login(userData)
-            if (checked === true)
+            if (checked === true){
                 window.localStorage.setItem('...', JSON.stringify(userData.email));
+            } 
 
-            localStorage.setItem("_id", userData._id);
-            localStorage.setItem("firstname", userData.firstname);
-            localStorage.setItem("lastname", userData.lastname);
-            localStorage.setItem("privilege", userData.privilege);
-            localStorage.setItem("token", userData.token);
-            localStorage.setItem("image",userData.image);
-            localStorage.setItem("notificationEmail",userData.notification);
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
             } else if (userData.privilege === 'coordinator') {
@@ -93,6 +88,7 @@ function Login(props) {
         variables: { loginInput: values }
     });
 
+    console.log(log)
 
     return (
 
@@ -177,7 +173,7 @@ function Login(props) {
                                 },
                             }}
                         />} label="Remember Email" />
-              
+
                     <span><a href='/forgot'>  Forgot password?</a></span>
 
 

@@ -1,6 +1,4 @@
 import { gql, useQuery } from '@apollo/client';
-import { useState } from 'react';
-import * as React from 'react';
 import './css/getgroups.css';
 
 const GET_TIME_RANGE = gql`
@@ -10,7 +8,6 @@ const GET_TIME_RANGE = gql`
 `
 
 export const GetCoordinatorTimeRange = ({ ID }) => {
-
 
     const { loading, error, data } = useQuery(GET_TIME_RANGE, {
         variables: { cid: ID }

@@ -20,8 +20,6 @@ function Professors(props) {
     // user data lives in here 
     const { user, logout } = useContext(AuthContext);
     let navigate = useNavigate();
-    console.log(user);
-    // let navigate = useNavigate();
     var year = new Date().getFullYear()
 
     const onLogout = () => {
@@ -37,7 +35,7 @@ function Professors(props) {
                         <CustomSidebar />
                         <div className='professorWrapper'>
                             <div className="userInfo">
-                                <p className='studentHeader'>Home Page</p>
+                                <p className='profHeader'>Home Page</p>
                             </div>
 
                             <div className='professorContainer'>

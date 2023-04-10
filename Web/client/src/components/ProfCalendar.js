@@ -47,11 +47,10 @@ const info = [
 
 
 const numOfAppointmentDays = 5
-const profStartDays = {prof: 'leinecker', month: 3, day:20, year: 2023}
+const profStartDays = { prof: 'leinecker', month: 3, day: 20, year: 2023 }
 
-export default function ProfCalendar({data}) {
+export default function ProfCalendar({ data }) {
   // const { loading, error, data } = useQuery(GET_COORD_SCHEDULE);
-  console.log(data)
 
   const { getAllCoordinatorSchedule } = data;
 
@@ -59,7 +58,6 @@ export default function ProfCalendar({data}) {
 
   const appointmentsOnThatDay = (val, app) => {
     const retVal = app.filter((date) => {
-      // console.log((val.$d.toLocaleDateString() === date.date) ? "Yes" : "No")
       return val.$d.toLocaleDateString() === date.date
     })
     return retVal
@@ -89,27 +87,27 @@ export default function ProfCalendar({data}) {
   // ]
 
   const timesArr = [
-    { id: 0, data: '700', selected: false},
-    { id: 1, data: '800', selected: false},
-    { id: 2, data: '900', selected: false},
-    { id: 3, data: '1000', selected: false},
-    { id: 4, data: '1100', selected: false},
-    { id: 5, data: '1200', selected: false},
-    { id: 6, data: '1300', selected: false},
-    { id: 7, data: '1400', selected: false},
-    { id: 8, data: '1500', selected: false},
-    { id: 9, data: '1600', selected: false},
-    { id: 10, data: '1700', selected: false},
-    { id: 11, data: '1800', selected: false},
-    { id: 12, data: '1900', selected: false},
-    { id: 13, data: '2000', selected: false},
-    { id: 14, data: '2100', selected: false},
-    { id: 15, data: '2200', selected: false},
+    { id: 0, data: '700', selected: false },
+    { id: 1, data: '800', selected: false },
+    { id: 2, data: '900', selected: false },
+    { id: 3, data: '1000', selected: false },
+    { id: 4, data: '1100', selected: false },
+    { id: 5, data: '1200', selected: false },
+    { id: 6, data: '1300', selected: false },
+    { id: 7, data: '1400', selected: false },
+    { id: 8, data: '1500', selected: false },
+    { id: 9, data: '1600', selected: false },
+    { id: 10, data: '1700', selected: false },
+    { id: 11, data: '1800', selected: false },
+    { id: 12, data: '1900', selected: false },
+    { id: 13, data: '2000', selected: false },
+    { id: 14, data: '2100', selected: false },
+    { id: 15, data: '2200', selected: false },
   ]
 
-  
 
-  const daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday']
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
   const parseCoordinatorData = () => {
     let newObj = []
@@ -121,14 +119,13 @@ export default function ProfCalendar({data}) {
       const coordDate = dataRecieved.format("YYYY-MM-DD")
 
       // for some reason when I do this, it gives the hour as 4 hours prior. Not exactly sure why thats the case. Diff timezone maybe?
-        // this error fixed itself the next day. keep a look out but looks like it's good now?
+      // this error fixed itself the next day. keep a look out but looks like it's good now?
       const coordTime = dataRecieved.get('hour')
       const curDay = dataRecieved.get('day') - 1
 
       // maybe make the time array index become the hour so that it's consistent but not entirely sure. should be fine for now
-      return {...newObj, day_id: curDay, l_name: coordinator.coordinatorInfo.coordinatorLName , time_id: idx++, fulldate: coordDate, dayOfWeek: daysOfWeek[curDay], time: coordTime, times: []}
+      return { ...newObj, day_id: curDay, l_name: coordinator.coordinatorInfo.coordinatorLName, time_id: idx++, fulldate: coordDate, dayOfWeek: daysOfWeek[curDay], time: coordTime, times: [] }
     })
-    console.log(newObj)
     return newObj
   }
 
@@ -149,7 +146,7 @@ export default function ProfCalendar({data}) {
       newObj.add(coord.day_id)
     })
     const temp = [...newObj].map((curDay) => {
-      return {id: curDay, data: daysOfWeek[curDay], selected: false}
+      return { id: curDay, data: daysOfWeek[curDay], selected: false }
     })
     return temp
   }
@@ -166,21 +163,21 @@ export default function ProfCalendar({data}) {
   // then for professors, populate the values using what times and days come back from the api that the professors have set
   // maybe take advantage of value state and have the confirm work for those
   // try to somehow stylize that calendar so it will tell which days are for which professor
-    // maybe use the material ui badges
+  // maybe use the material ui badges
 
   const createAppointmentDays = () => {
     let newObj = []
 
     // i wasn't sure how to make it skip weekends so I created an offset so when it hits a weekend, it increments the counter to skip that day
     let offset = 0
-    
-    for (let i = 0; i < numOfAppointmentDays; i++){
+
+    for (let i = 0; i < numOfAppointmentDays; i++) {
 
       let appDate = dayjs(new Date(profStartDays.year, profStartDays.month - 1, profStartDays.day + offset++))
 
       // when its a weekend, don't increase the count but increase the offset so it knows to skip that day
       // the weekend will still technically be within the loop so need to add logic to ignore them
-      if(isWeekend(appDate)){
+      if (isWeekend(appDate)) {
         i--
       }
       else {
@@ -188,19 +185,15 @@ export default function ProfCalendar({data}) {
 
         const currentDate = appDate.format('YYYY-MM-DD')
 
-        newObj = [...newObj, {id: i, dateTime: currentDate.toString(), coord:profStartDays.prof, day: daysOfWeek[(curDay - 1) % 5], times: []}]
+        newObj = [...newObj, { id: i, dateTime: currentDate.toString(), coord: profStartDays.prof, day: daysOfWeek[(curDay - 1) % 5], times: [] }]
       }
     }
-    // console.log(newObj)
     return newObj
   }
 
   const [days, setDays] = useState(daysArr)
   const [times, setTimes] = useState(timesArr)
   const [appAvailability, setAppAvailability] = useState(createAppointmentDays())
-
-  console.log(appAvailability)
-
 
   const dayClickEvent = (curDay) => {
     const newVal = [...days]
@@ -221,26 +214,25 @@ export default function ProfCalendar({data}) {
   }
 
   const updateAppointmentAvailability = () => {
-    
+
     // need this when do map so it knows which id to check for
     let selectedDayIdx = 0
     let selectedTimeIdx = -1
     let i = 0
     const newObj = [...appAvailability]
-    
+
     const selectedDays = days.filter((curDay) => {
       return curDay.selected === true;
     })
 
     // don't change anything if they don't have a day selected
     // should probably add an error but not sure how
-    if(selectedDays.length === 0) {
+    if (selectedDays.length === 0) {
       return newObj
     }
 
     const prevTimes = newObj.filter((curDay) => {
-      // console.log()
-      if(selectedDays[i]?.id === curDay.id){
+      if (selectedDays[i]?.id === curDay.id) {
         i++
         return curDay.times
       }
@@ -263,15 +255,14 @@ export default function ProfCalendar({data}) {
       return curTime.sort((a, b) => a.id - b.id)
     })
 
-    console.log(sortedTimes)
 
     const updatedObj = newObj.map(curDay => {
       if (curDay.id === selectedDays[selectedDayIdx].id) {
-        if(selectedDayIdx < selectedDays.length - 1){
+        if (selectedDayIdx < selectedDays.length - 1) {
           selectedDayIdx++
         }
         selectedTimeIdx++
-        return { ...curDay, times: [...sortedTimes[selectedTimeIdx]]};
+        return { ...curDay, times: [...sortedTimes[selectedTimeIdx]] };
         // return { ...curDay, times: [...selectedTimes[selectedTimeIdx]]};
       } else {
         // No changes
@@ -295,8 +286,6 @@ export default function ProfCalendar({data}) {
     setAppAvailability(newObj)
   }
 
-  // console.log(appAvailability)
-  
   return (
     <div className="calendarMundo">
       <div>
@@ -327,7 +316,7 @@ export default function ProfCalendar({data}) {
       </div>
       <div className='appointments'>
         <p className='appointHeader'>My Schedule</p>
-        <div className='appointmentWrapper' style={{backgroundColor: 'gray'}}>
+        <div className='appointmentWrapper' style={{ backgroundColor: 'gray' }}>
           <div className='daytimeContainer'>
             <p className='sectionHeader'>Week Days:</p>
             <div className='btn-wrapper'>
@@ -348,7 +337,7 @@ export default function ProfCalendar({data}) {
             <p className='sectionHeader'>Times Available:</p>
             <div className='btn-wrapper'>
               <div className='timeAvail'>
-                {appAvailability.map((curDay)=> <TimesAvailable key={curDay.id} value={curDay} deleteAppFunc={deleteSelectedAppointmentFunc} />)}
+                {appAvailability.map((curDay) => <TimesAvailable key={curDay.id} value={curDay} deleteAppFunc={deleteSelectedAppointmentFunc} />)}
               </div>
             </div>
           </div>
