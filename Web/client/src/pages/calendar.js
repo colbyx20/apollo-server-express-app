@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { Button } from "@mui/material";
-import { GetColleaguesSchedule } from '../components/GetColleaguesSchedule'
+import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
 import "../components/css/calendar2.css"
 
 function Calendar(props) {
@@ -34,7 +34,7 @@ function Calendar(props) {
                                 <div className='timeListContainer'>
                                     <h2 className='timeListTitle'>Pick time</h2>
                                     <div className='listContainer'>
-                                        <GetColleaguesSchedule />
+                                        <GetAllCoordinatorSchedule />
                                     </div>
                                 </div>
                             </div>

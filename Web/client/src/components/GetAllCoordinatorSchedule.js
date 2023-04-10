@@ -1,4 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
+import { AuthContext } from '../context/authContext';
+import { useContext } from 'react';
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,8 +13,8 @@ import './css/getgroups.css';
 import { Button, Checkbox } from '@mui/material';
 
 const GET_All_COORDINATOR_SCHEDULE = gql`
-query Query {
-    getAllCoordinatorSchedule {
+query Query($id: ID) {
+    getAllCoordinatorSchedule(ID: $id) {
         _id
         coordinatorInfo {
             _id
@@ -35,11 +37,17 @@ query Query {
 }
 `
 
+
 export const GetAllCoordinatorSchedule = (props) => {
 
+    const { user } = useContext(AuthContext);
 
-    const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE);
+    const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE, {
+        variables: { id: user.id }
+    });
+
     const [checkedStates, setCheckedStates] = React.useState([]);
+
 
     const handleChange = (event) => {
         checkedStates.push(event)
@@ -60,7 +68,7 @@ export const GetAllCoordinatorSchedule = (props) => {
     }
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', width: '100%'}}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', width: '100%' }}>
             <Table sx={{ minWidth: 500 }} size="small" aria-label="a dense table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
@@ -68,7 +76,6 @@ export const GetAllCoordinatorSchedule = (props) => {
                         <TableCell sx={{ color: 'white' }} align='left'>Room</TableCell>
                         <TableCell sx={{ color: 'white' }} align='left'>Coordinator</TableCell>
                         <TableCell sx={{ color: 'white' }} align='left'>Selection</TableCell>
-
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -84,10 +91,10 @@ export const GetAllCoordinatorSchedule = (props) => {
                                 {returnCurrentDateTime(coordinator.time)}
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo.coordinatorFName + " " + coordinator.coordinatorInfo.coordinatorLName} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)}/>
+                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo?.coordinatorFName + ' ' + coordinator.coordinatorInfo?.coordinatorLName} </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)} />
                             </TableCell>
-                            
+
                         </TableRow>
                         )
                     })}
