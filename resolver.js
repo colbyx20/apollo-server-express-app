@@ -10,6 +10,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
@@ -139,8 +140,15 @@ const resolvers = {
                 },
             ])
         },
-        getAllCoordinatorSchedule: async () => {
+        getAllCoordinatorSchedule: async (_, { ID }) => {
+
+            const PID = Mongoose.Types.ObjectId(ID)
+            const getUser = await Professors.findOne({ _id: PID }).select('availSchedule');
+
+            const availSchedule = getUser.availSchedule.map(date => new Date(date));
+
             const user = await CoordSchedule.aggregate([
+                { $match: { time: { $nin: availSchedule } } },
                 {
                     $lookup: {
                         from: "coordinators",
@@ -165,7 +173,46 @@ const resolvers = {
                 },
                 { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
                 { $unwind: "$coordinatorInfo" },
-                { $sort: { coordinatorID: 1, time: 1 } }
+                { $sort: { time: 1 } }
+            ])
+
+            return user;
+        },
+        getColleagueSchedule: async (_, { ID }) => {
+
+            const CID = Mongoose.Types.ObjectId(ID)
+            const getUser = await Coordinator.findOne({ _id: CID }).select('availSchedule');
+            console.log(getUser);
+
+            const availSchedule = getUser.availSchedule.map(date => new Date(date));
+
+            const user = await CoordSchedule.aggregate([
+                { $match: { time: { $nin: availSchedule }, coordinatorID: { $ne: CID } } },
+                {
+                    $lookup: {
+                        from: "coordinators",
+                        localField: "coordinatorID",
+                        foreignField: "_id",
+                        as: "coordinatorInfo"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "groups",
+                        localField: "groupId",
+                        foreignField: "_id",
+                        as: "groupId"
+                    }
+                },
+                {
+                    $project: {
+                        coordinatorID: 1, coordinatorInfo: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
+                        "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
+                    }
+                },
+                { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
+                { $unwind: "$coordinatorInfo" },
+                { $sort: { time: 1 } }
             ])
 
             return user;
@@ -285,7 +332,7 @@ const resolvers = {
             const authCoordinator = new Auth({
                 userId: res._id,
                 password: encryptedPassword,
-                confirm: false,
+                confirm: true,
                 privilege: "coordinator",
                 token: token
             })
@@ -428,9 +475,8 @@ const resolvers = {
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
             const oldProfessor = await UserInfo.findOne({ email: email });
-            const oldUser = await UserInfo.findOne({ email: email });
 
-            if (oldProfessor || oldUser) {
+            if (oldProfessor) {
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
@@ -444,155 +490,75 @@ const resolvers = {
                     pass: process.env.EMAIL_PASSWORD
                 },
             });
+            // Encrypt password using bcryptjs
+            const encryptedPassword = await bcrypt.hash(password, 10);
 
-            if (STUDENT_EMAIL.test(email)) {
+            // Build out mongoose model 
+            const newProfessor = new Professors({
+                professorFName: firstname.toLowerCase(),
+                professorLName: lastname.toLowerCase()
+            });
 
-
-                // Encrypt password using bcryptjs
-                var encryptedPassword = await bcrypt.hash(password, 10);
-
-                // Build out mongoose model 
-                const newStudent = new Users({
-                    userFName: firstname.toLowerCase(),
-                    userLName: lastname.toLowerCase(),
-                    role: "",
-                    groupNumber: 0,
-                });
-
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newStudent._id, email },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
-
-                // Save user in MongoDB
-                const res = await newStudent.save();
-
-                // create professors auth information in separate collection called Auth
-                const authStudent = new Auth({
-                    userId: res._id,
-                    password: encryptedPassword,
-                    confirm: false,
-                    privilege: "student",
-                    token: token
-                })
-
-                // save new professor profile
-                await authStudent.save();
-
-                // create model for professors information 
-                const studentInfo = new UserInfo({
-                    userId: res._id,
-                    email: email.toLowerCase(),
-                    notificationEmail: email.toLowerCase(),
-                    image: ''
-                })
-
-                await studentInfo.save();
-
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: email,
-                    subject: "mySDSchedule - Please Confirm Your Account",
-                    html: `<h1>Email Confirmation</h1>
-                    <h2>Hello ${firstname}</h2>
-                    <p>Thank you for Registering!</p>
-                    <p>To activate your account please click on the link below.</p>
-                    
-                    <p>Please Check you Junk/Spam folder</p>
-                    </div>`,
-                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                })
-
-                return {
-                    firstname: res.userFName,
-                    lastname: res.userLName,
-                    email: studentInfo.email,
-                    privilege: studentInfo.privilege,
-                    password: authStudent.password,
-                    confirm: authStudent.confirm,
-                    token: authStudent.token
-
+            // create JWT (attach to user model)
+            const token = jwt.sign(
+                { id: newProfessor._id, email },
+                "UNSAFE_STRING", // stored in a secret file 
+                {
+                    expiresIn: "2h"
                 }
+            );
 
-            } else if (!STUDENT_EMAIL.test(email)) {
+            // Save user in MongoDB
+            const res = await newProfessor.save();
 
+            // create professors auth information in separate collection called Auth
+            const authProfessor = new Auth({
+                userId: res._id,
+                password: encryptedPassword,
+                confirm: true,
+                token: token
+            })
 
-                // Encrypt password using bcryptjs
-                var encryptedPassword = await bcrypt.hash(password, 10);
+            // save new professor profile
+            await authProfessor.save();
 
-                // Build out mongoose model 
-                const newProfessor = new Professors({
-                    professorFName: firstname.toLowerCase(),
-                    professorLName: lastname.toLowerCase()
-                });
+            // create model for professors information 
+            const professorInfo = new UserInfo({
+                userId: res._id,
+                email: email.toLowerCase(),
+                notificationEmail: email.toLowerCase(),
+                image: '',
+                privilege: "professor"
+            })
 
-                // create JWT (attach to user model)
-                const token = jwt.sign(
-                    { id: newProfessor._id, email },
-                    "UNSAFE_STRING", // stored in a secret file 
-                    {
-                        expiresIn: "2h"
-                    }
-                );
+            await professorInfo.save();
 
-                // Save user in MongoDB
-                const res = await newProfessor.save();
+            // transport.sendMail({
+            //     from: "group13confirmation@gmail.com",
+            //     to: email,
+            //     subject: "mySDSchedule - Please Confirm Your Account",
+            //     html: `<h1>Email Confirmation</h1>
+            //     <h2>Hello ${firstname}</h2>
+            //     <p>Thank you for Registering!</p>
+            //     <p>To activate your account please click on the link below.</p>
 
-                // create professors auth information in separate collection called Auth
-                const authProfessor = new Auth({
-                    userId: res._id,
-                    password: encryptedPassword,
-                    confirm: false,
-                    token: token
-                })
+            //     <p>Please Check you Junk/Spam folder</p>
+            //     </div>`,
+            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+            // })
 
-                // save new professor profile
-                await authProfessor.save();
+            return {
+                id: res._id,
+                firstname: res.professorFName,
+                lastname: res.professorLName,
+                email: professorInfo.email,
+                privilege: professorInfo.privilege,
+                password: authProfessor.password,
+                confirm: authProfessor.confirm,
+                token: authProfessor.token
 
-                // create model for professors information 
-                const professorInfo = new UserInfo({
-                    userId: res._id,
-                    email: email.toLowerCase(),
-                    notificationEmail: email.toLowerCase(),
-                    image: '',
-                    privilege: "professor"
-                })
-
-                await professorInfo.save();
-
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: email,
-                    subject: "mySDSchedule - Please Confirm Your Account",
-                    html: `<h1>Email Confirmation</h1>
-                    <h2>Hello ${firstname}</h2>
-                    <p>Thank you for Registering!</p>
-                    <p>To activate your account please click on the link below.</p>
-                    
-                    <p>Please Check you Junk/Spam folder</p>
-                    </div>`,
-                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-                })
-
-                return {
-                    id: res._id,
-                    firstname: res.professorFName,
-                    lastname: res.professorLName,
-                    email: professorInfo.email,
-                    privilege: professorInfo.privilege,
-                    password: authProfessor.password,
-                    confirm: authProfessor.confirm,
-                    token: authProfessor.token
-
-                }
-
-            } else {
-                throw new ApolloError("Invalid Email " + email, " EMAIL IS NOT VALID");
             }
+
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
@@ -954,7 +920,7 @@ const resolvers = {
                 else {
                     const pro = mongoose.Types.ObjectId(prof);//might make it a try catch
                     await Professors.updateOne({ _id: prof }, { $pull: { availSchedule: chrono }, $push: { appointments: appointment._id } }).modifiedCount
-                    const profInfo = {_id:availTest._id,fullName:''.concat(availTest.professorFName,' ',availTest.professorLName)}
+                    const profInfo = { _id: availTest._id, fullName: ''.concat(availTest.professorFName, ' ', availTest.professorLName) }
                     await CoordSchedule.updateOne({ coordinatorID: CID, time: chrono }, { $push: { attending2: profInfo }, $inc: { numberOfAttending: 1 } })   //add to the attending professor
                     modification = modification + 1;
                 }
@@ -1009,8 +975,7 @@ const resolvers = {
                 const group = await Group.findOne({ _id: appointment.groupId });
                 await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $inc: { numberOfAttending: -1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
                 const lead = await Users.find({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                for(x of lead)
-                {
+                for (x of lead) {
                     const notify = await UserInfo.find({ userId: lead._id });
                     transport.sendMail({
                         from: "SDSNotifier@gmail.com",
@@ -1063,7 +1028,7 @@ const resolvers = {
                     {
                         const group = await Group.findOne({ _id: appointment.groupId });
                         const members = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                        for(user of members){
+                        for (user of members) {
                             const notify = await UserInfo.find({ userId: user._id });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
@@ -1072,7 +1037,7 @@ const resolvers = {
                                 html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
                                        <p>Please reschedule a new proffessor</p>
                                        </div>`,
-                                      //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                         }
                     }
@@ -1089,7 +1054,7 @@ const resolvers = {
                                 html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
                                        <p>Thank you for your understanding</p>
                                        </div>`,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                             await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
                         }
@@ -1123,7 +1088,6 @@ const resolvers = {
                         { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
                         { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
-                    console.log(coordinatorInfo);
                     const date = new Date(coordinatorInfo.time);
 
                     const matchProfessors = await Professors.aggregate([
@@ -1131,8 +1095,6 @@ const resolvers = {
                         { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
-
-                    console.log(matchProfessors);
 
                     if (matchProfessors) {
                         const professorInfo = matchProfessors.map((professor) => ({
@@ -1278,9 +1240,54 @@ const resolvers = {
             }
             await Group.deleteMany({ coordinatorId: CID })
             return true
+        },
+        generateGroupAppointment: async (_, { CID }) => {
+            const ID = Mongoose.Types.ObjectId(CID);
+
+            const [scheduleCount, groupCount] = await Promise.all([
+                CoordSchedule.find({ coordinatorID: ID, groupId: null }).count(),
+                Group.find({ coordinatorId: ID, appointment: { $size: 0 } }).count()
+            ])
+
+            if (groupCount === 0 || scheduleCount === 0) {
+                throw new ApolloError("Please create your Groups or Add Appointment Times")
+            }
+
+            const remainder = groupCount - scheduleCount;
+
+            if (scheduleCount < groupCount) {
+                throw new ApolloError(`Please create ${remainder} more appointments to Generate your group Appointments`)
+            } else {
+                for (let count = 0; count < groupCount; count++) {
+
+                    const coordinatorGroup = await Group.aggregate([
+                        { $match: { coordinatorId: ID, appointment: { $size: 0 } } },
+                        { $sample: { size: 1 } },
+                        { $project: { _id: 1 } }
+                    ])
+
+                    const coordinatorSchedule = await CoordSchedule.aggregate([
+                        { $match: { coordinatorID: ID, groupId: null } },
+                        { $sample: { size: 1 } },
+                        { $project: { _id: 1 } }
+                    ])
+
+                    if (coordinatorGroup) {
+                        await Promise.all([
+                            CoordSchedule.findOneAndUpdate({ _id: coordinatorSchedule[0]._id }, { $set: { groupId: coordinatorGroup[0]._id } }),
+                            Group.findOneAndUpdate({ _id: coordinatorGroup[0]._id }, { $push: { appointment: coordinatorSchedule[0]._id } })
+                        ])
+                    } else {
+                        console.log("something went wrong");
+                    }
+                }
+            }
+            return true;
         }
+
     }
 }
+
 
 module.exports = resolvers;
 

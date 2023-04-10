@@ -219,9 +219,16 @@ scalar DateTime
         time: DateTime
     }
 
+    type something {
+        room: String
+        CID: ID
+        name: String
+    }
+
     type getAllCoordScheduleFormat2 {
-        _id:ID
-        times: [DateTime]
+        _id:DateTime
+        uniqueId: ID
+        coordinator:something
     }
 
     input coordinatorSInput {
@@ -283,7 +290,7 @@ scalar DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
-        getAllCoordinatorSchedule:[getAllCoordScheduleFormat]
+        getAllCoordinatorSchedule(ID: ID):[getAllCoordScheduleFormat]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
@@ -291,6 +298,7 @@ scalar DateTime
         getCoordinatorTimeRange(CID: String) : [DateTime]
         getAllGroups : [Group]
         getFullTimeRange: [getAllCoordScheduleFormat2]
+        getColleagueSchedule(ID: ID):[getAllCoordScheduleFormat]
     }
 
     type Mutation {
@@ -320,6 +328,7 @@ scalar DateTime
         deleteGroup(groupId:ID):Boolean
         deleteAllGroups(CID:ID):Boolean
         createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String) : Boolean
+        generateGroupAppointment (CID:ID): Boolean
     }
 `
 
