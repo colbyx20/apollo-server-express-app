@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { ThemeContext } from './context/themeContext'
+import './index.css';
 import Homepage from './pages/homepage';
 import Register from './pages/register';
 import Login from './pages/login';
@@ -8,13 +10,13 @@ import Loginpath from './pages/login';
 import Professors from "./pages/professors";
 import Coordinator from "./pages/coordinator"
 import Calendar from "./pages/calendar";
+import Calendar2 from "./pages/calendar2";
+import Calendar3 from "./pages/calendar3";
 import Semester from "./pages/semester";
 import Account from "./pages/account";
 import Forgot from "./pages/forgot";
 import RegisterCoord from "./pages/registerCoord";
 // update master 
-
-const ThemeContext = createContext(null)
 
 function App() {
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
