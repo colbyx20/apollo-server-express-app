@@ -11,9 +11,9 @@ import "../components/css/register.css";
 import Slider from '../components/Slider'
 
 
-const REGISTER_USER = gql`
+const REGISTER_COORDINATOR = gql`
     mutation Mutation($registerInput: RegisterInput) {
-        registerUser(registerInput: $registerInput) {
+        registerCoordinator(registerInput: $registerInput) {
             firstname
             lastname
             email
@@ -57,10 +57,10 @@ function Register(props) {
     })
 
 
-    const [registerUser, { loading }] = useMutation(REGISTER_USER, {
-        update(proxy, { data: { registerUser: userData } }) {
-            context.login(userData);
-        },
+    const [registerUser, { loading }] = useMutation(REGISTER_COORDINATOR, {
+        // update(proxy, { data: { registerUser: userData } }) {
+        //     context.login(userData);
+        // },
         onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
@@ -132,9 +132,9 @@ function Register(props) {
 
                     {
 
-                        <Alert severity="success">
-                            You have Successfully Registered
-                        </Alert>
+                        // <Alert severity="success">
+                        //     You have Successfully Registered
+                        // </Alert>
 
                     }
 

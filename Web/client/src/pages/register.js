@@ -58,9 +58,9 @@ function Register(props) {
 
 
     const [registerUser, { loading }] = useMutation(REGISTER_USER, {
-        update(proxy, { data: { registerUser: userData } }) {
-            context.login(userData);
-        },
+        // update(proxy, { data: { registerUser: userData } }) {
+        //     context.login(userData);
+        // },
         onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
@@ -132,9 +132,9 @@ function Register(props) {
 
                     {
 
-                        <Alert severity="success">
-                            You have Successfully Registered
-                        </Alert>
+                        // <Alert severity="success">
+                        //     You have Successfully Registered
+                        // </Alert>
 
                     }
 
