@@ -178,6 +178,45 @@ const resolvers = {
 
             return user;
         },
+        getColleagueSchedule: async (_, { ID }) => {
+
+            const CID = Mongoose.Types.ObjectId(ID)
+            const getUser = await Coordinator.findOne({ _id: CID }).select('availSchedule');
+            console.log(getUser);
+
+            const availSchedule = getUser.availSchedule.map(date => new Date(date));
+
+            const user = await CoordSchedule.aggregate([
+                { $match: { time: { $nin: availSchedule }, coordinatorID: { $ne: CID } } },
+                {
+                    $lookup: {
+                        from: "coordinators",
+                        localField: "coordinatorID",
+                        foreignField: "_id",
+                        as: "coordinatorInfo"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "groups",
+                        localField: "groupId",
+                        foreignField: "_id",
+                        as: "groupId"
+                    }
+                },
+                {
+                    $project: {
+                        coordinatorID: 1, coordinatorInfo: 1, room: 1, time: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: 1, attending2: 1, numberOfAttending: 1,
+                        "groupId.groupName": 1, "groupId.groupNumber": 1, "groupId.projectField": 1
+                    }
+                },
+                { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
+                { $unwind: "$coordinatorInfo" },
+                { $sort: { time: 1 } }
+            ])
+
+            return user;
+        },
         getFullTimeRange: async () => {
             const dates = await CoordSchedule.aggregate([
                 { $match: { numberOfAttending: { $lt: 3 } } },

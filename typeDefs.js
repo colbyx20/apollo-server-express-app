@@ -298,6 +298,7 @@ scalar DateTime
         getCoordinatorTimeRange(CID: String) : [DateTime]
         getAllGroups : [Group]
         getFullTimeRange: [getAllCoordScheduleFormat2]
+        getColleagueSchedule(ID: ID):[getAllCoordScheduleFormat]
     }
 
     type Mutation {
