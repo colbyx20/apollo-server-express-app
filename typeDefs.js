@@ -226,8 +226,9 @@ scalar DateTime
     }
 
     type getAllCoordScheduleFormat2 {
-        _id:ID
-        coordinator:[something]
+        _id:DateTime
+        uniqueId: ID
+        coordinator:something
     }
 
     input coordinatorSInput {
@@ -289,7 +290,7 @@ scalar DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
-        getAllCoordinatorSchedule:[getAllCoordScheduleFormat]
+        getAllCoordinatorSchedule:[getAllCoordScheduleFormat2]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]

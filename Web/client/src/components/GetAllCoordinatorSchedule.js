@@ -35,12 +35,27 @@ query Query {
 }
 `
 
+const QUERY2 = gql`
+query Query {
+  getAllCoordinatorSchedule {
+    _id
+    coordinator {
+      CID
+      name
+      room
+    }
+  }
+}
+
+`
+
+
 export const GetAllCoordinatorSchedule = (props) => {
 
 
-    const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE);
+    const { loading, error, data } = useQuery(QUERY2);
     const [checkedStates, setCheckedStates] = React.useState([]);
-
+    console.log(data);
     const handleChange = (event) => {
         checkedStates.push(event)
     };
@@ -60,7 +75,7 @@ export const GetAllCoordinatorSchedule = (props) => {
     }
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', width: '100%'}}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', width: '100%' }}>
             <Table sx={{ minWidth: 500 }} size="small" aria-label="a dense table">
                 <TableHead >
                     <TableRow sx={{ color: 'white' }}>
@@ -74,20 +89,20 @@ export const GetAllCoordinatorSchedule = (props) => {
                 <TableBody>
                     {getAllCoordinatorSchedule.map((coordinator, index) => {
                         return (<TableRow
-                            key={coordinator._id}
+                            key={coordinator.uniqueId}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
                         >
                             <TableCell sx={{ color: 'white' }} align='center'>
-                                {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
-                                {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
-                                {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
-                                {returnCurrentDateTime(coordinator.time)}
+                                {new Date(coordinator._id).toLocaleDateString('en-US', { month: 'long' })}{' '}
+                                {new Date(coordinator._id).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
+                                {new Date(coordinator._id).getDate() % 10 === 1 ? 'st' : new Date(coordinator._id).getDate() % 10 === 2 ? 'nd' : new Date(coordinator._id).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                                {returnCurrentDateTime(coordinator._id)}
                             </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo.coordinatorFName + " " + coordinator.coordinatorInfo.coordinatorLName} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)}/>
+                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinator?.room} </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinator?.name} </TableCell>
+                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)} />
                             </TableCell>
-                            
+
                         </TableRow>
                         )
                     })}

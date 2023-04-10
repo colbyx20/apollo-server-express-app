@@ -10,6 +10,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 const STUDENT_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@k(nights)?nights\.ucf\.edu$');
 const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@gmail\.com$');
@@ -169,11 +170,15 @@ const resolvers = {
             // ])
 
             const user = await CoordSchedule.aggregate([
-                {$lookup:{from:"coordinators",localField:"coordinatorID", foreignField:"_id", as : "coordinatorID"}},
-                {$unwind:"$coordiantorID"},
-                {$group:{_id:"$time", coordinator:{$push:{room:"$room", CID: "$coordinatorID._id", name:{$concat:["$coordiantorID.coordinatorFName", " " , "$coordinatorID.coordiantorLName"]}}}}},
-                {$sort:{_id:1}}
+                { $lookup: { from: "coordinators", localField: "coordinatorID", foreignField: "_id", as: "coordinatorID" } },
+                { $unwind: "$coordinatorID" },
+                { $group: { _id: "$time", coordinator: { $push: { room: "$room", CID: "$coordinatorID._id", name: { $concat: ["$coordinatorID.coordinatorFName", " ", "$coordinatorID.coordinatorLName"] } } } } },
+                { $unwind: "$coordinator" },
+                { $addFields: { uniqueId: new ObjectId() } },
+                { $sort: { _id: 1 } }
             ])
+
+
 
             return user;
         },
@@ -436,7 +441,7 @@ const resolvers = {
             // const oldUser = await Users.findOne({email});
             const oldProfessor = await UserInfo.findOne({ email: email });
 
-            if (oldProfessor ) {
+            if (oldProfessor) {
                 // throw an error 
                 throw new ApolloError("A user is already reigstered with the email " + email, "USER_ALREADY_EXISTS");
             }
@@ -519,7 +524,6 @@ const resolvers = {
 
             }
 
-            } 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
             const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
@@ -881,7 +885,7 @@ const resolvers = {
                 else {
                     const pro = mongoose.Types.ObjectId(prof);//might make it a try catch
                     await Professors.updateOne({ _id: prof }, { $pull: { availSchedule: chrono }, $push: { appointments: appointment._id } }).modifiedCount
-                    const profInfo = {_id:availTest._id,fullName:''.concat(availTest.professorFName,' ',availTest.professorLName)}
+                    const profInfo = { _id: availTest._id, fullName: ''.concat(availTest.professorFName, ' ', availTest.professorLName) }
                     await CoordSchedule.updateOne({ coordinatorID: CID, time: chrono }, { $push: { attending2: profInfo }, $inc: { numberOfAttending: 1 } })   //add to the attending professor
                     modification = modification + 1;
                 }
@@ -936,8 +940,7 @@ const resolvers = {
                 const group = await Group.findOne({ _id: appointment.groupId });
                 await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $inc: { numberOfAttending: -1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
                 const lead = await Users.find({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                for(x of lead)
-                {
+                for (x of lead) {
                     const notify = await UserInfo.find({ userId: lead._id });
                     transport.sendMail({
                         from: "SDSNotifier@gmail.com",
@@ -990,7 +993,7 @@ const resolvers = {
                     {
                         const group = await Group.findOne({ _id: appointment.groupId });
                         const members = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                        for(user of members){
+                        for (user of members) {
                             const notify = await UserInfo.find({ userId: user._id });
                             transport.sendMail({
                                 from: "SDSNotifier@gmail.com",
@@ -999,7 +1002,7 @@ const resolvers = {
                                 html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
                                        <p>Please reschedule a new proffessor</p>
                                        </div>`,
-                                      //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                         }
                     }
@@ -1016,7 +1019,7 @@ const resolvers = {
                                 html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
                                        <p>Thank you for your understanding</p>
                                        </div>`,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                             await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
                         }
@@ -1248,6 +1251,7 @@ const resolvers = {
         }
 
     }
+}
 
 
 module.exports = resolvers;
