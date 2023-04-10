@@ -23,6 +23,8 @@ function GroupItem({
   subTitle,
   number,
   image,
+  room,
+  id,
   onPress,
   renderRightActions,
   renderLeftActions,
@@ -39,7 +41,9 @@ function GroupItem({
           <TouchableHighlight
             style={styles.highlight}
             underlayColor={colors.grayMedium}
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              onPress ? console.log(id) : setModalVisible(true);
+            }}
           >
             <View style={[styles.container]}>
               <View>
@@ -49,6 +53,7 @@ function GroupItem({
                 <AppText style={styles.number}>Group #{number}</AppText>
                 <AppText style={styles.title}>{title}</AppText>
                 <AppText style={styles.subTitle}>{subTitle}</AppText>
+                <AppText style={styles.number}>Room: {room}</AppText>
               </View>
             </View>
           </TouchableHighlight>
@@ -66,6 +71,7 @@ function GroupItem({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.gold,
     borderRadius: 25,
     padding: 7,
