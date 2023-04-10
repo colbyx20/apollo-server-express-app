@@ -38,7 +38,7 @@ function App() {
           <Route path="/login" element={<Loginpath />} />
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/registerCoord" element={<RegisterCoord />} />
+          <Route path="/registerCoordinator" element={<RegisterCoord />} />
           <Route path="/student" element={<Student />} />
           <Route path="/professor" element={<Professors />} />
           <Route path="/calendar" element={<Calendar lightMode={false} />} />

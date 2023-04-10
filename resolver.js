@@ -332,7 +332,7 @@ const resolvers = {
             const authCoordinator = new Auth({
                 userId: res._id,
                 password: encryptedPassword,
-                confirm: false,
+                confirm: true,
                 privilege: "coordinator",
                 token: token
             })
@@ -515,7 +515,7 @@ const resolvers = {
             const authProfessor = new Auth({
                 userId: res._id,
                 password: encryptedPassword,
-                confirm: false,
+                confirm: true,
                 token: token
             })
 
@@ -533,19 +533,19 @@ const resolvers = {
 
             await professorInfo.save();
 
-            transport.sendMail({
-                from: "group13confirmation@gmail.com",
-                to: email,
-                subject: "mySDSchedule - Please Confirm Your Account",
-                html: `<h1>Email Confirmation</h1>
-                <h2>Hello ${firstname}</h2>
-                <p>Thank you for Registering!</p>
-                <p>To activate your account please click on the link below.</p>
-                
-                <p>Please Check you Junk/Spam folder</p>
-                </div>`,
-                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-            })
+            // transport.sendMail({
+            //     from: "group13confirmation@gmail.com",
+            //     to: email,
+            //     subject: "mySDSchedule - Please Confirm Your Account",
+            //     html: `<h1>Email Confirmation</h1>
+            //     <h2>Hello ${firstname}</h2>
+            //     <p>Thank you for Registering!</p>
+            //     <p>To activate your account please click on the link below.</p>
+
+            //     <p>Please Check you Junk/Spam folder</p>
+            //     </div>`,
+            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+            // })
 
             return {
                 id: res._id,

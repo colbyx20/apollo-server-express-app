@@ -11,9 +11,9 @@ import "../components/css/register.css";
 import Slider from '../components/Slider'
 
 
-const REGISTER_USER = gql`
+const REGISTER_COORDINATOR = gql`
     mutation Mutation($registerInput: RegisterInput) {
-        registerUser(registerInput: $registerInput) {
+        registerCoordinator(registerInput: $registerInput) {
             firstname
             lastname
             email
@@ -57,10 +57,10 @@ function Register(props) {
     })
 
 
-    const [registerUser, { loading }] = useMutation(REGISTER_USER, {
-        update(proxy, { data: { registerUser: userData } }) {
-            context.login(userData);
-        },
+    const [registerUser, { loading }] = useMutation(REGISTER_COORDINATOR, {
+        // update(proxy, { data: { registerUser: userData } }) {
+        //     context.login(userData);
+        // },
         onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
@@ -73,7 +73,7 @@ function Register(props) {
             <div className='registerContainer'>
                 <Container>
                     <h3>Create an account</h3>
-                    <p>Welcome, complete the form to create a Coordinator account</p>
+                    <p>Welcome, complete the form to create a Senior Design Scheduler account</p>
                     <Stack spacing={2} paddingBottom={1}>
                         <TextField sx={textBoxStyle}
                             InputLabelProps={{ className: 'mylabel' }}
@@ -132,9 +132,9 @@ function Register(props) {
 
                     {
 
-                        <Alert severity="success">
-                            You have Successfully Registered
-                        </Alert>
+                        // <Alert severity="success">
+                        //     You have Successfully Registered
+                        // </Alert>
 
                     }
 
