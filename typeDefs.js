@@ -290,7 +290,7 @@ scalar DateTime
         availSchedule: DateTime
         availScheduleByGroup(date:DateTime!): DateTime
         availScheduleProfessor: DateTime
-        getAllCoordinatorSchedule:[getAllCoordScheduleFormat2]
+        getAllCoordinatorSchedule:[getAllCoordScheduleFormat]
         getCoordinatorSchedule(CID: String): [CoordSchedule2]
         refreshToken(id : String, privilege:String) : String
         getProfessorsAppointments (profId: String ) : [userAppointments]
