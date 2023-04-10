@@ -1,4 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
+import { AuthContext } from '../context/authContext';
+import { useContext } from 'react';
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,8 +13,8 @@ import './css/getgroups.css';
 import { Button, Checkbox } from '@mui/material';
 
 const GET_All_COORDINATOR_SCHEDULE = gql`
-query Query {
-    getAllCoordinatorSchedule {
+query Query($id: ID) {
+    getAllCoordinatorSchedule(ID: $id) {
         _id
         coordinatorInfo {
             _id
@@ -38,10 +40,15 @@ query Query {
 
 export const GetAllCoordinatorSchedule = (props) => {
 
+    const { user } = useContext(AuthContext);
 
-    const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE);
+    const { loading, error, data } = useQuery(GET_All_COORDINATOR_SCHEDULE, {
+        variables: { id: user.id }
+    });
+
     const [checkedStates, setCheckedStates] = React.useState([]);
-    console.log(data);
+
+
     const handleChange = (event) => {
         checkedStates.push(event)
     };

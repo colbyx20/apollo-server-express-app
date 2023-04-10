@@ -140,7 +140,13 @@ const resolvers = {
                 },
             ])
         },
-        getAllCoordinatorSchedule: async () => {
+        getAllCoordinatorSchedule: async (_, { ID }) => {
+            console.log(ID);
+
+            const PID = Mongoose.Types.ObjectId(ID)
+            const getUser = await Professors.findOne({ _id: PID }).select('availSchedule');
+            console.log(getUser);
+
             const user = await CoordSchedule.aggregate([
                 {
                     $lookup: {
@@ -166,6 +172,7 @@ const resolvers = {
                 },
                 { $unwind: { path: "$groupId", preserveNullAndEmptyArrays: true } },
                 { $unwind: "$coordinatorInfo" },
+                { $match: { time: { $nin: getUser.availSchedule } } },
                 { $sort: { time: 1 } }
             ])
 
