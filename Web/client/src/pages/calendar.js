@@ -4,17 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { Button } from "@mui/material";
-import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
+import { GetColleaguesSchedule } from '../components/GetColleaguesSchedule'
 import "../components/css/calendar2.css"
 
 function Calendar(props) {
     // user data lives in here  
     const { user, logout } = useContext(AuthContext);
     let navigate = useNavigate();
-   
+
     var [currentDate, setCurrentDate] = useState(new Date());
     const initialValue = dayjs(currentDate);
-  
+
     const onLogout = () => {
         logout();
         navigate('/');
@@ -34,7 +34,7 @@ function Calendar(props) {
                                 <div className='timeListContainer'>
                                     <h2 className='timeListTitle'>Pick time</h2>
                                     <div className='listContainer'>
-                                        <GetAllCoordinatorSchedule />
+                                        <GetColleaguesSchedule />
                                     </div>
                                 </div>
                             </div>
