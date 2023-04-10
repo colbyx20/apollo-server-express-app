@@ -168,3 +168,32 @@
     color: black;
     margin-bottom: 5px;
 }
+
+.designWeekRoom{
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 82%;
+    height: 50px;
+}
+
+.designInput{
+    width: 100%;
+    height: 100%;
+}
+
+.designInput {
+    border: none;
+    border-bottom: 2px solid #ccc;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f7f7f7;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.designInput:focus {
+    outline: none;
+    border-bottom-color: #0077cc;
+    box-shadow: 0 0 5px rgba(0, 119, 204, 0.5);
+}
