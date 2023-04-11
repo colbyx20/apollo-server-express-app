@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Constants from "expo-constants";
 import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
 import { useQuery } from "@apollo/client";
-import { GROUPS } from "../gql/queries/getAllGroups";
+import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorSchedule";
 import {
   CalendarList,
   Calendar,
@@ -19,14 +19,20 @@ import GroupItem from "../components/GroupItem";
 import AppointmentItemAddAction from "../components/AppointmentItemAddAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
+import { useFocusEffect } from "@react-navigation/native";
 import TitleBar from "../components/TitleBar";
 // import NavBar from "../components/NavBar";
 
 function CalendarProfessorScreen(props) {
   //APOLLO CLIENT
-  const { data, loading, error } = useQuery(GROUPS);
+  const { data, loading, error, refetch } = useQuery(APPOINTMENTS);
   const [modalVisible, setModalVisible] = useState(false);
   const [currDay, setCurrDay] = useState(0);
+
+  useFocusEffect(() => {
+    console.log("Refetch Calendar");
+    refetch();
+  });
 
   if (error) {
     return <AppText>Error: {error.message}</AppText>; //while loading return this
@@ -37,12 +43,14 @@ function CalendarProfessorScreen(props) {
   }
 
   //   console.log(data.getAllGroups[0].groupName);
-  //   console.log(data);
+  console.log(data);
   console.log(new Date().toLocaleString().split("T")[0]);
+  var dateABC = new Date();
+  var dateABCstr = getDate(dateABC);
   return (
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
-        title="Availabilities"
+        title={dateABCstr}
         // leftButton={
         //   <MaterialCommunityIcons
         //     name="chevron-left"
@@ -75,7 +83,7 @@ function CalendarProfessorScreen(props) {
           //     groupNumber: "1",
           //   },
           // ],
-          "2023-03-16": [
+          "2023-04-10": [
             {
               _id: "1234567890",
               arrayLength: 3,
@@ -292,6 +300,40 @@ function CalendarProfessorScreen(props) {
       </View> */}
     </SafeAreaView>
   );
+}
+
+function getDate(date) {
+  return date.toISOString().split("T")[0];
+}
+
+function getAppointments(data) {
+  // "2023-04-10": [
+  //   {
+  //     _id: "1234567890",
+  //     arrayLength: 3,
+  //     pId: [
+  //       { _id: 123, name: "abc" },
+  //       { _id: 223, name: "bbc" },
+  //       { _id: 323, name: "cbc" },
+  //     ],
+  //   },
+  //   {
+  //     _id: "0987654321",
+  //     arrayLength: 5,
+  //     pId: [
+  //       { _id: 123, name: "abc" },
+  //       { _id: 223, name: "bbc" },
+  //       { _id: 323, name: "cbc" },
+  //       { _id: 233, name: "bbc" },
+  //       { _id: 333, name: "cbc" },
+  //     ],
+  //   },
+  // ],
+  var appointments;
+}
+
+function mapAppoinntment(appointent) {
+  return;
 }
 
 const styles = StyleSheet.create({

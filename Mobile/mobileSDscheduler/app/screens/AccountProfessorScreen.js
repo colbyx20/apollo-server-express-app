@@ -6,6 +6,7 @@ import Constants from "expo-constants";
 import { useMutation, useQuery } from "@apollo/client";
 import { PROFESSOR } from "../gql/queries/getProfessor";
 import { PROFESSOR_EMAIL } from "../gql/mutations/editProfessor";
+import { PASSWORD } from "../gql/mutations/updatePassword";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -23,10 +24,11 @@ const validationSchema = Yup.object().shape({
   //   .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
   //   .label("Email"),
   notifEmail: Yup.string().email().label("Email"),
-  password: Yup.string().min(7).label("Password"),
+  oldPassword: Yup.string().min(4).label("Password"),
+  password: Yup.string().min(4).label("Password"),
   confirmPassword: Yup.string().oneOf(
     [Yup.ref("password"), null],
-    "Passwords must match"
+    "New Passwords must match"
   ),
 });
 
@@ -40,6 +42,7 @@ function AccountScreen(props) {
   });
 
   const [notificationEmail] = useMutation(PROFESSOR_EMAIL);
+  const [updatePassWord] = useMutation(PASSWORD);
 
   useFocusEffect(() => {
     console.log("Refetch accnt");
@@ -54,9 +57,8 @@ function AccountScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  // console.log(data.getAllGroups[0].groupName);
-  console.log(data);
-  console.log(data.getProfessor.professorFName);
+  // console.log(data);
+  // console.log(data.getProfessor.professorFName);
   var fname = upperFirstLetter(data.getProfessor.professorFName);
   var lname = upperFirstLetter(data.getProfessor.professorLName);
   var curEmail = data.getUserInfo.email;
@@ -72,17 +74,56 @@ function AccountScreen(props) {
   //   });
   // };
 
-  const handleSubmit = ({ notifEmail }) => {
+  // const handleSubmit = ({ notifEmail }) => { //FUNCA
+  //   //email,
+  //   console.log("Submit Email! " + notifEmail);
+  //   notificationEmail({
+  //     variables: {
+  //       id: "6414996286c77fadcb080900",
+  //       email: notifEmail,
+  //     },
+  //   });
+  // };
+
+  const handleSubmit = ({
+    notifEmail,
+    oldPassword,
+    password,
+    confirmPassword,
+  }) => {
     //email,
-    console.log("Submit! " + email + " " + notifEmail);
-    notificationEmail({
+    if (notifEmail != "") {
+      console.log("Submit Email! " + notifEmail);
+      notificationEmail({
+        variables: {
+          id: "6414996286c77fadcb080900",
+          email: notifEmail,
+        },
+      });
+    }
+
+    if (password != "" && oldPassword != "" && confirmPassword != "") {
+      console.log("Submit Pasword! " + password);
+      updatePassWord({
+        variables: {
+          id: "6414996286c77fadcb080900",
+          oldPassword: oldPassword,
+          newPassword: password,
+          confirmedPassword: confirmPassword,
+        },
+      });
+    }
+  };
+
+  const handleSubmitPassword = ({ oldPassword, password, confirmPassword }) => {
+    //email,
+    console.log("Submit Pasword! " + password);
+    updatePassWord({
       variables: {
-        // id: "6414996286c77fadcb080900",
-        // professorInput: {
-        //   email: email,
-        // },
-        editNotificationEmailId2: "6414996286c77fadcb080900",
-        email: notifEmail,
+        id: "6414996286c77fadcb080900",
+        oldPassword: oldPassword,
+        newPassword: password,
+        confirmedPassword: confirmPassword,
       },
     });
   };
@@ -95,7 +136,8 @@ function AccountScreen(props) {
       </AppText>
       <Formik
         initialValues={{
-          notifEmail: curNotifEmail,
+          notifEmail: "",
+          oldPassword: "",
           password: "",
           confirmPassword: "",
         }} // email: curEmail,
@@ -104,18 +146,6 @@ function AccountScreen(props) {
       >
         {({ handleChange, errors, setFieldTouched, touched, values }) => (
           <>
-            {/* <AppText style={styles.subtitle}>Change Login email:</AppText>
-            <AppTextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="email"
-              keyboardType="email-address"
-              onBlur={() => setFieldTouched("email")}
-              onChangeText={handleChange("email")}
-              placeholder={curEmail}
-              textContextType="emailAddress" //might need to remove
-            />
-            <ErrorMessage error={errors.email} visible={touched.email} /> */}
             {curNotifEmail == "" ? (
               <AppText style={styles.subtitle}>Add Notification email:</AppText>
             ) : (
@@ -142,9 +172,23 @@ function AccountScreen(props) {
               autoCapitalize="none"
               autoCorrect={false}
               icon="lock"
+              onBlur={() => setFieldTouched("oldPassword")}
+              onChangeText={handleChange("oldPassword")}
+              placeholder="Current Password"
+              secureTextEntry
+              textContextType="password" //might need to remove
+            />
+            <ErrorMessage
+              error={errors.oldPassword}
+              visible={touched.oldPassword}
+            />
+            <AppTextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="lock"
               onBlur={() => setFieldTouched("password")}
               onChangeText={handleChange("password")}
-              placeholder="Password"
+              placeholder="New Password"
               secureTextEntry
               textContextType="password" //might need to remove
             />
@@ -193,7 +237,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   background: {
-    padding: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 5,
     backgroundColor: colors.primaryDark,
     flex: 1,
   },
@@ -205,7 +251,7 @@ const styles = StyleSheet.create({
     height: 150,
     alignSelf: "center",
     borderRadius: 75,
-    marginTop: 50,
+    marginTop: 5,
     marginBottom: 10,
     borderWidth: 3,
     borderColor: colors.secondaryDark,
@@ -220,6 +266,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.secondaryDark,
+    marginTop: 10,
+    marginBottom: 5,
     fontSize: 15,
     fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
     fontWeight: "bold",

@@ -7,7 +7,7 @@ import { gql } from "@apollo/client";
 //   "newPassword": null,
 //   "confirmedPassword": null
 // }
-export const GROUPS = gql`
+export const PASSWORD = gql`
   mutation Mutation(
     $id: String!
     $oldPassword: String!

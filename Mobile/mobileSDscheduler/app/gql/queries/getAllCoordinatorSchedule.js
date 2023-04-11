@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const GROUPS = gql`
+export const APPOINTMENTS = gql`
   query Query {
     getAllCoordinatorSchedule {
       _id
