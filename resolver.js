@@ -177,6 +177,8 @@ const resolvers = {
             ])
 
             return user;
+
+
         },
         getColleagueSchedule: async (_, { ID }) => {
 
@@ -292,12 +294,32 @@ const resolvers = {
     },
     Mutation: {
         registerCoordinator: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
+
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
             if (password !== confirmpassword) {
                 throw new ApolloError("Passwords Do Not Match");
             }
+
             if (password === "" || firstname === "" || lastname === "" || email === "") {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
+            // if (!numberRegex.test(password)) {
+            //     throw new ApolloError("Password doesn't contain a number");
+            // }
+
+            // if (!specialRegex.test(password)) {
+            //     throw new ApolloError("password doesn't contain any special characters")
+            // }
+
+
 
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
@@ -465,6 +487,9 @@ const resolvers = {
             }
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
             if (password !== confirmpassword) {
                 throw new ApolloError("Passwords Do Not Match");
@@ -472,8 +497,11 @@ const resolvers = {
             if (password === "" || firstname === "" || lastname === "" || email === "") {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
-            // See if an old user or Professor exists with Email attempting to Register
-            // const oldUser = await Users.findOne({email});
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
             const oldProfessor = await UserInfo.findOne({ email: email });
 
             if (oldProfessor) {
@@ -701,12 +729,20 @@ const resolvers = {
         updatePassword: async (_, { ID, oldPassword, newPassword, confirmedPassword }) => {
             const userId = Mongoose.Types.ObjectId(ID);
 
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
             if (newPassword !== confirmedPassword) {
                 throw new ApolloError("New Passwords Do Not Match!");
             }
 
-            if (newPassword.length < 4) {
+            if (newPassword.length < 8) {
                 throw new ApolloError("New Password is too short");
+            }
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
             }
 
             try {
@@ -726,11 +762,18 @@ const resolvers = {
             }
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
             // encrypt new password and set to user.
             if (password !== confirmPassword) {
                 throw new ApolloError("Passwords Do Not Match!");
             }
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
             try {
 
                 const [encryptedPassword, finduser] = await Promise.all([
