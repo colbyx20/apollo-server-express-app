@@ -1123,21 +1123,22 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
             const MAX_APPOINTMENTS = 3;
 
-            // grab # of appointments without at least 3 attending.
-            const numAttending = await CoordSchedule.find().count();
-
             try {
+                const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
 
                 for (let counter = 0; counter < numAttending; counter++) {
-                    const coordinatorInfo = await CoordSchedule.findOne(
-                        { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
-                        { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
 
-                    const date = new Date(coordinatorInfo.time);
+                    const coordinatorInfo = await CoordSchedule.aggregate([
+                        { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } } },
+                        { $sample: { size: 1 } },
+                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 } }
+                    ])
+
+                    const date = new Date(coordinatorInfo[0].time);
 
                     const matchProfessors = await Professors.aggregate([
                         { $match: { availSchedule: date } },
-                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
+                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
 
