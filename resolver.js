@@ -43,7 +43,23 @@ const resolvers = {
             return await Users.find();
         },
         getProfessor: async (_, { ID }) => {
-            return await Professors.findById(ID);
+            return await Professors.findById(ID)
+                .select({
+                    availSchedule: {
+                        $map: {
+                            input: "$availSchedule",
+                            as: "schedule",
+                            in: {
+                                $dateToString: { format: "%m/%d/%Y %H:%M", date: "$$schedule" }
+                            }
+                        }
+                    }
+                })
+                .lean()
+                .then(doc => {
+                    doc.availSchedule.sort((a, b) => new Date(a) - new Date(b));
+                    return doc;
+                });
         },
         getAllProfessors: async () => {
             return await Professors.find();

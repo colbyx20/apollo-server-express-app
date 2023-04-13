@@ -5,6 +5,7 @@ import CustomSidebar from '../components/Sidebar';
 import dayjs from 'dayjs';
 import { Button } from "@mui/material";
 import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
+import { GetProfessorSchedule } from '../components/GetProfessorSchedule'
 import "../components/css/calendar2.css"
 
 function Calendar(props) {
@@ -40,7 +41,7 @@ function Calendar(props) {
                             </div>
                             <div className='rightContainer'>
                                 <div className='timeListContainer'>
-
+                                    <GetProfessorSchedule />
                                 </div>
                             </div>
                         </div>
