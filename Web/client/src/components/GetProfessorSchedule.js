@@ -25,8 +25,12 @@ export const GetProfessorSchedule = () => {
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`;
 
-    // return (
-    //     // <div>{data}</div>
-    // )
+
+
+    return (
+        <div>{data.getProfessor.availSchedule.map((time) => {
+            return <tr>{time}</tr>
+        })}</div>
+    )
 
 }
