@@ -7,7 +7,6 @@ import { Button, TextField } from "@mui/material";
 import { gql, useQuery } from '@apollo/client';
 import '../components/css/professor.css';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import '../components/css/coordinator.css';
 import { GetProfessorsAppointments } from '../components/GetProfessorsAppointments';
 
 
@@ -41,8 +40,8 @@ function Professors(props) {
                             <div className='professorContainer'>
                                 <div className='displayProfNotification'>
                                     <p className='notificationTitle'>Upcoming Meetings <NotificationsNoneIcon /></p>
-                                    <div className='appointmentContainer'>
-                                        <div className='appointmentObject'><GetProfessorsAppointments /></div>
+                                    <div className='appointContainer'>
+                                        <GetProfessorsAppointments />
                                     </div>
                                 </div>
                             </div>
