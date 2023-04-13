@@ -808,10 +808,12 @@ const resolvers = {
                         dates.push(new Date(times));
                     })
 
+                    console.log(UniqueTimes);
+
 
                     if (privilege === "professor") {
                         const isScheduled = (await Professors.find({ _id: ID, availSchedule: { $in: dates } }).count());
-
+                        console.log(isScheduled)
                         if (!isScheduled) {
                             (await Professors.updateOne({ _id: ID }, { $push: { availSchedule: { $each: dates } } })).modifiedCount;
                         } else {
