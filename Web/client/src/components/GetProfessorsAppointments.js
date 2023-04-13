@@ -2,6 +2,8 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
+import '../components/css/getprofgroups.css';
+import { Button, TextField } from "@mui/material";
 
 const GET_PROFESSOR_SCHEDULE = gql`
   query GetProfessorsAppointments($profId: String) {
@@ -41,21 +43,58 @@ export const GetProfessorsAppointments = () => {
     }).then(() => refetch());
   }
 
+  /**
+   *  takes in time from database and formates it to for the user
+   * @param {*} time 
+   * @returns 
+   */
+  function returnNiceTime(time){
+    const [dateString, timeString] = time.split(' ');
+    const date = new Date(dateString);
+    date.setHours(parseInt(timeString)-4)
+    const options = { month: 'long', day: 'numeric', ordinal: 'numeric' };
+    const displayDateTime = date.toLocaleDateString('en-us', options)+", "+ date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    return displayDateTime;
+  }
+
   return (
-    <table style={{ color: 'white' }}>
+    <>
+    {schedule.length === 0 ?
+    <span className='noAppointmentMessage'>Appointment has not been Set</span>
+    :
+    <table style={{ color: 'white' }} className="profAppTable">
+      <tbody className='profBodyTable'>
       {schedule.map((s) => (
-        <tbody key={s._id}>
-          <tr style={{ color: 'black' }}>
-            <td>{s.time}</td>
-            <td>{s.room}</td>
-            <td>{s.groupName}</td>
-            <td>{s.groupNumber}</td>
+          <tr style={{ color: 'black' }} key={s._id} className="appointTr">
             <td>
-              <button onClick={() => handleCancelAppointment(PID, s._id)}>Cancel Meeting</button>
+              <div className='Appointment'>
+                <div>
+                  {"Appointment: "}<br/>
+                  {returnNiceTime(s.time)}
+                </div>
+                <div className='profData'>
+                  {"Location: "}<br/>
+                  {s.room}
+                </div>
+                <div className='profData'>
+                  {"Group: "+s.groupNumber}<br/>
+                  {s.groupName+" "}
+                  
+                </div>
+                
+                
+                <div className='profDel'>
+                  <Button variant="contained" color="secondary" style={{ backgroundColor: "red"}} onClick={() => handleCancelAppointment(PID, s._id)}>
+                    Cancel Meeting
+                  </Button>
+                </div>
+              </div>
             </td>
           </tr>
-        </tbody>
       ))}
+      </tbody>
     </table>
+    }
+    </>
   );
 };
