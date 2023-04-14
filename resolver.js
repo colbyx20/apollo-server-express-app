@@ -156,6 +156,14 @@ const resolvers = {
                 },
             ])
         },
+        getAllCoordinatorScheduleFancy: async () => {
+            return CoordSchedule.aggregate([
+                { $lookup: { from: "coordinators", localField: "coordinatorID", foreignField: "_id", as: "coordinatorInfo" } },
+                { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupInfo" } },
+                { $group: { _id: { $dateToString: { format: "%m/%d/%Y", date: "$time" } }, info: { $push: { datetime: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: "$attending2", room: "$room", group: "$groupInfo", coordinator: "$coordinatorInfo" } } } },
+                { $sort: { _id: 1 } }
+            ])
+        },
         getAllCoordinatorSchedule: async (_, { ID }) => {
 
             const PID = Mongoose.Types.ObjectId(ID)

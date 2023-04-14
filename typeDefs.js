@@ -95,6 +95,7 @@ scalar DateTime
         groupName: String
         projectField: String
         groupNumber: Int
+        appointment: [ID]
     } 
     
     input UserInput {
@@ -280,6 +281,24 @@ scalar DateTime
         groupName: String
     }
 
+    type attendingProfessors {
+        _id: ID
+        fullName: String
+    }
+    
+    type fancy {
+        datetime: String
+        room: String
+        attending: [attendingProfessors]
+        group: [Group]
+        coordinator: [coordinatorDetails]
+    }
+
+    type test {
+        _id: String
+        info: [fancy]
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getUserInfo(ID: String!): UserInfo
@@ -301,6 +320,7 @@ scalar DateTime
         getAllGroups : [Group]
         getFullTimeRange: [getAllCoordScheduleFormat2]
         getColleagueSchedule(ID: ID):[getAllCoordScheduleFormat]
+        getAllCoordinatorScheduleFancy: [test]
     }
 
     type Mutation {
