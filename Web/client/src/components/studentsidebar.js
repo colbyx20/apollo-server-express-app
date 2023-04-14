@@ -24,11 +24,6 @@ export const studentsidebar = [
         link: "/student"
     },
     {
-        title: <p className='sideBarText'>Calendar</p>,
-        icon: <img className='icon' src={Calendar}></img>,
-        link: "/calendar"
-    },
-    {
         title: <p className='sideBarText'>Logout</p>,
         icon: <img className='icon' src={Logout}></img>,
         link: "/"

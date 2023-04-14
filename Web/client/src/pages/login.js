@@ -27,33 +27,6 @@ const LOGIN_USER = gql`
 function Login(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
-    const [checked, setChecked] = useState(false);
-    const [log, setLog] = useState("");
-
-    // Get Log from local storage
-    useEffect(() =>{
-        const saved = window.localStorage.getItem('...')
-        const initialValue = JSON.parse(saved);
-        setLog(initialValue);
-    }, []);
-
-    // Get checkbox state
-    useEffect(() => {
-        const data = window.localStorage.getItem('checkbox')
-        if (data !== null) setChecked(JSON.parse(data))
-        if (JSON.parse(data) === false) window.localStorage.clear();   
-    }, [])
-
-    // Save checkbox state
-    useEffect(() => {
-        window.localStorage.setItem('checkbox', JSON.stringify(checked));
-
-    }, [checked])
-
-
-    const handleChange = (event) => {
-        setChecked(event.target.checked);
-    };
 
 
     function loginUserCallback() {
@@ -67,10 +40,9 @@ function Login(props) {
 
     const [loginUser] = useMutation(LOGIN_USER, {
         update(proxy, { data: { loginUser: userData } }) {
-            context.login(userData)
-            if (checked === true){
-                window.localStorage.setItem('...', JSON.stringify(userData.email));
-            } 
+            // DO not remove line below or login breaks
+            context.login(userData) // Do not remove this line
+            // Do not remove the line above 
 
             if (userData.privilege === 'student') {
                 window.location.href = '/student';
@@ -87,8 +59,6 @@ function Login(props) {
         },
         variables: { loginInput: values }
     });
-
-    console.log(log)
 
     return (
 
@@ -126,7 +96,6 @@ function Login(props) {
                             InputLabelProps={{ className: 'mylabel' }}
                             label="Email"
                             name="email"
-                            defaultValue={log}
                             onChange={onChange}
                         />
                         <TextField sx={{
@@ -161,18 +130,6 @@ function Login(props) {
                         marginBottom: '5%',
                         width: '100%',
                     }} variant="contained" onClick={onSubmit}>Login</Button>
-                    <FormControlLabel control={
-                        <Checkbox
-                            id='rememberCheck'
-                            checked={checked}
-                            onChange={handleChange}
-                            sx={{
-                                color: 'white',
-                                '&.Mui-checked': {
-                                    color: blue[500],
-                                },
-                            }}
-                        />} label="Remember Email" />
 
                     <span><a href='/forgot'>  Forgot password?</a></span>
 
