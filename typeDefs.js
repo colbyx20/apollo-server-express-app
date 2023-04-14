@@ -331,7 +331,7 @@ scalar DateTime
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
         groupSelectAppointmentTime(CID:ID!, GID:ID!, time: DateTime): Boolean
-        RandomlySelectProfessorsToAGroup(CID:ID!) : Boolean
+        RandomlySelectProfessorsToAGroup(CID:ID!, fullName: String) : Boolean
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
@@ -349,7 +349,7 @@ scalar DateTime
         updatePassword (ID: String!, oldPassword: String!, newPassword: String!, confirmedPassword: String!) : Boolean
         deleteGroup(groupId:ID):Boolean
         deleteAllGroups(CID:ID):Boolean
-        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String) : Boolean
+        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String, isSponsor: Int) : Boolean
         generateGroupAppointment (CID:ID): Boolean
     }
 `

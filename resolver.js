@@ -407,9 +407,9 @@ const resolvers = {
                 token: authCoordinator.token
             }
         },
-        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname, role }) => {
+        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname, role, isSponsor }) => {
 
-            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined || role === undefined) {
+            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined || role === undefined || isSponsor === undefined) {
                 throw new ApolloError("Missing Data From CSV File");
             }
 
@@ -428,8 +428,8 @@ const resolvers = {
                     groupName: groupName.toLowerCase(),
                     projectField: "",
                     groupNumber: groupNumber,
+                    isSponsor: parseInt(isSponsor)
                 });
-
 
                 const student = new Users({
                     userFName: firstname.toLowerCase(),
@@ -505,7 +505,12 @@ const resolvers = {
                     image: '',
                 })
 
-                await Promise.all([student.save(), authStudent.save(), studentInfo.save()])
+                try {
+                    await Promise.all([student.save(), authStudent.save(), studentInfo.save()]);
+                    // console.log('All documents saved successfully');
+                } catch (error) {
+                    // console.log('Error while saving documents:', error);
+                }
 
                 return true;
             }
@@ -1142,12 +1147,24 @@ const resolvers = {
                 return new ApolloError("Error on Set / Update Role")
             }
         },
-        RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
+        RandomlySelectProfessorsToAGroup: async (_, { CID, fullName }) => {
 
             const coordinatorId = Mongoose.Types.ObjectId(CID)
             const MAX_APPOINTMENTS = 3;
 
             try {
+
+                const sponsor = await Group.find({ coordinatorId: coordinatorId, isSponsor: true });
+
+                const coordinatorInfo = [{
+                    _id: coordinatorId,
+                    fullName: fullName
+                }]
+
+                sponsor.map(async (group) => {
+                    await CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, groupId: group._id, numberOfAttending: { $eq: 0 } }, { $inc: { numberOfAttending: 1 }, $push: { attending2: { $each: coordinatorInfo } } })
+                })
+
                 const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
 
                 for (let counter = 0; counter < numAttending; counter++) {
@@ -1155,7 +1172,7 @@ const resolvers = {
                     const coordinatorInfo = await CoordSchedule.aggregate([
                         { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } } },
                         { $sample: { size: 1 } },
-                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 } }
+                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1, groupId: 1 } }
                     ])
 
                     const date = new Date(coordinatorInfo[0].time);
@@ -1178,7 +1195,6 @@ const resolvers = {
                         ]);
                     }
                 }
-
             } catch (e) {
                 return false;
             }
