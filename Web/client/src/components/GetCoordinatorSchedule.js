@@ -1,6 +1,7 @@
 import { gql, useQuery, NetworkStatus, useMutation } from '@apollo/client';
+import { AuthContext } from '../context/authContext';
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -31,8 +32,8 @@ const GET_SCHEDULE = gql`
 `
 
 const GENERATE_APPOINTMENT = gql`
-    mutation RandomlySelectProfessorsToAGroup($cid: ID!) {
-    RandomlySelectProfessorsToAGroup(CID: $cid)
+    mutation RandomlySelectProfessorsToAGroup($cid: ID!, $fullName: String) {
+    RandomlySelectProfessorsToAGroup(CID: $cid, fullName: $fullName)
     }
 `
 const CANCEL_APPOINTMENT = gql`
@@ -42,6 +43,7 @@ const CANCEL_APPOINTMENT = gql`
 `
 
 export const GetCoordinatorSchedule = ({ ID }) => {
+    const { user } = useContext(AuthContext);
 
     const [schedule, setSchedule] = useState([]);
     const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
@@ -95,9 +97,9 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     if (error) return `Error! ${error.message}`
 
 
-    function handleCreateGenerateViewers(e, ID) {
+    function handleCreateGenerateViewers(e, ID, firstname, lastname) {
         randomlySelectProfessorsToAGroup({
-            variables: { cid: ID },
+            variables: { cid: ID, fullName: firstname + ' ' + lastname },
             refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
         })
     }
@@ -113,7 +115,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     return (
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none' }}>
             <div className='StickyHeader'>
-                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID)}>Generate</Button>
+                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate</Button>
             </div>
             <Table>
                 <TableBody>

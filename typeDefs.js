@@ -30,6 +30,8 @@ scalar DateTime
         coordinatorId:ID
     }
 
+    
+
     type UserLogin {
         _id:ID
         firstname: String 
@@ -93,6 +95,7 @@ scalar DateTime
         groupName: String
         projectField: String
         groupNumber: Int
+        appointment: [ID]
     } 
     
     input UserInput {
@@ -278,6 +281,24 @@ scalar DateTime
         groupName: String
     }
 
+    type attendingProfessors {
+        _id: ID
+        fullName: String
+    }
+    
+    type fancy {
+        datetime: String
+        room: String
+        attending: [attendingProfessors]
+        group: [Group]
+        coordinator: [coordinatorDetails]
+    }
+
+    type test {
+        _id: String
+        info: [fancy]
+    }
+
     type Query {
         getUser(ID:ID!) : Users
         getUserInfo(ID: String!): UserInfo
@@ -299,17 +320,18 @@ scalar DateTime
         getAllGroups : [Group]
         getFullTimeRange: [getAllCoordScheduleFormat2]
         getColleagueSchedule(ID: ID):[getAllCoordScheduleFormat]
+        getAllCoordinatorScheduleFancy: [test]
     }
 
     type Mutation {
-        createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput): Boolean
+        createProfessorSchedule(ID:ID!,privilege: String! ,time:[String]): Boolean
         deleteUser(ID:ID!):Users
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!
         editProfessor(ID:ID!, professorInput:ProfessorInput):Professors
         makeAppointment(AppointmentEdit:appointmentEdit):CoordSchedule
         groupSelectAppointmentTime(CID:ID!, GID:ID!, time: DateTime): Boolean
-        RandomlySelectProfessorsToAGroup(CID:ID!) : Boolean
+        RandomlySelectProfessorsToAGroup(CID:ID!, fullName: String) : Boolean
         roomChange(CID:ID!, newRoom:String):[CoordSchedule]
         registerUser(registerInput: RegisterInput) : UserLogin
         registerCoordinator(registerInput: RegisterInput): UserLogin
@@ -327,7 +349,7 @@ scalar DateTime
         updatePassword (ID: String!, oldPassword: String!, newPassword: String!, confirmedPassword: String!) : Boolean
         deleteGroup(groupId:ID):Boolean
         deleteAllGroups(CID:ID):Boolean
-        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String) : Boolean
+        createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String, isSponsor: Int) : Boolean
         generateGroupAppointment (CID:ID): Boolean
     }
 `

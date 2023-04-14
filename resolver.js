@@ -43,7 +43,23 @@ const resolvers = {
             return await Users.find();
         },
         getProfessor: async (_, { ID }) => {
-            return await Professors.findById(ID);
+            return await Professors.findById(ID)
+                .select({
+                    availSchedule: {
+                        $map: {
+                            input: "$availSchedule",
+                            as: "schedule",
+                            in: {
+                                $dateToString: { format: "%m/%d/%Y %H:%M", date: "$$schedule" }
+                            }
+                        }
+                    }
+                })
+                .lean()
+                .then(doc => {
+                    doc.availSchedule.sort((a, b) => new Date(a) - new Date(b));
+                    return doc;
+                });
         },
         getAllProfessors: async () => {
             return await Professors.find();
@@ -140,15 +156,25 @@ const resolvers = {
                 },
             ])
         },
+        getAllCoordinatorScheduleFancy: async () => {
+            return CoordSchedule.aggregate([
+                { $lookup: { from: "coordinators", localField: "coordinatorID", foreignField: "_id", as: "coordinatorInfo" } },
+                { $lookup: { from: "groups", localField: "groupId", foreignField: "_id", as: "groupInfo" } },
+                { $group: { _id: { $dateToString: { format: "%m/%d/%Y", date: "$time" } }, info: { $push: { datetime: { $dateToString: { format: "%m/%d/%Y %H:%M", date: "$time" } }, attending: "$attending2", room: "$room", group: "$groupInfo", coordinator: "$coordinatorInfo" } } } },
+                { $sort: { _id: 1 } }
+            ])
+        },
         getAllCoordinatorSchedule: async (_, { ID }) => {
 
             const PID = Mongoose.Types.ObjectId(ID)
             const getUser = await Professors.findOne({ _id: PID }).select('availSchedule');
+            const currentAppointment = await CoordSchedule.find({ "attending2._id": PID }).select("time");
 
             const availSchedule = getUser.availSchedule.map(date => new Date(date));
+            const pickedApp = currentAppointment.map(date => new Date(date));
 
             const user = await CoordSchedule.aggregate([
-                { $match: { time: { $nin: availSchedule } } },
+                { $match: { $and: [{ time: { $nin: availSchedule } }, { time: { $nin: pickedApp } }] } },
                 {
                     $lookup: {
                         from: "coordinators",
@@ -177,6 +203,8 @@ const resolvers = {
             ])
 
             return user;
+
+
         },
         getColleagueSchedule: async (_, { ID }) => {
 
@@ -292,12 +320,32 @@ const resolvers = {
     },
     Mutation: {
         registerCoordinator: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
+
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
             if (password !== confirmpassword) {
                 throw new ApolloError("Passwords Do Not Match");
             }
+
             if (password === "" || firstname === "" || lastname === "" || email === "") {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
+            // if (!numberRegex.test(password)) {
+            //     throw new ApolloError("Password doesn't contain a number");
+            // }
+
+            // if (!specialRegex.test(password)) {
+            //     throw new ApolloError("password doesn't contain any special characters")
+            // }
+
+
 
             // See if an old user or Professor exists with Email attempting to Register
             // const oldUser = await Users.findOne({email});
@@ -361,9 +409,9 @@ const resolvers = {
                 token: authCoordinator.token
             }
         },
-        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname, role }) => {
+        createAccounts: async (_, { CID, groupNumber, groupName, userLogin, password, firstname, lastname, role, isSponsor }) => {
 
-            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined || role === undefined) {
+            if (groupNumber === undefined || groupName === undefined || userLogin === undefined || password === undefined || firstname === undefined || lastname === undefined || role === undefined || isSponsor === undefined) {
                 throw new ApolloError("Missing Data From CSV File");
             }
 
@@ -382,8 +430,8 @@ const resolvers = {
                     groupName: groupName.toLowerCase(),
                     projectField: "",
                     groupNumber: groupNumber,
+                    isSponsor: parseInt(isSponsor)
                 });
-
 
                 const student = new Users({
                     userFName: firstname.toLowerCase(),
@@ -459,12 +507,20 @@ const resolvers = {
                     image: '',
                 })
 
-                await Promise.all([student.save(), authStudent.save(), studentInfo.save()])
+                try {
+                    await Promise.all([student.save(), authStudent.save(), studentInfo.save()]);
+                    // console.log('All documents saved successfully');
+                } catch (error) {
+                    // console.log('Error while saving documents:', error);
+                }
 
                 return true;
             }
         },
         registerUser: async (_, { registerInput: { firstname, lastname, email, password, confirmpassword } }) => {
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
             if (password !== confirmpassword) {
                 throw new ApolloError("Passwords Do Not Match");
@@ -472,8 +528,11 @@ const resolvers = {
             if (password === "" || firstname === "" || lastname === "" || email === "") {
                 throw new ApolloError("Please fill in all of the Boxes!");
             }
-            // See if an old user or Professor exists with Email attempting to Register
-            // const oldUser = await Users.findOne({email});
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
             const oldProfessor = await UserInfo.findOne({ email: email });
 
             if (oldProfessor) {
@@ -701,12 +760,20 @@ const resolvers = {
         updatePassword: async (_, { ID, oldPassword, newPassword, confirmedPassword }) => {
             const userId = Mongoose.Types.ObjectId(ID);
 
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
             if (newPassword !== confirmedPassword) {
                 throw new ApolloError("New Passwords Do Not Match!");
             }
 
-            if (newPassword.length < 4) {
+            if (newPassword.length < 8) {
                 throw new ApolloError("New Password is too short");
+            }
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
             }
 
             try {
@@ -726,11 +793,18 @@ const resolvers = {
             }
         },
         resetPassword: async (_, { resetPassword: { email, password, confirmPassword } }) => {
+            const capitalRegex = /[A-Z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
             // encrypt new password and set to user.
             if (password !== confirmPassword) {
                 throw new ApolloError("Passwords Do Not Match!");
             }
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
             try {
 
                 const [encryptedPassword, finduser] = await Promise.all([
@@ -749,8 +823,7 @@ const resolvers = {
             }
             return true
         },
-        createProfessorSchedule: async (_, { ID, privilege, professorScheduleInput: { time } }) => {
-
+        createProfessorSchedule: async (_, { ID, privilege, time }) => {
             if (ID === null || privilege === null) {
                 throw new ApolloError("Missing Field Data");
             } else {
@@ -765,10 +838,12 @@ const resolvers = {
                         dates.push(new Date(times));
                     })
 
+                    console.log(UniqueTimes);
+
 
                     if (privilege === "professor") {
                         const isScheduled = (await Professors.find({ _id: ID, availSchedule: { $in: dates } }).count());
-
+                        console.log(isScheduled)
                         if (!isScheduled) {
                             (await Professors.updateOne({ _id: ID }, { $push: { availSchedule: { $each: dates } } })).modifiedCount;
                         } else {
@@ -1073,26 +1148,39 @@ const resolvers = {
                 return new ApolloError("Error on Set / Update Role")
             }
         },
-        RandomlySelectProfessorsToAGroup: async (_, { CID }) => {
+        RandomlySelectProfessorsToAGroup: async (_, { CID, fullName }) => {
 
             const coordinatorId = Mongoose.Types.ObjectId(CID)
             const MAX_APPOINTMENTS = 3;
 
-            // grab # of appointments without at least 3 attending.
-            const numAttending = await CoordSchedule.find().count();
-
             try {
 
-                for (let counter = 0; counter < numAttending; counter++) {
-                    const coordinatorInfo = await CoordSchedule.findOne(
-                        { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } },
-                        { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1 });
+                const sponsor = await Group.find({ coordinatorId: coordinatorId, isSponsor: true });
 
-                    const date = new Date(coordinatorInfo.time);
+                const coordinatorInfo = [{
+                    _id: coordinatorId,
+                    fullName: fullName
+                }]
+
+                sponsor.map(async (group) => {
+                    await CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, groupId: group._id, numberOfAttending: { $eq: 0 } }, { $inc: { numberOfAttending: 1 }, $push: { attending2: { $each: coordinatorInfo } } })
+                })
+
+                const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
+
+                for (let counter = 0; counter < numAttending; counter++) {
+
+                    const coordinatorInfo = await CoordSchedule.aggregate([
+                        { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } } },
+                        { $sample: { size: 1 } },
+                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1, groupId: 1 } }
+                    ])
+
+                    const date = new Date(coordinatorInfo[0].time);
 
                     const matchProfessors = await Professors.aggregate([
                         { $match: { availSchedule: date } },
-                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo.numberOfAttending } },
+                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
 
@@ -1108,7 +1196,6 @@ const resolvers = {
                         ]);
                     }
                 }
-
             } catch (e) {
                 return false;
             }

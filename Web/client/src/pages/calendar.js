@@ -2,12 +2,22 @@ import { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import CustomSidebar from '../components/Sidebar';
+import { gql, useMutation } from '@apollo/client';
 import dayjs from 'dayjs';
 import { Button } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
+import { GET_All_COORDINATOR_SCHEDULE } from '../components/GetAllCoordinatorSchedule'
+import { GetProfessorSchedule } from '../components/GetProfessorSchedule'
+// import { CreateProfessorSchedule } from '../components/CreateProfessorSchedule'
 import "../components/css/calendar2.css"
+
+const ADD_DATES = gql`
+    mutation Mutation($id: ID!, $privilege: String!, $time: [String]) {
+    createProfessorSchedule(ID: $id, privilege: $privilege, time: $time)
+    }
+`
 
 function Calendar(props) {
     // user data lives in here  
@@ -16,7 +26,7 @@ function Calendar(props) {
 
     const [selectedDates, setDate] = useState([]);
     const [deleteDate, setDeleteDate] = useState(null);
-
+    const [createProfessorSchedule] = useMutation(ADD_DATES);
 
     const onLogout = () => {
         logout();
@@ -27,7 +37,7 @@ function Calendar(props) {
         setDate(checkedStates);
     };
 
-    const handleIndexRest = (index) =>{
+    const handleIndexRest = (index) => {
         setDeleteDate(index)
     }
 
@@ -40,13 +50,13 @@ function Calendar(props) {
         color: 'white',
         backgroundColor: '#f44336',
         '&:hover': {
-          backgroundColor: '#d32f2f',
+            backgroundColor: '#d32f2f',
         },
         float: 'right',
         marginRight: '5px',
     }));
 
-    const SubmitButton = styled(Button)(({theme}) =>({
+    const SubmitButton = styled(Button)(({ theme }) => ({
         margin: 'auto',
         marginTop: '5px',
         width: '91%',
@@ -61,6 +71,22 @@ function Calendar(props) {
         return edtTime;
     }
 
+    function handleAddAvailability(selectedDates) {
+
+        let availDates = []
+        for (let i = 0; i < selectedDates.length; i++) {
+            let date = new Date(selectedDates[i].time);
+            let offset = date.getTimezoneOffset();
+            date.setMinutes(date.getMinutes() - offset);
+            availDates.push(date.toISOString());
+        }
+
+        createProfessorSchedule({
+            variables: { id: user.id, privilege: user.privilege, time: availDates },
+            refetchQueries: [{ query: GET_All_COORDINATOR_SCHEDULE, variables: { id: user.id } }]
+        })
+
+    }
     return (
         <>
             <div className='calendar2Page'>
@@ -81,30 +107,31 @@ function Calendar(props) {
                             </div>
                             <div className='rightContainer'>
                                 <div className='timeListContainer'>
-                                <h2 className='timeListTitle'>Selected Items</h2>
+                                    <h2 className='timeListTitle'>Selected Items</h2>
                                     <div className='timeItemContainer'>
-                                    {selectedDates.map((data, index) => {
-                                        return(
-                                            <div className='timeItem' key={data._id}>
-                                                <div className='timeData'>
-                                                {new Date(data.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
-                                                {new Date(data.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
-                                                {new Date(data.time).getDate() % 10 === 1 ? 'st' : new Date(data.time).getDate() % 10 === 2 ? 'nd' : new Date(data.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
-                                                {returnCurrentDateTime(data.time) +" "}
+                                        {selectedDates.map((data, index) => {
+                                            return (
+                                                <div className='timeItem' key={data._id}>
+                                                    <div className='timeData'>
+                                                        {new Date(data.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
+                                                        {new Date(data.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
+                                                        {new Date(data.time).getDate() % 10 === 1 ? 'st' : new Date(data.time).getDate() % 10 === 2 ? 'nd' : new Date(data.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                                                        {returnCurrentDateTime(data.time) + " "}
+                                                    </div>
+                                                    <div>
+                                                        {"Room: " + data.room + " "}
+                                                    </div>
+                                                    <div>{data.coordinatorInfo?.coordinatorLName}</div>
+                                                    <RedButton onClick={() => updatedDates(index)}><DeleteForeverIcon /></RedButton>
                                                 </div>
-                                                <div>
-                                                {"Room: "+data.room+" "}
-                                                </div>
-                                                <div>{data.coordinatorInfo?.coordinatorLName}</div>
-                                                <RedButton onClick={() => updatedDates(index)}><DeleteForeverIcon/></RedButton>
-                                            </div>
-                                        )
-                                    })}
+                                            )
+                                        })}
                                     </div>
                                     <SubmitButton
                                         variant="contained"
                                         color="primary"
-                                        disabled={selectedDates.length <= 0}> Update Schedule</SubmitButton>
+                                        disabled={selectedDates.length <= 0}
+                                        onClick={() => handleAddAvailability(selectedDates)}> Update Schedule</SubmitButton>
                                 </div>
                             </div>
                         </div>

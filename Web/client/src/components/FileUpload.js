@@ -12,8 +12,8 @@ import Papa from "papaparse";
 
 
 const CREATE_ACCOUNTS = gql`
-    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String, $role: String) {
-    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role)
+    mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String, $role: String, $isSponsor: Int) {
+    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role, isSponsor: $isSponsor)
     }
 `
 
@@ -25,6 +25,7 @@ query Query($coordinatorId: String) {
         groupName
         groupNumber
         projectField
+        isSponsor
     }
 }
 `
@@ -76,7 +77,8 @@ function FileUpload(props) {
                                 password: row[3],
                                 firstname: row[4],
                                 lastname: row[5],
-                                role: row[6]
+                                role: row[6],
+                                isSponsor: parseInt(row[7])
                             },
                         });
                     } catch (error) {
