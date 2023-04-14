@@ -174,7 +174,7 @@ const resolvers = {
             const pickedApp = currentAppointment.map(date => new Date(date));
 
             const user = await CoordSchedule.aggregate([
-                { $match: { time: { $nin: availSchedule, $nin: pickedApp } } },
+                { $match: { $and: [{ time: { $nin: availSchedule } }, { time: { $nin: pickedApp } }] } },
                 {
                     $lookup: {
                         from: "coordinators",
