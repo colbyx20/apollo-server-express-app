@@ -8,6 +8,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import AddIcon from '@mui/icons-material/Add';
 import Paper from '@mui/material/Paper';
 import './css/getgroups.css';
 import { Button, Checkbox } from '@mui/material';
@@ -38,7 +39,7 @@ query Query($id: ID) {
 `
 
 
-export const GetAllCoordinatorSchedule = (props) => {
+export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedCheckedStates, onDelete}) => {
 
     const { user } = useContext(AuthContext);
 
@@ -47,16 +48,42 @@ export const GetAllCoordinatorSchedule = (props) => {
     });
 
     const [checkedStates, setCheckedStates] = React.useState([]);
+    const [dateRemove,setRemove] = React.useState(updatedCheckedStates)
 
+    React.useEffect(()=>{
+        if(updatedCheckedStates != null){
+            setCheckedStates((prevSelectedDates) => {
+                const newSelectedDates = [...checkedStates];
+                newSelectedDates.splice(updatedCheckedStates, 1);
+                return newSelectedDates;
+            });
+            setRemove(null);
+        }
+        
+        console.log(updatedCheckedStates)
+            
+    }, [updatedCheckedStates]);
 
+    React.useEffect(() => {
+        onCheckedStatesChange(checkedStates);
+        // console.log(checkedStates);
+    }, [checkedStates, onCheckedStatesChange]);
+
+    React.useEffect(() =>{
+        onDelete(dateRemove);
+    },[dateRemove, onDelete]);
+    
     const handleChange = (event) => {
-        checkedStates.push(event)
+        if (!checkedStates.includes(getAllCoordinatorSchedule[event])){
+        const newCheckedStates = [...checkedStates, getAllCoordinatorSchedule[event]];
+        setCheckedStates(newCheckedStates);
+        }
     };
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    const search = props.data;
+    
     const { getAllCoordinatorSchedule } = data;
 
     function returnCurrentDateTime(date1) {
@@ -92,7 +119,7 @@ export const GetAllCoordinatorSchedule = (props) => {
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo?.coordinatorFName + ' ' + coordinator.coordinatorInfo?.coordinatorLName} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> <Checkbox onChange={() => handleChange(index)} />
+                            <TableCell sx={{ color: 'white' }} align='left'> <Button variant='contained' size='small' sx={{float: 'right', mt: 1}} onClick={() => handleChange(index)}><AddIcon/></Button>
                             </TableCell>
 
                         </TableRow>
