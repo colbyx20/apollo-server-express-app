@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import AccountScreen from "../app/screens/AccountProfessorScreen";
-import CalendarProfessorScreen from "../app/screens/CalendarProfessorScreen";
-import HomeScreen from "../app/screens/HomeProfessorScreen";
+import AccountStudentScreen from "../app/screens/AccountProfessorScreen";
+import CalendarStudentScreen from "../app/screens/CalendarStudentScreen";
+import HomeStudentScreen from "../app/screens/HomeStudentScreen";
 import styles from "../app/config/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -14,19 +14,19 @@ const TabArr = [
     route: "Calendar",
     iconActive: "calendar-clock",
     iconInactive: "calendar-clock-outline",
-    component: CalendarProfessorScreen,
+    component: CalendarStudentScreen,
   },
   {
     route: "Home",
     iconActive: "home",
     iconInactive: "home-outline",
-    component: HomeScreen,
+    component: HomeStudentScreen,
   },
   {
     route: "Account",
     iconActive: "account-circle",
     iconInactive: "account-circle-outline",
-    component: AccountScreen,
+    component: AccountStudentScreen,
   },
 ];
 
@@ -35,7 +35,7 @@ const AppNavigator = () => (
     initialRouteName="Home"
     screenOptions={{
       headerShown: false,
-
+      keyboardHidesTabBar: true,
       tabBarInactiveBackgroundColor: styles.colors.gold,
       tabBarActiveBackgroundColor: styles.colors.gold,
       tabBarActiveTintColor: styles.colors.grayDark,

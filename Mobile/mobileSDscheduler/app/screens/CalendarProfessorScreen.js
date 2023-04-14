@@ -28,6 +28,7 @@ function CalendarProfessorScreen(props) {
   const { data, loading, error, refetch } = useQuery(APPOINTMENTS);
   const [modalVisible, setModalVisible] = useState(false);
   const [currDay, setCurrDay] = useState(0);
+  const [currDate, setCurrDate] = useState("");
 
   useFocusEffect(() => {
     console.log("Refetch Calendar");
@@ -43,10 +44,10 @@ function CalendarProfessorScreen(props) {
   }
 
   //   console.log(data.getAllGroups[0].groupName);
-  console.log(data);
-  console.log(new Date().toLocaleString().split("T")[0]);
+  // console.log(data);
+  // console.log(new Date().toLocaleString().split("T")[0]);
   var dateABC = new Date();
-  var dateABCstr = getDate(dateABC);
+  var dateABCstr = getIndex(dateABC);
   return (
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
@@ -138,7 +139,7 @@ function CalendarProfessorScreen(props) {
         onDayPress={(day) => {
           console.log("day pressed", day);
           setCurrDay((new Date(day.dateString).getDay() + 1) % 7);
-          console.log((new Date(day.dateString).getDay() + 1) % 7);
+          setCurrDate(day.dateString);
         }}
         // Callback that gets called when day changes while scrolling agenda list
         onDayChange={(day) => {
@@ -154,7 +155,7 @@ function CalendarProfessorScreen(props) {
         //Max amount of months allowed to scroll to the past. Default = 50
         pastScrollRange={1}
         // Max amount of months allowed to scroll to the future. Default = 50
-        futureScrollRange={12}
+        futureScrollRange={5}
         // Specify how each item should be rendered in agenda
         renderItem={(item, firstItemInDay) => {
           return (
@@ -186,10 +187,6 @@ function CalendarProfessorScreen(props) {
             </View>
           );
         }}
-        // // Specify how each date should be rendered. day can be undefined if the item is not first in that day
-        // renderDay={(day, item) => {
-        //   return <View />;
-        // }}
         // Specify how empty date content with no items should be rendered
         renderEmptyDate={() => {
           return (
@@ -198,14 +195,6 @@ function CalendarProfessorScreen(props) {
             </View>
           );
         }}
-        // // Specify how agenda knob should look like
-        // renderKnob={() => {
-        //   return <View />;
-        // }}
-        // Override inner list with a custom implemented component
-        // renderList={(listProps) => {
-        //   return <MyCustomList {...listProps} />;
-        // }}
         // Specify what should be rendered instead of ActivityIndicator
         renderEmptyData={() => {
           return (
@@ -284,8 +273,10 @@ function CalendarProfessorScreen(props) {
       ></Agenda>
       <AvailabilityModal
         onPress={() => setModalVisible(false)}
-        dayIndex={currDay}
-        //THIS (appmtmdl) SHOULD BE DELETED, OTHERWISE CYCLE OCCURS
+        dayIndex={currDate == "" ? getIndex(new Date()) : currDay}
+        dateString={
+          currDate == "" ? new Date().toISOString().split("T")[0] : currDate
+        }
         modalVisible={modalVisible}
       ></AvailabilityModal>
       {/* <NavBar
@@ -302,8 +293,10 @@ function CalendarProfessorScreen(props) {
   );
 }
 
-function getDate(date) {
-  return date.toISOString().split("T")[0];
+function getIndex(date) {
+  var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var currDayName = date.toLocaleString().split(" ")[0];
+  return days.indexOf(currDayName);
 }
 
 function getAppointments(data) {

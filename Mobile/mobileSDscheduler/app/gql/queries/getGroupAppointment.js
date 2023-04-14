@@ -1,13 +1,13 @@
 import { gql } from "@apollo/client";
 
-export const GROUPS = gql`
+export const APPOINTMENT = gql`
   query Query($studentId: String) {
     getGroupAppointment(studentId: $studentId) {
       _id
       attending
       attending2 {
-        _id
         fullName
+        _id
       }
       groupId {
         groupName
@@ -15,8 +15,8 @@ export const GROUPS = gql`
         projectField
       }
       numberOfAttending
-      time
       room
+      time
     }
   }
 `;

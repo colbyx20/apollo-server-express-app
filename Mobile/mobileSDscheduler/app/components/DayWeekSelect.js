@@ -2,16 +2,16 @@ import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
 import SwitchButton from "./SwitchButton";
 
-function DayWeekSelect({ dayIndex }) {
-  const [days, setDays] = useState([
-    { name: "Sun", isActive: false },
-    { name: "Mon", isActive: false },
-    { name: "Tue", isActive: false },
-    { name: "Wed", isActive: false },
-    { name: "Thu", isActive: false },
-    { name: "Fri", isActive: false },
-    { name: "Sat", isActive: false },
-  ]);
+function DayWeekSelect({ dayIndex, days, setDays }) {
+  // const [days, setDays] = useState([
+  //   { name: "Sun", isActive: false },
+  //   { name: "Mon", isActive: false },
+  //   { name: "Tue", isActive: false },
+  //   { name: "Wed", isActive: false },
+  //   { name: "Thu", isActive: false },
+  //   { name: "Fri", isActive: false },
+  //   { name: "Sat", isActive: false },
+  // ]);
 
   function handlePress(index) {
     //console.log("handling press ", index);
@@ -38,7 +38,7 @@ function DayWeekSelect({ dayIndex }) {
   // var days = [true, false, false, false, false, false, false];
   // var nameDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   useLayoutEffect(() => {
-    handlePress(dayIndex);
+    if (!days[dayIndex].isActive) handlePress(dayIndex);
   }, []);
   return (
     <View style={styles.container}>

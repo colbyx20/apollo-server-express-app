@@ -5,6 +5,7 @@ import AppButton from "./AppButton";
 import AppText from "./AppText";
 import AppTextInput from "./AppTextInput";
 import Screen from "./Screen";
+import ErrorMessage from "./ErrorMessage";
 import colors from "../config/colors";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -13,45 +14,82 @@ import DayWeekSelect from "./DayWeekSelect";
 import defaultStyles from "../config/styles";
 import TimePickerButton from "./TimePickerButton";
 
-function AvailabilityModal({ modalVisible, onPress, dayIndex }) {
-  const [startDateVisible, setStartDateVisible] = useState(false);
-  const [endDateVisible, setEndDateVisible] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+function AvailabilityModal({ modalVisible, onPress, dayIndex, dateString }) {
+  const [startTimeVisible, setStartTimeVisible] = useState(false);
+  const [endTimeVisible, setEndTimeVisible] = useState(false);
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
+
+  const [days, setDays] = useState([
+    { name: "Sun", isActive: false },
+    { name: "Mon", isActive: false },
+    { name: "Tue", isActive: false },
+    { name: "Wed", isActive: false },
+    { name: "Thu", isActive: false },
+    { name: "Fri", isActive: false },
+    { name: "Sat", isActive: false },
+  ]);
+
+  const [validInterval, setValidInterval] = useState(true);
+
+  var daysOfWeek = [];
+  getDaysOfWeek(dateString, dayIndex);
+  console.log(daysOfWeek);
+
+  console.log(
+    getAvailability(days, daysOfWeek, startTime.getHours(), endTime.getHours())
+  );
 
   const onStartChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     console.log("hello start");
-    setStartDateVisible(false);
-    setStartDate(currentDate);
+    setStartTimeVisible(false);
+    setStartTime(currentDate);
+    setValidInterval(startTime <= endTime);
     //console.log(newDate.toISOString());
   };
 
   const onEndChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     console.log("hello end");
-    setEndDateVisible(false);
-    setEndDate(currentDate);
+    setEndTimeVisible(false);
+    setEndTime(currentDate);
+    setValidInterval(startTime <= endTime);
     //console.log(newDate.toISOString());
   };
 
   const onPressSave = () => {
-    console.log("SAVED");
+    setValidInterval(startTime <= endTime);
+    console.log(
+      "SAVED ",
+      roundMinutes(startTime).getHours(),
+      " ",
+      roundMinutes(endTime).getHours()
+    );
   };
 
   return (
     <Modal visible={modalVisible} animationType="slide">
       <Screen style={styles.background}>
-        <AppText style={styles.title}>Please select availability</AppText>
+        <AppText style={styles.title}>
+          Please select availability for this week
+        </AppText>
+        <AppText style={styles.text}>
+          Week of {new Date(daysOfWeek[1]).toDateString()}
+        </AppText>
         <AppText style={styles.text}>
           Select days where pattern repeats:
         </AppText>
-        <DayWeekSelect dayIndex={dayIndex}></DayWeekSelect>
+        <DayWeekSelect
+          dayIndex={dayIndex}
+          days={days}
+          setDays={setDays}
+        ></DayWeekSelect>
         <AppText style={styles.text}>Select start time:</AppText>
-        {startDateVisible && (
+        {startTimeVisible && (
           <DateTimePicker
             mode="time"
-            value={startDate}
+            value={startTime}
             //is24Hour={false} //Lets make 24 hours the standard in the US
             onChange={onStartChange}
             minuteInterval={30} //it's a bit buggy
@@ -63,18 +101,18 @@ function AvailabilityModal({ modalVisible, onPress, dayIndex }) {
               styles.button,
               { backgroundColor: defaultStyles.colors.gold },
             ]}
-            onPress={() => setStartDateVisible(true)}
+            onPress={() => setStartTimeVisible(true)}
           >
             <TimePickerButton
-              newDate={startDate.toISOString()}
+              newDate={startTime.toISOString()}
             ></TimePickerButton>
           </TouchableOpacity>
         </View>
         <AppText style={styles.text}>Select end time:</AppText>
-        {endDateVisible && (
+        {endTimeVisible && (
           <DateTimePicker
             mode="time"
-            value={endDate}
+            value={endTime}
             //is24Hour={false} //Lets make 24 hours the standard in the US
             onChange={onEndChange}
             minuteInterval={30} //it's a bit buggy
@@ -86,15 +124,21 @@ function AvailabilityModal({ modalVisible, onPress, dayIndex }) {
               styles.button,
               { backgroundColor: defaultStyles.colors.gold },
             ]}
-            onPress={() => setEndDateVisible(true)}
+            onPress={() => setEndTimeVisible(true)}
           >
             <TimePickerButton
-              newDate={endDate.toISOString()}
+              newDate={endTime.toISOString()}
             ></TimePickerButton>
           </TouchableOpacity>
         </View>
 
         <View style={styles.buttonContainer}>
+          {!validInterval && (
+            <ErrorMessage
+              error={"The end time has to be after the start time"}
+              visible={!validInterval}
+            />
+          )}
           <AppButton
             title="Save"
             onPress={onPressSave} //{() => setModalVisible(false)}
@@ -107,9 +151,39 @@ function AvailabilityModal({ modalVisible, onPress, dayIndex }) {
       </Screen>
     </Modal>
   );
+
+  function getDaysOfWeek(date, index) {
+    for (var i = 0; 7 > i; i++) {
+      var tempDate = new Date(date);
+      tempDate.setDate(tempDate.getDate() - index + i);
+      daysOfWeek.push(tempDate.toISOString());
+    }
+  }
+
+  function getAvailability(days, week, startTime, endTime) {
+    var availability = [];
+    for (var i = 0; 7 > i; i++) {
+      if (days[i].isActive) {
+        for (var t = startTime; endTime > t; t++) {
+          var slot = new Date(week[i].split("T")[0]);
+          slot.setDate(slot.getDate() + 1);
+          slot.setHours(slot.getUTCHours() + t);
+          availability.push(slot);
+        }
+      }
+    }
+    return availability;
+  }
 }
 
 export default AvailabilityModal;
+
+function roundMinutes(date) {
+  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
+  date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+
+  return date;
+}
 
 const styles = StyleSheet.create({
   button: {

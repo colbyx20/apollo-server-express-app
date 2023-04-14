@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const GROUPS = gql`
-  query Query($id: ID!) {
+export const USER = gql`
+  query Query($id: ID!, $id2: String!) {
     getUser(ID: $id) {
       _id
       coordinatorId
@@ -9,6 +9,10 @@ export const GROUPS = gql`
       role
       userFName
       userLName
+    }
+    getUserInfo(ID: $id2) {
+      notificationEmail
+      email
     }
   }
 `;

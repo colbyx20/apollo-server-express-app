@@ -12,15 +12,8 @@ import { gql } from "@apollo/client";
 //     "password": null
 //   }
 // }
-export const GROUPS = gql`
-  mutation Mutation($id: ID!, $userInput: UserInput) {
-    editUser(ID: $id, userInput: $userInput) {
-      _id
-      coordinatorId
-      groupNumber
-      role
-      userFName
-      userLName
-    }
+export const USER_EMAIL = gql`
+  mutation Mutation($id: String!, $email: String!) {
+    editNotificationEmail(ID: $id, email: $email)
   }
 `;

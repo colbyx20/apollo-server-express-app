@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { FlatList, StyleSheet } from "react-native";
 import { useQuery, useLazyQuery } from "@apollo/client";
@@ -11,13 +11,15 @@ import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
+import AuthContext from "../auth/context";
 
 function HomeScreen(props) {
+  const { user } = useContext(AuthContext);
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(
     GROUPS,
     {
-      variables: { profId: "6414996286c77fadcb080900" },
+      variables: { profId: user.loginUser._id },
     },
     {
       fetchPolicy: "network-only", // Doesn't check cache before making a network request
@@ -49,7 +51,7 @@ function HomeScreen(props) {
         keyExtractor={(data) => data._id.toString()}
         renderItem={({ item }) => (
           <GroupItem
-            image={require("../assets/TheTab_KGrgb_300ppi.png")}
+            image={require("../assets/knightro.png")}
             title={item.groupName}
             subTitle={dateToTimeString(item.time)}
             room={item.room}

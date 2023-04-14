@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { Image, StyleSheet, Dimensions, View } from "react-native";
 import Constants from "expo-constants";
@@ -17,6 +17,7 @@ import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import Screen from "../components/Screen";
 import colors from "../config/colors";
+import AuthContext from "../auth/context";
 
 const validationSchema = Yup.object().shape({
   // email: Yup.string()
@@ -32,12 +33,13 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-function AccountScreen(props) {
+function AccountStudentScreen(props) {
+  const { user, setUser } = useContext(AuthContext);
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(PROFESSOR, {
     variables: {
-      id: "6414996286c77fadcb080900",
-      getProfessorId2: "6414996286c77fadcb080900",
+      id: user.loginUser._id,
+      getProfessorId2: user.loginUser._id,
     },
   });
 
@@ -96,7 +98,7 @@ function AccountScreen(props) {
       console.log("Submit Email! " + notifEmail);
       notificationEmail({
         variables: {
-          id: "6414996286c77fadcb080900",
+          id: user.loginUser._id,
           email: notifEmail,
         },
       });
@@ -106,7 +108,7 @@ function AccountScreen(props) {
       console.log("Submit Pasword! " + password);
       updatePassWord({
         variables: {
-          id: "6414996286c77fadcb080900",
+          id: user.loginUser._id,
           oldPassword: oldPassword,
           newPassword: password,
           confirmedPassword: confirmPassword,
@@ -120,7 +122,7 @@ function AccountScreen(props) {
     console.log("Submit Pasword! " + password);
     updatePassWord({
       variables: {
-        id: "6414996286c77fadcb080900",
+        id: user.loginUser._id,
         oldPassword: oldPassword,
         newPassword: password,
         confirmedPassword: confirmPassword,
@@ -219,7 +221,10 @@ function AccountScreen(props) {
         <AppButton
           title="Logout"
           color="gold"
-          onPress={() => console.log("logout")}
+          onPress={() => {
+            console.log("logout");
+            setUser(null);
+          }}
           style={styles.button}
         ></AppButton>
       </View>
@@ -274,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountScreen;
+export default AccountStudentScreen;

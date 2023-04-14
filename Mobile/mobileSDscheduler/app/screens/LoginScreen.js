@@ -8,82 +8,65 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-import AppButton from "../components/AppButton";
+import AppFormButton from "../components/AppFormButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
 import Constants from "expo-constants";
 import apiClient from "../api/client";
-import { useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { GROUPS } from "../gql/queries/getAllGroups";
+import { LOGIN_USER } from "../gql/mutations/loginUser";
 
 import Screen from "../components/Screen";
 import colors from "../config/colors";
 import ErrorMessage from "../components/ErrorMessage";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
 import GroupItemEditAction from "../components/GroupItemEditAction";
+import AuthContext from "../auth/context";
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .required()
-    .email()
-    .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
-    .label("Email"),
-  password: Yup.string().required().min(7).label("Password"),
+  email: Yup.string().email().label("Email"),
+  // email: Yup.string()
+  //   .required()
+  //   .email()
+  //   .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
+  //   .label("Email"),
+  password: Yup.string().required().min(4).label("Password"),
 });
 
 function LoginScreen(props) {
-  //API SAUCE
-  // const [groups, setGroups] = useState([]);
+  const authContext = useContext(AuthContext);
+  const [loginUser, { data, loading, error }] = useMutation(LOGIN_USER);
+
+  const handleSubmit = async ({ email, password }) => {
+    console.log(email, " ", password);
+
+    await loginUser({
+      variables: {
+        loginInput: {
+          email: email.toLowerCase(),
+          password: password,
+        },
+      },
+    });
+
+    if (error) {
+      return <AppText>Error: {error.message}</AppText>; //while loading return this
+    }
+
+    if (loading) {
+      return <AppText>Fetching data...</AppText>; //while loading return this
+    }
+
+    authContext.setUser(data);
+    console.log("Data: ", data);
+  };
 
   // useEffect(() => {
-  //   loadGroups();
-  // }, []);
-
-  // const loadGroups = async () => {
-  //   const response = await apiClient.get("getAllGroups");
-  //   setGroups(response.data);
-  // };
-
-  // console.log(groups);
-
-  //-----------------
-  //TESTING THINGS
-  //   const [groups, setGroups] = useState([]);
-
-  //   useEffect(() => {
-  //     loadGroups();
-  //   }, []);
-
-  //   const loadGroups = async () => {
-  //     //const response = await useQuery(GROUPS);
-  //     const { data, loading } = await useQuery(GROUPS);
-  //     setGroups(data);
-  //   };
-
-  //   console.log(groups);
-
-  //APOLLO CLIENT
-  const { data, loading, error } = useQuery(GROUPS);
-
-  if (error) {
-    return <AppText>Error: {error.message}</AppText>; //while loading return this
-  }
-
-  if (loading) {
-    return <AppText>Fetching data...</AppText>; //while loading return this
-  }
-
-  console.log(data.getAllGroups[0].groupName);
-  console.log(data);
-
-  // const handleSubmit = async ({ email, password }) => {
-  //   const result = await authApi.login(email, password);
-  //   if (!result.ok) return setLoginFailed(true);
-  //   setLoginFailed(false);
-  //   auth.logIn(result.data);
-  // };
+  //   console.log("Data: ", authContext.user);
+  // });
 
   return (
     <ImageBackground
@@ -99,7 +82,7 @@ function LoginScreen(props) {
 
         <Formik
           initialValues={{ email: "", password: "" }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
           {({ handleChange, errors, setFieldTouched, touched }) => (
@@ -115,6 +98,7 @@ function LoginScreen(props) {
                 textContextType="emailAddress" //might need to remove
               />
               <ErrorMessage error={errors.email} visible={touched.email} />
+              <AppText></AppText>
               <AppTextInput
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -129,11 +113,12 @@ function LoginScreen(props) {
                 error={errors.password}
                 visible={touched.password}
               />
-              <AppButton
+              <AppText></AppText>
+              <AppFormButton
                 title="Login"
                 color="gold"
                 onPress={handleSubmit}
-              ></AppButton>
+              ></AppFormButton>
             </>
           )}
         </Formik>
