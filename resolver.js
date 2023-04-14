@@ -168,11 +168,13 @@ const resolvers = {
 
             const PID = Mongoose.Types.ObjectId(ID)
             const getUser = await Professors.findOne({ _id: PID }).select('availSchedule');
+            const currentAppointment = await CoordSchedule.find({ "attending2._id": PID }).select("time");
 
             const availSchedule = getUser.availSchedule.map(date => new Date(date));
+            const pickedApp = currentAppointment.map(date => new Date(date));
 
             const user = await CoordSchedule.aggregate([
-                { $match: { time: { $nin: availSchedule } } },
+                { $match: { time: { $nin: availSchedule, $nin: pickedApp } } },
                 {
                     $lookup: {
                         from: "coordinators",
