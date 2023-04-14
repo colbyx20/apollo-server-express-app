@@ -24,7 +24,7 @@ export const professorsidebar = [
         link: "/professor"
     },
     {
-        title: <p className='sideBarText'>Calendar</p>,
+        title: <p className='sideBarText'>Schedule</p>,
         icon: <img className='icon' src={Calendar}></img>,
         link: "/calendar"
     },
