@@ -821,8 +821,7 @@ const resolvers = {
             }
             return true
         },
-        createProfessorSchedule: async (_, { ID, privilege, professorScheduleInput: { time } }) => {
-
+        createProfessorSchedule: async (_, { ID, privilege, time }) => {
             if (ID === null || privilege === null) {
                 throw new ApolloError("Missing Field Data");
             } else {

@@ -324,7 +324,7 @@ scalar DateTime
     }
 
     type Mutation {
-        createProfessorSchedule(ID:ID!,privilege: String! ,professorScheduleInput:ProfessorScheduleInput): Boolean
+        createProfessorSchedule(ID:ID!,privilege: String! ,time:[String]): Boolean
         deleteUser(ID:ID!):Users
         deleteProfessor(ID:ID!):Professors
         editUser(ID:ID!, userInput:UserInput):Users!

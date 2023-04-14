@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import './css/getgroups.css';
 import { Button, Checkbox } from '@mui/material';
 
-const GET_All_COORDINATOR_SCHEDULE = gql`
+export const GET_All_COORDINATOR_SCHEDULE = gql`
 query Query($id: ID) {
     getAllCoordinatorSchedule(ID: $id) {
         _id
@@ -39,7 +39,7 @@ query Query($id: ID) {
 `
 
 
-export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedCheckedStates, onDelete}) => {
+export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedCheckedStates, onDelete }) => {
 
     const { user } = useContext(AuthContext);
 
@@ -48,10 +48,10 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
     });
 
     const [checkedStates, setCheckedStates] = React.useState([]);
-    const [dateRemove,setRemove] = React.useState(updatedCheckedStates)
+    const [dateRemove, setRemove] = React.useState(updatedCheckedStates)
 
-    React.useEffect(()=>{
-        if(updatedCheckedStates != null){
+    React.useEffect(() => {
+        if (updatedCheckedStates != null) {
             setCheckedStates((prevSelectedDates) => {
                 const newSelectedDates = [...checkedStates];
                 newSelectedDates.splice(updatedCheckedStates, 1);
@@ -59,9 +59,7 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
             });
             setRemove(null);
         }
-        
-        console.log(updatedCheckedStates)
-            
+
     }, [updatedCheckedStates]);
 
     React.useEffect(() => {
@@ -69,21 +67,21 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
         // console.log(checkedStates);
     }, [checkedStates, onCheckedStatesChange]);
 
-    React.useEffect(() =>{
+    React.useEffect(() => {
         onDelete(dateRemove);
-    },[dateRemove, onDelete]);
-    
+    }, [dateRemove, onDelete]);
+
     const handleChange = (event) => {
-        if (!checkedStates.includes(getAllCoordinatorSchedule[event])){
-        const newCheckedStates = [...checkedStates, getAllCoordinatorSchedule[event]];
-        setCheckedStates(newCheckedStates);
+        if (!checkedStates.includes(getAllCoordinatorSchedule[event])) {
+            const newCheckedStates = [...checkedStates, getAllCoordinatorSchedule[event]];
+            setCheckedStates(newCheckedStates);
         }
     };
 
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
-    
+
     const { getAllCoordinatorSchedule } = data;
 
     function returnCurrentDateTime(date1) {
@@ -119,7 +117,7 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
                             </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.room} </TableCell>
                             <TableCell sx={{ color: 'white' }} align='left'> {coordinator.coordinatorInfo?.coordinatorFName + ' ' + coordinator.coordinatorInfo?.coordinatorLName} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'> <Button variant='contained' size='small' sx={{float: 'right', mt: 1}} onClick={() => handleChange(index)}><AddIcon/></Button>
+                            <TableCell sx={{ color: 'white' }} align='left'> <Button variant='contained' size='small' sx={{ float: 'right', mt: 1 }} onClick={() => handleChange(index)}><AddIcon /></Button>
                             </TableCell>
 
                         </TableRow>
