@@ -1,5 +1,5 @@
 import React from 'react'
-import '../components/css/icon.css' 
+import '../components/css/icon.css'
 import Home from '../components/images/house-door.svg';
 import Building from '../components/images/building.svg';
 import Calendar from '../components/images/calendar3-week.svg';
@@ -30,7 +30,7 @@ export const datasidebar = [
     {
         title: <p className='sideBarText'>Calendar</p>,
         icon: <img className='icon' src={Calendar}></img>,
-        link: "/calendar"
+        link: "/calendar2"
     },
     {
         title: <p className='sideBarText'>Logout</p>,

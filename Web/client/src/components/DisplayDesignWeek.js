@@ -20,8 +20,14 @@ function DisplayDesignWeek(props) {
     const [selected, setSelected] = useState([]);
     const [selectedTime, setSelectedTime] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
+    const [inputValue, setInputValue] = useState('');
     // const { data } = useQuery(GET_All_COORDINATOR_SCHEDULE)
     // console.log(data);
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+        checkEmptyList();
+    }
 
     const handleSelectedTime = (event, newSelected) => {
         setSelectedTime(newSelected);
@@ -38,7 +44,7 @@ function DisplayDesignWeek(props) {
     }, [props.daysList]);
 
     useEffect(() => {
-        if (selected.length > 0 && selectedTime.length > 0) {
+        if (selected.length > 0 && selectedTime.length > 0 && inputValue != '') {
             setIsEmpty(true);
         } else {
             setIsEmpty(false);
@@ -104,7 +110,8 @@ function DisplayDesignWeek(props) {
     }
 
     const checkEmptyList = () => {
-        if (selected.length > 0 && selectedTime.length > 0)
+
+        if (selected.length > 0 && selectedTime.length > 0 && inputValue != '')
             setIsEmpty(true);
     }
 
@@ -127,6 +134,14 @@ function DisplayDesignWeek(props) {
                             sx={{ marginRights: '50px' }}>
                             {TimeList}
                         </ToggleButtonGroup>
+                    </div>
+                    <div className="designWeekRoom">
+                        <input 
+                        placeholder="Room Location"
+                        className="designInput"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        />
                     </div>
                 </>
                 :
