@@ -994,8 +994,7 @@ const resolvers = {
                 }
             }
             //coordinator
-            else if (canceler.privilege == 'coordinator') {
-
+            else if (canceler.privilege == 'coordinator') 
                 if (reason == "Group")// cancel on groups behalf
                 {
                     if (appointment.attending2.length > 0)//Group had professors
@@ -1013,7 +1012,7 @@ const resolvers = {
                                 </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
-                            await Professors.updateOne({ _id: prof._id }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
+                            await Professors.updateOne({ _id: prof._id }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
                         }
                     }
                     await CoordSchedule.updateOne({ _id: ApID }, {
@@ -1027,7 +1026,7 @@ const resolvers = {
                     if (appointment.groupId)//Group already claimed it
                     {
                         const group = await Group.findOne({ _id: appointment.groupId });
-                        const members = await Users.findOne({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
+                        const members = await Users.find({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
                         for (user of members) {
                             const notify = await UserInfo.find({ userId: user._id });
                             transport.sendMail({
@@ -1056,13 +1055,13 @@ const resolvers = {
                                        </div>`,
                                 //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
-                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: chrono }, $pull: { appointments: appointment._id } })//return there  availability
+                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
                         }
 
-                    }
+                    } console.log("here")
                     await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
                 }
-            }
+        
             return true
         },
         setRole: async (_, { CID, role }) => {

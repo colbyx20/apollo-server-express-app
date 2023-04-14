@@ -79,6 +79,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
             variables: { cancelation: { CancelerID: ID, ApID: appointment, reason: "Personal" } },
             refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
         })
+
     };
 
     const handleMouseUp = () => {
@@ -143,6 +144,11 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                         ':hover': {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
+                                        } ,
+                                        ':active':{
+                                            background:'black',
+                                            transitionDuration:'3s'
+
                                         }
                                     }}
                                     onMouseDown={() => handleMouseDown(coordinator._id)}
