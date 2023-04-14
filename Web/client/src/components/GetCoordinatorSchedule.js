@@ -44,8 +44,6 @@ const CANCEL_APPOINTMENT = gql`
 
 export const GetCoordinatorSchedule = ({ ID }) => {
     const { user } = useContext(AuthContext);
-    console.log(user.firstname)
-    console.log(user.lastname)
 
     const [schedule, setSchedule] = useState([]);
     const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
