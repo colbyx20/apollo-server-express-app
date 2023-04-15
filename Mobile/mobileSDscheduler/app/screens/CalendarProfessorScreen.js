@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Constants from "expo-constants";
 import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
 import { useQuery } from "@apollo/client";
-import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorSchedule";
+import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorScheduleFancy";
 import {
   CalendarList,
   Calendar,
@@ -44,10 +44,15 @@ function CalendarProfessorScreen(props) {
   }
 
   //   console.log(data.getAllGroups[0].groupName);
-  // console.log(data);
+  console.log("hello");
+  // console.log(data.getAllCoordinatorScheduleFancy[0]._id);
+  // console.log(data.getAllCoordinatorScheduleFancy[1]._id);
   // console.log(new Date().toLocaleString().split("T")[0]);
   var dateABC = new Date();
   var dateABCstr = getIndex(dateABC);
+
+  //console.log(mapAppmntDay(data.getAllCoordinatorScheduleFancy[0]));
+  console.log(mapAppmntList(data.getAllCoordinatorScheduleFancy));
   return (
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
@@ -73,59 +78,62 @@ function CalendarProfessorScreen(props) {
         // The list of items that have to be displayed in agenda. If you want to render item as empty date
         // the value of date key has to be an empty array []. If there exists no value for date key it is
         // considered that the date in question is not yet loaded
-        items={{
-          // "2023-03-14": [{ name: "item 1 - any js object" }],
-          // "2023-03-23": [
-          //   {
-          //     name: "item 2 - any js object",
-          //     height: 80,
-          //     groupName: "SD Scheduler",
-          //     projectField: "IT",
-          //     groupNumber: "1",
-          //   },
-          // ],
-          "2023-04-10": [
-            {
-              _id: "1234567890",
-              arrayLength: 3,
-              pId: [
-                { _id: 123, name: "abc" },
-                { _id: 223, name: "bbc" },
-                { _id: 323, name: "cbc" },
-              ],
-            },
-            {
-              _id: "0987654321",
-              arrayLength: 5,
-              pId: [
-                { _id: 123, name: "abc" },
-                { _id: 223, name: "bbc" },
-                { _id: 323, name: "cbc" },
-                { _id: 233, name: "bbc" },
-                { _id: 333, name: "cbc" },
-              ],
-            },
-          ],
-          // "2023-03-22": [
-          //   {
-          //     _id: "1234567890",
-          //     arrayLength: 5,
-          //     pId: [
-          //       { _id: 123, name: "abc" },
-          //       { _id: 223, name: "bbc" },
-          //       { _id: 323, name: "cbc" },
-          //       { _id: 233, name: "bbc" },
-          //       { _id: 333, name: "cbc" },
-          //     ],
-          //   },
-          // ],
+        items={mapAppmntDay(data.getAllCoordinatorScheduleFancy[0])}
+        //items={mapAppmntList(data.getAllCoordinatorScheduleFancy)}
+        // items={{
+        //   // "2023-03-14": [{ name: "item 1 - any js object" }],
+        //   // "2023-03-23": [
+        //   //   {
+        //   //     name: "item 2 - any js object",
+        //   //     height: 80,
+        //   //     groupName: "SD Scheduler",
+        //   //     projectField: "IT",
+        //   //     groupNumber: "1",
+        //   //   },
+        //   // ],
+        //   "2023-04-10": [
+        //     {
+        //       _id: "1234567890",
+        //       arrayLength: 3,
+        //       pId: [
+        //         { _id: 123, name: "abc" },
+        //         { _id: 223, name: "bbc" },
+        //         { _id: 323, name: "cbc" },
+        //       ],
+        //     },
+        //     {
+        //       _id: "0987654321",
+        //       arrayLength: 5,
+        //       pId: [
+        //         { _id: 123, name: "abc" },
+        //         { _id: 223, name: "bbc" },
+        //         { _id: 323, name: "cbc" },
+        //         { _id: 233, name: "bbc" },
+        //         { _id: 333, name: "cbc" },
+        //       ],
+        //     },
+        //   ],
 
-          // "2023-03-24": [],
-          // "2023-03-25": [
-          //   { name: "item 3 - any js object" },
-          //   { name: "any js object" },
-          // ],
-        }}
+        //   // "2023-03-22": [
+        //   //   {
+        //   //     _id: "1234567890",
+        //   //     arrayLength: 5,
+        //   //     pId: [
+        //   //       { _id: 123, name: "abc" },
+        //   //       { _id: 223, name: "bbc" },
+        //   //       { _id: 323, name: "cbc" },
+        //   //       { _id: 233, name: "bbc" },
+        //   //       { _id: 333, name: "cbc" },
+        //   //     ],
+        //   //   },
+        //   // ],
+
+        //   // "2023-03-24": [],
+        //   // "2023-03-25": [
+        //   //   { name: "item 3 - any js object" },
+        //   //   { name: "any js object" },
+        //   // ],
+        // }}
         // Callback that gets called when items for a certain month should be loaded (month became visible)
         loadItemsForMonth={(month) => {
           console.log("trigger items loading");
@@ -158,15 +166,21 @@ function CalendarProfessorScreen(props) {
         futureScrollRange={5}
         // Specify how each item should be rendered in agenda
         renderItem={(item, firstItemInDay) => {
+          //itemInfo = item.info;
+          //console.log("DATETIME= ", itemInfo.datetime);
           return (
             <View style={styles.titleContainer}>
               <AppointmentItem
-                time={item._id}
+                time={item.datetime}
                 canSelect={false}
-                prof1={item.pId[0].name}
-                prof2={item.pId[1].name}
-                prof3={item.pId[2].name}
-                numProf={item.arrayLength}
+                profs={item.attending}
+                room={item.room}
+                coord={item.coordinator[0]}
+                group={item.group[0]}
+                // prof1={item.pId[0].name}
+                // prof2={item.pId[1].name}
+                // prof3={item.pId[2].name}
+                // numProf={item.arrayLength}
                 onPress={() => console.log("Group selected", item)}
                 renderRightActions={(itemObject) => (
                   <AppointmentItemAddAction
@@ -300,34 +314,45 @@ function getIndex(date) {
 }
 
 function getAppointments(data) {
-  // "2023-04-10": [
-  //   {
-  //     _id: "1234567890",
-  //     arrayLength: 3,
-  //     pId: [
-  //       { _id: 123, name: "abc" },
-  //       { _id: 223, name: "bbc" },
-  //       { _id: 323, name: "cbc" },
-  //     ],
-  //   },
-  //   {
-  //     _id: "0987654321",
-  //     arrayLength: 5,
-  //     pId: [
-  //       { _id: 123, name: "abc" },
-  //       { _id: 223, name: "bbc" },
-  //       { _id: 323, name: "cbc" },
-  //       { _id: 233, name: "bbc" },
-  //       { _id: 333, name: "cbc" },
-  //     ],
-  //   },
-  // ],
+  // items={{
+  //   // "2023-03-14": [{ name: "item 1 - any js object" }],
+  //   // "2023-03-23": [
+  //   //   {
+  //   //     name: "item 2 - any js object",
+  //   //     height: 80,
+  //   //     groupName: "SD Scheduler",
+  //   //     projectField: "IT",
+  //   //     groupNumber: "1",
+  //   //   },
+  //   // ],}}
   var appointments;
 }
 
-function mapAppoinntment(appointent) {
-  return;
+function mapAppmntList(appointents) {
+  var list = [];
+  //const [key] = Object.entries(object1);
+  //console.log(`${key}`);
+  appointents.forEach((item) => list.push(mapAppmntDay(item)));
+  return list;
 }
+
+function mapAppmntDay({ _id, info }) {
+  var date = new Date(_id).toISOString().split("T")[0];
+  var key = date,
+    day = {
+      [key]: info,
+    };
+  return day;
+}
+
+function getTime(appointment) {
+  return appointment._id;
+}
+
+// function mapAppmntSlots(appointment) {
+//   appmt = {appointents._id : []};
+//   return;
+// }
 
 const styles = StyleSheet.create({
   agenda: {

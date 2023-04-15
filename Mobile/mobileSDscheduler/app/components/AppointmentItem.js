@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
+  FlatList,
   Modal,
   Button,
 } from "react-native";
@@ -20,11 +21,11 @@ import AppointmentModal from "./AppointmentModal";
 
 function AppointmentItem({
   title,
-  numProf,
-  prof1,
-  prof2,
-  prof3,
+  profs,
+  coord,
   time,
+  room,
+  group,
   onPress,
   canSelect,
   renderRightActions,
@@ -32,6 +33,7 @@ function AppointmentItem({
   style,
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  var numProfs = profs.length;
   return (
     <View style={style}>
       <GestureHandlerRootView>
@@ -46,25 +48,62 @@ function AppointmentItem({
           >
             <View style={[styles.container]}>
               <View style={styles.details}>
-                <AppText style={styles.time}>Time: {time}</AppText>
-                <AppText style={styles.professors}>
-                  {prof1}, {prof2}, {numProf === 3 ? "and " : ""}
-                  {prof3}
-                  {3 < numProf ? ", ..." : ""}{" "}
+                <AppText style={styles.subTitle}>
+                  Coordinator: {toUppercase(coord.coordinatorFName)}{" "}
+                  {toUppercase(coord.coordinatorLName)}
                 </AppText>
+                <AppText style={styles.time}>
+                  Time: {time.split(" ")[1]}
+                </AppText>
+                {0 < numProfs ? (
+                  <AppText style={styles.subTitle}>Professors:</AppText>
+                ) : (
+                  <AppText style={styles.subTitle}>
+                    No professors currently available
+                  </AppText>
+                )}
+                <FlatList
+                  data={profs}
+                  keyExtractor={(data) => data._id.toString()}
+                  renderItem={({ item }) => (
+                    <AppText style={styles.professors}>
+                      {toUppercase(item.fullName)}
+                    </AppText>
+                  )}
+                />
+                {group != null ? (
+                  <AppText style={styles.subTitle}>
+                    Group #{group.groupNumber}: {group.groupName}
+                  </AppText>
+                ) : (
+                  <AppText style={styles.subTitle}>
+                    No group currently assigned
+                  </AppText>
+                )}
+                <AppText style={styles.time}>Room: {room}</AppText>
               </View>
             </View>
           </TouchableHighlight>
-          <AppointmentModal
+          {/* <AppointmentModal
             canSelect={canSelect}
             onPress={() => setModalVisible(false)}
             //THIS (appmtmdl) SHOULD BE DELETED, OTHERWISE CYCLE OCCURS
             modalVisible={modalVisible}
-          ></AppointmentModal>
+          ></AppointmentModal> */}
         </Swipeable>
       </GestureHandlerRootView>
     </View>
   );
+}
+
+function toUppercase(name) {
+  const words = name.split(" ");
+
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i][0].toUpperCase() + words[i].substr(1) + " ";
+  }
+
+  return words;
 }
 
 const styles = StyleSheet.create({
@@ -88,7 +127,11 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   professors: {
-    fontWeight: "600",
+    fontSize: 13,
+    marginLeft: 25,
+  },
+  subTitle: {
+    fontSize: 13,
     marginLeft: 10,
   },
 });
