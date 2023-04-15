@@ -42,7 +42,7 @@ function Register(props) {
     const context = useContext(AuthContext);
     let navigate = useNavigate();
     const [errors, setErrors] = useState([]);
-
+    const [isRegistered, setIsRegistered] = useState(false);
     function registerUserCallback() {
         console.log("callback hit");
         registerUser(); // call Reigster User API
@@ -61,10 +61,16 @@ function Register(props) {
         // update(proxy, { data: { registerUser: userData } }) {
         //     context.login(userData);
         // },
+        variables: { registerInput: values },
         onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
-        variables: { registerInput: values }
+        onCompleted() {
+            setIsRegistered(true);
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 3000)
+        }
     });
 
     return (
@@ -108,43 +114,16 @@ function Register(props) {
                             onChange={onChange}
                         />
                     </Stack>
-                    {errors ?
+                    {errors.length ? (
                         <>
-                            {errors.map(function (error) {
-                                return (
-                                    <Alert severity="error">
-                                        {error.message}
-                                    </Alert>
-                                )
-                            })}
+                            {errors.map((error) => (
+                                <Alert severity="error">{error.message}</Alert>
+                            ))}
                         </>
-                        :
-                        <>
+                    ) : isRegistered ? (
+                        <Alert severity="success">You have successfully registered</Alert>
+                    ) : null}
 
-                            <Alert severity="success">
-                                You have Successfully Registered
-                            </Alert>
-
-                        </>
-
-
-                    }
-
-                    {
-
-                        // <Alert severity="success">
-                        //     You have Successfully Registered
-                        // </Alert>
-
-                    }
-
-                    {/* {errors.map(function(error){
-                        return(
-                            <Alert severity="error">
-                                {error.message}
-                            </Alert>
-                        )
-                    })} */}
                     <Button sx={{
                         display: 'block',
                         marginRight: 'auto',
@@ -154,7 +133,13 @@ function Register(props) {
                     }}
                         variant="contained" onClick={onSubmit}>Register</Button>
 
-                    <span>Have an account?<a href='/login'> Log In</a><br /></span>
+                    <span>Have an account?<a href='/login'> Log In</a><br /></span><br />
+                    <ul style={{ paddingLeft: '5px', color: 'white', listStyleType: 'none' }}>Password Rules <hr /><br />
+                        <li>First character Must be Upper Case</li>
+                        <li>Must be at least 8 characters long</li>
+                        <li>Must contain a Number</li>
+                        <li>Must contain a Special Character</li>
+                    </ul>
                 </Container>
             </div>
             <div className='imageContainer'>
