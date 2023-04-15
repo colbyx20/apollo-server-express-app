@@ -1207,6 +1207,7 @@ const resolvers = {
             return true;
         },
         sendEventEmail: async (_, { ID, email, privilege }) => {
+
             if (ID === undefined || email === undefined) {
                 throw new ApolloError("Must send an email");
             }
@@ -1217,6 +1218,64 @@ const resolvers = {
                     const [getCoordinator, getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
                         Coordinator.findOne({ _id: ID }),
                         CoordSchedule.find({ coordinatorID: ID }),
+                        UserInfo.findOne({ userId: CID }),
+                    ])
+
+                    const firstname = getCoordinator.coordinatorFName.charAt(0).toUpperCase() + getCoordinator.coordinatorFName.slice(1);
+                    const lastname = getCoordinator.coordinatorLName.charAt(0).toUpperCase() + getCoordinator.coordinatorLName.slice(1);
+
+                    if (getNotificationEmail.notificationEmail === email) {
+
+                        let transport = nodemailer.createTransport({
+                            service: "Gmail",
+                            host: process.env.EMAIL_USERNAME,
+                            secure: false,
+                            auth: {
+                                user: process.env.EMAIL_USERNAME,
+                                pass: process.env.EMAIL_PASSWORD
+                            },
+                        });
+
+                        const scheduleTableRows = getCoordinatorSchedule.map((schedule) => {
+                            const estDate = new Date(schedule.time);
+                            return `<tr>
+                                        <td>${estDate.toDateString()}</td>
+                                        <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                                        <td>${schedule.room}</td>
+                                    </tr>`;
+                        }).join('');
+
+                        transport.sendMail({
+                            from: "group13confirmation@gmail.com",
+                            to: email,
+                            subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
+                            html: `<h1>Senior Design Appointments </h1>
+                            <h1>${firstname} ${lastname}</h1>
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${scheduleTableRows}
+                            </tbody>
+                        </table>
+                            `,
+                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                        })
+
+                    }
+
+                } else if (privilege === 'professor') {
+                    const getProfessor = await Professors.findOne({ _id: ID });
+                    const firstname = getProfessor.professorFName.charAt(0).toUpperCase() + getProfessor.professorFName.slice(1);
+                    const lastname = getProfessor.professorLName.charAt(0).toUpperCase() + getProfessor.professorLName.slice(1);
+
+                    const [getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
+                        CoordSchedule.find({ "attending2._id": ID }).select('room time'),
                         UserInfo.findOne({ userId: CID }),
                     ])
 
@@ -1246,28 +1305,81 @@ const resolvers = {
                             to: email,
                             subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
                             html: `<h1>Senior Design Appointments </h1>
+                            <h1>${firstname} ${lastname}</h1>
                             <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Room</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${scheduleTableRows}
-                            </tbody>
-                        </table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${scheduleTableRows}
+                                </tbody>
+                            </table>
                             `,
                             //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
 
                     }
-
                 } else if (privilege === 'student') {
 
-                }
-                // const getNotificationEmail = await UserInfo.findOne({ userId: CID });
+                    const getUser = await Users.findOne({ _id: ID });
+                    const firstname = getUser.userFName.charAt(0).toUpperCase() + getUser.userFName.slice(1);
+                    const lastname = getUser.userLName.charAt(0).toUpperCase() + getUser.userLName.slice(1);
+
+                    const [getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
+                        CoordSchedule.find({ groupId: getUser.groupId }).select('room time'),
+                        UserInfo.findOne({ userId: CID }),
+                    ])
+
+                    if (getNotificationEmail.notificationEmail === email) {
+
+                        let transport = nodemailer.createTransport({
+                            service: "Gmail",
+                            host: process.env.EMAIL_USERNAME,
+                            secure: false,
+                            auth: {
+                                user: process.env.EMAIL_USERNAME,
+                                pass: process.env.EMAIL_PASSWORD
+                            },
+                        });
+
+                        const scheduleTableRows = getCoordinatorSchedule.map((schedule) => {
+                            const estDate = new Date(schedule.time);
+                            return `<tr>
+                                        <td>${estDate.toDateString()}</td>
+                                        <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                                        <td>${schedule.room}</td>
+                                    </tr>`;
+                        }).join('');
+
+                        transport.sendMail({
+                            from: "group13confirmation@gmail.com",
+                            to: email,
+                            subject: "mySDSchedule - Upcoming Senior Design2 Presentation Appointments",
+                            html: `<h1>Senior Design Appointments </h1>
+                            <h1>${firstname} ${lastname}</h1>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${scheduleTableRows}
+                                </tbody>
+                            </table>
+                            `,
+                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
+                        })
+
+                    }
+                } else { }
+
 
                 return true;
 
