@@ -88,6 +88,7 @@
     border-radius: 5px;
     padding-left: 20px;
     padding-right: 20px;
+    overflow:none;
 }
 
 .notificationTitle {
@@ -107,7 +108,6 @@
     width: 90%;
     height: 85%;
     margin-bottom: 5px;
-    background-color: bisque;
     overflow: none;
 }
 
