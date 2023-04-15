@@ -118,7 +118,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                 <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate</Button>
         </div>
         <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '95%', overflow: 'none' }}>
-            
             <Table>
                 <TableBody>
                     {schedule.map((coordinator) => {
