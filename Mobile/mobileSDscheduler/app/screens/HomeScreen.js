@@ -5,6 +5,7 @@ import HomeProfessorScreen from "./HomeProfessorScreen";
 
 function HomeScreen(props) {
   const { user } = useContext(AuthContext);
+  console.log("USER: ", user);
   return (
     <>
       {user.loginUser.privilege == "student" ? (

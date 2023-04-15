@@ -34,8 +34,8 @@ function AccountStudentScreen(props) {
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(USER, {
     variables: {
-      id: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id,
-      id2: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id,
+      id: user.loginUser._id,
+      id2: user.loginUser._id,
     },
   });
 

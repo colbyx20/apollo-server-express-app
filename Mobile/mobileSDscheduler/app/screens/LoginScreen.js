@@ -60,7 +60,7 @@ function LoginScreen(props) {
       return <AppText>Fetching data...</AppText>; //while loading return this
     }
 
-    authContext.setUser(data);
+    if (data != null) authContext.setUser(data);
     console.log("Data: ", data);
   };
 

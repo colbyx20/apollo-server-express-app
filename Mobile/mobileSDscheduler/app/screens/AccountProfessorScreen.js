@@ -61,8 +61,10 @@ function AccountProfessorScreen(props) {
 
   // console.log(data);
   // console.log(data.getProfessor.professorFName);
-  var fname = upperFirstLetter(data.getProfessor.professorFName);
-  var lname = upperFirstLetter(data.getProfessor.professorLName);
+  var fname = upperFirstLetter(user.loginUser.firstname);
+  var lname = upperFirstLetter(user.loginUser.lastname);
+  // var fname = upperFirstLetter(data.getProfessor.professorFName);
+  // var lname = upperFirstLetter(data.getProfessor.professorLName);
   var curEmail = data.getUserInfo.email;
   var curNotifEmail = data.getUserInfo.notificationEmail;
 
