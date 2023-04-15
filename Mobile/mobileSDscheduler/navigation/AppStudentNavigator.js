@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import AccountStudentScreen from "../app/screens/AccountProfessorScreen";
+import AccountProfessorScreen from "../app/screens/AccountProfessorScreen";
 import CalendarStudentScreen from "../app/screens/CalendarStudentScreen";
 import HomeStudentScreen from "../app/screens/HomeStudentScreen";
 import styles from "../app/config/styles";
@@ -26,7 +26,7 @@ const TabArr = [
     route: "Account",
     iconActive: "account-circle",
     iconInactive: "account-circle-outline",
-    component: AccountStudentScreen,
+    component: AccountProfessorScreen,
   },
 ];
 

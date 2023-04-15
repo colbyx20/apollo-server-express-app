@@ -30,7 +30,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function AccountStudentScreen(props) {
-  //const { user, setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(USER, {
     variables: {
@@ -56,7 +56,6 @@ function AccountStudentScreen(props) {
   }
 
   console.log(data);
-  // console.log(data.getProfessor.professorFName);
   var fname = upperFirstLetter(data.getUser.userFName);
   var lname = upperFirstLetter(data.getUser.userLName);
   var role = upperFirstLetter(data.getUser.role);
@@ -204,7 +203,7 @@ function AccountStudentScreen(props) {
           color="gold"
           onPress={() => {
             console.log("logout");
-            //setUser(null);
+            setUser(null);
           }}
           style={styles.button}
         ></AppButton>

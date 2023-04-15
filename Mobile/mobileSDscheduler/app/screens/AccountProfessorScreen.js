@@ -33,7 +33,7 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-function AccountStudentScreen(props) {
+function AccountProfessorScreen(props) {
   const { user, setUser } = useContext(AuthContext);
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(PROFESSOR, {
@@ -279,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountStudentScreen;
+export default AccountProfessorScreen;

@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import AccountProfessorScreen from "../app/screens/AccountProfessorScreen";
-import CalendarProfessorScreen from "../app/screens/CalendarProfessorScreen";
-import HomeProfessorScreen from "../app/screens/HomeProfessorScreen";
+import AccountScreen from "../app/screens/AccountScreen";
+import CalendarScreen from "../app/screens/CalendarScreen";
+import HomeScreen from "../app/screens/HomeScreen";
 import styles from "../app/config/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -14,19 +14,19 @@ const TabArr = [
     route: "Calendar",
     iconActive: "calendar-clock",
     iconInactive: "calendar-clock-outline",
-    component: CalendarProfessorScreen,
+    component: CalendarScreen,
   },
   {
     route: "Home",
     iconActive: "home",
     iconInactive: "home-outline",
-    component: HomeProfessorScreen,
+    component: HomeScreen,
   },
   {
     route: "Account",
     iconActive: "account-circle",
     iconInactive: "account-circle-outline",
-    component: AccountProfessorScreen,
+    component: AccountScreen,
   },
 ];
 
