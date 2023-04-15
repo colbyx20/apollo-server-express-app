@@ -1415,9 +1415,6 @@ const resolvers = {
 
                 const converTime = new Date(coordInfo.time)
 
-                // <td>${estDate.toDateString()}</td>
-                //                         <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
-                //                         <td>${schedule.room}
 
                 transport.sendMail({
                     from: "group13confirmation@gmail.com",
