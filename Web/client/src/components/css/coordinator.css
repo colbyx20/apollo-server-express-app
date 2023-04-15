@@ -86,9 +86,9 @@
     height: 100%;
     background-color: #D0A300;
     border-radius: 5px;
-    overflow: hidden;
     padding-left: 20px;
     padding-right: 20px;
+    overflow:none;
 }
 
 .notificationTitle {
@@ -108,8 +108,7 @@
     width: 90%;
     height: 85%;
     margin-bottom: 5px;
-    background-color: bisque;
-    overflow-y: auto;
+    overflow: none;
 }
 
 .appointmentObject {
