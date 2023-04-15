@@ -146,6 +146,11 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                                         ':hover': {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
+                                        },
+                                        ':active':{
+                                            background:'black',
+                                            transitionDuration:'3s'
+
                                         }
                                     }}
                                     onMouseDown={() => handleMouseDown(coordinator._id)}

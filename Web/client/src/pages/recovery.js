@@ -79,6 +79,7 @@ function Forgot(props) {
             <div className='loginContainer'>
                 <Container>
                     <img src={logo} alt="Senior Design Schedular Logo"></img>
+                    <h3>Password Reset</h3>
                     <Stack spacing={2} paddingBottom={2}>
                         <TextField sx={{
                             input: { color: 'white' },
