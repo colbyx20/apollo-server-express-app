@@ -92,9 +92,9 @@ function Coordinator(props) {
                             <div className='notificationContainer'>
                                 <div className='notificationBox'>
                                     <p className='notificationTitle'>Upcoming Events<NotificationsNoneIcon /> </p>
-                                    {/* <div className='appointmentContainer'> */}
-                                    <GetCoordinatorSchedule ID={user.id} />
-                                    {/* </div> */}
+                                    <div className='appointmentContainer'>
+                                        <GetCoordinatorSchedule ID={user.id} />
+                                    </div>
                                 </div>
                             </div>
                             <div className='emailContainer'>

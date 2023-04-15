@@ -113,7 +113,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     }
 
     return (
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '455px', overflow: 'none' }}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '100%', overflow: 'none' }}>
             <div className='StickyHeader'>
                 <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate</Button>
             </div>
