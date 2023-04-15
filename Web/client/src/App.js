@@ -16,7 +16,7 @@ import Semester from "./pages/semester";
 import Account from "./pages/account";
 import Forgot from "./pages/forgot";
 import RegisterCoord from "./pages/registerCoord";
-// update master 
+import Recovery from './pages/recovery';
 
 function App() {
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') || 'dark')
@@ -44,6 +44,7 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/semester" element={<Semester />} />
+          <Route path ="/recovery" element={<Recovery/>} />
         </Routes>
       </ThemeContext.Provider>
     </div>
