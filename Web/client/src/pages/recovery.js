@@ -14,7 +14,6 @@ function Forgot(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
-    
 
     // Get checkbox state
     useEffect(() => {
@@ -54,9 +53,8 @@ function Forgot(props) {
             <div className='loginContainer'>
                 <Container>
                     <img src={logo} alt="Senior Design Schedular Logo"></img>
-                    <h3>Forgot Password</h3>
                     <Stack spacing={2} paddingBottom={2}>
-                        <TextField sx={{
+                    <TextField sx={{
                             input: { color: 'white' },
 
                             '& .MuiOutlinedInput-root': {
@@ -74,6 +72,43 @@ function Forgot(props) {
                             name="email"
                             onChange={onChange}
                         />
+                        <TextField sx={{
+                            input: { color: 'white' },
+
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'yellow',
+                                },
+                            },
+
+                        }}
+                            InputLabelProps={{ className: 'mylabel' }}
+                            label="New Password"
+                            name="newPassword"
+                            onChange={onChange}
+                        />
+
+                        <TextField sx={{
+                            input: { color: 'white' },
+
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'yellow',
+                                },
+                            },
+
+                        }}
+                            InputLabelProps={{ className: 'mylabel' }}
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            onChange={onChange}
+                        />
                     </Stack>
                     {errors.map(function (error) {
                         return (
@@ -88,7 +123,7 @@ function Forgot(props) {
                         marginLeft: 'auto',
                         marginBottom: '5%',
                         width: '100%',
-                    }} variant="contained" onClick={onSubmit}>Confirm</Button>
+                    }} variant="contained" onClick={onSubmit}>Reset Password</Button>
                     <br />
                     <span><a href='/'>  Have a login?</a></span>
                 </Container>
