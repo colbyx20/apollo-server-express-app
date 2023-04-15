@@ -13,7 +13,7 @@ import Papa from "papaparse";
 
 const CREATE_ACCOUNTS = gql`
     mutation Mutation($cid: ID, $groupNumber: Int, $groupName: String, $userLogin: String, $password: String, $firstname: String, $lastname: String, $role: String, $isSponsor: Int) {
-    createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role, isSponsor: $isSponsor)
+        createAccounts(CID: $cid, groupNumber: $groupNumber, groupName: $groupName, userLogin: $userLogin, password: $password, firstname: $firstname, lastname: $lastname, role: $role, isSponsor: $isSponsor)
     }
 `
 
