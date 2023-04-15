@@ -210,7 +210,6 @@ const resolvers = {
 
             const CID = Mongoose.Types.ObjectId(ID)
             const getUser = await Coordinator.findOne({ _id: CID }).select('availSchedule');
-            console.log(getUser);
 
             const availSchedule = getUser.availSchedule.map(date => new Date(date));
 
@@ -838,12 +837,8 @@ const resolvers = {
                         dates.push(new Date(times));
                     })
 
-                    console.log(UniqueTimes);
-
-
                     if (privilege === "professor") {
                         const isScheduled = (await Professors.find({ _id: ID, availSchedule: { $in: dates } }).count());
-                        console.log(isScheduled)
                         if (!isScheduled) {
                             (await Professors.updateOne({ _id: ID }, { $push: { availSchedule: { $each: dates } } })).modifiedCount;
                         } else {
