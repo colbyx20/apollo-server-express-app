@@ -81,9 +81,6 @@ function Student(props) {
                             </div>
                         </div>
 
-
-
-
                     </>
                     :
                     <>

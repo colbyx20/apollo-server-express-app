@@ -10,11 +10,19 @@ import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
 import Slider from '../components/Slider'
 
+const FORGOT_PASSWORD = gql`
+    mutation Mutation($email: String) {
+    forgotPassword(email: $email)
+    }
+`
+
+
 function Forgot(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
-    
+    const [emailInput, setEmailInput] = useState('');
+    const [forgotPassword] = useMutation(FORGOT_PASSWORD);
 
     // Get checkbox state
     useEffect(() => {
@@ -36,16 +44,21 @@ function Forgot(props) {
     const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
-    
 
-   const onChange = () =>{
 
-   }
+    const onChange = () => {
 
-   const onSubmit = () =>{
-    
-   }
+    }
 
+    const onSubmit = () => {
+
+    }
+
+    function sendEmail() {
+        forgotPassword({
+            variables: { email: emailInput.toLowerCase() }
+        })
+    }
 
     return (
 
@@ -72,7 +85,7 @@ function Forgot(props) {
                             InputLabelProps={{ className: 'mylabel' }}
                             label="Email"
                             name="email"
-                            onChange={onChange}
+                            onChange={(e) => setEmailInput(e.target.value)}
                         />
                     </Stack>
                     {errors.map(function (error) {
@@ -88,16 +101,16 @@ function Forgot(props) {
                         marginLeft: 'auto',
                         marginBottom: '5%',
                         width: '100%',
-                    }} variant="contained" onClick={onSubmit}>Confirm</Button>
+                    }} variant="contained" onClick={() => sendEmail()}>Confirm</Button>
                     <br />
-                    <span><a href='/'>  Have a login?</a></span>
+                    <span><a href='/'>Have a login?</a></span>
                 </Container>
             </div>
             <div className='imageContainer'>
                 <Slider>
                 </Slider>
             </div>
-        </div>
+        </div >
 
     )
 }

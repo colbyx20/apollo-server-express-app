@@ -352,6 +352,7 @@ scalar DateTime
         createAccounts(CID:ID, groupNumber:Int, groupName: String, userLogin: String, password: String, firstname: String, lastname: String, role:String, isSponsor: Int) : Boolean
         generateGroupAppointment (CID:ID): Boolean
         forgotPassword(email: String): Boolean
+        restPasswordPreLogin(email: String, password: String, confirmPassword: String): Boolean
     }
 `
 

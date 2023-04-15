@@ -812,7 +812,7 @@ const resolvers = {
                 ])
 
                 // set password from user 
-                const setNewPassword = await Auth.findOneAndUpdate({ userId: finduser.userId }, { password: encryptedPassword, confirmpassword: encryptedPassword });
+                const setNewPassword = await Auth.findOneAndUpdate({ userId: finduser.userId }, { password: encryptedPassword });
 
                 setNewPassword.save();
 
@@ -1493,6 +1493,7 @@ const resolvers = {
             });
 
             if (isUser) {
+                await Auth.findOneAndUpdate({ userId: isUser.userId }, { $set: { isReset: true } })
 
                 transport.sendMail({
                     from: "group13confirmation@gmail.com",
@@ -1500,7 +1501,7 @@ const resolvers = {
                     subject: "mySDSchedule - Reset password",
                     html: `<h1>Reset Password </h1>
                         <p>Please click this Link to reset your Password</p>
-                        <a href=http:localhost/recovery> Click here</a>
+                        <a href=http://localhost:3000/recovery> Click here</a>
                     `,
                 })
 
@@ -1508,6 +1509,43 @@ const resolvers = {
             } else {
                 return false;
             }
+        },
+        restPasswordPreLogin: async (_, { email, password, confirmPassword }) => {
+
+            console.log(password, confirmPassword);
+
+            const capitalRegex = /[A-Za-z]/;
+            const numberRegex = /[0-9]/;
+            const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
+            // encrypt new password and set to user.
+            if (password !== confirmPassword) {
+                throw new ApolloError("Passwords Do Not Match!");
+            }
+
+            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+                throw new ApolloError("Password doesn't contain all requiremements")
+            }
+
+            const isValidReset = await UserInfo.findOne({ email: email })
+            const isValidAuthReset = await Auth.findOne({ userId: isValidReset.userId })
+            const encryptedPassword = await bcrypt.hash(password, 10);
+
+            if (isValidReset && isValidAuthReset.isReset === true) {
+                try {
+                    const setNewPassword = await Auth.findOneAndUpdate({ userId: isValidReset.userId }, { $set: { password: encryptedPassword, isReset: false } });
+                    setNewPassword.save();
+
+                } catch (e) {
+                    throw new ApolloError("Email is Invalid");
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+
+
         }
 
     }

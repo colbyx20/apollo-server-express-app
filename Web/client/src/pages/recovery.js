@@ -10,10 +10,21 @@ import "../components/css/login.css";
 import logo from '../components/images/sdsLogo.png';
 import Slider from '../components/Slider'
 
+const REST_PASSWORD_PRE_LOGIN = gql`
+    mutation RestPasswordPreLogin($email: String, $password: String, $confirmPassword: String) {
+        restPasswordPreLogin(email: $email, password: $password, confirmPassword: $confirmPassword)
+    }
+`
+
 function Forgot(props) {
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState([]);
     const [checked, setChecked] = useState(false);
+    const [emailInput, setEmailInput] = useState('');
+    const [passwordInput, setPasswordInput] = useState('');
+    const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+    const [isRegistered, setIsRegistered] = useState(false);
+    const [resetPasswordPreLogin] = useMutation(REST_PASSWORD_PRE_LOGIN)
 
     // Get checkbox state
     useEffect(() => {
@@ -35,15 +46,30 @@ function Forgot(props) {
     const PROFESSOR_EMAIL = new RegExp('^[a-z0-9](\.?[a-z0-9]){2,}@ucf\.com$');
 
 
-    
 
-   const onChange = () =>{
 
-   }
+    const onChange = () => {
 
-   const onSubmit = () =>{
-    
-   }
+    }
+
+    const onSubmit = () => {
+
+    }
+
+    function recoverPassword() {
+        resetPasswordPreLogin({
+            variables: { email: emailInput.toLowerCase(), password: passwordInput, confirmPassword: confirmPasswordInput },
+            onError({ graphQLErrors }) {
+                setErrors(graphQLErrors);
+            },
+            onCompleted() {
+                setIsRegistered(true);
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 3000)
+            }
+        })
+    }
 
 
     return (
@@ -54,7 +80,7 @@ function Forgot(props) {
                 <Container>
                     <img src={logo} alt="Senior Design Schedular Logo"></img>
                     <Stack spacing={2} paddingBottom={2}>
-                    <TextField sx={{
+                        <TextField sx={{
                             input: { color: 'white' },
 
                             '& .MuiOutlinedInput-root': {
@@ -70,7 +96,7 @@ function Forgot(props) {
                             InputLabelProps={{ className: 'mylabel' }}
                             label="Email"
                             name="email"
-                            onChange={onChange}
+                            onChange={(e) => setEmailInput(e.target.value)}
                         />
                         <TextField sx={{
                             input: { color: 'white' },
@@ -86,9 +112,10 @@ function Forgot(props) {
 
                         }}
                             InputLabelProps={{ className: 'mylabel' }}
+                            type="password"
                             label="New Password"
                             name="newPassword"
-                            onChange={onChange}
+                            onChange={(e) => setPasswordInput(e.target.value)}
                         />
 
                         <TextField sx={{
@@ -105,25 +132,28 @@ function Forgot(props) {
 
                         }}
                             InputLabelProps={{ className: 'mylabel' }}
+                            type="password"
                             label="Confirm Password"
                             name="confirmPassword"
-                            onChange={onChange}
+                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
                         />
                     </Stack>
-                    {errors.map(function (error) {
-                        return (
-                            <Alert severity="error">
-                                {error.message}
-                            </Alert>
-                        )
-                    })}
+                    {errors.length ? (
+                        <>
+                            {errors.map((error) => (
+                                <Alert severity="error">{error.message}</Alert>
+                            ))}
+                        </>
+                    ) : isRegistered ? (
+                        <Alert severity="success">Password Reset</Alert>
+                    ) : null}
                     <Button sx={{
                         display: 'block',
                         marginRight: 'auto',
                         marginLeft: 'auto',
                         marginBottom: '5%',
                         width: '100%',
-                    }} variant="contained" onClick={onSubmit}>Reset Password</Button>
+                    }} variant="contained" onClick={() => recoverPassword()}>Reset Password</Button>
                     <br />
                     <span><a href='/'>  Have a login?</a></span>
                 </Container>
