@@ -1392,11 +1392,45 @@ const resolvers = {
             const PID = Mongoose.Types.ObjectId(professorId);
             const SCID = Mongoose.Types.ObjectId(scheduleId);
 
+            let transport = nodemailer.createTransport({
+                service: "Gmail",
+                host: process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+            });
+
             try {
-                await Promise.all([
-                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $inc: { numberOfAttending: -1 }, $pull: { attending2: { _id: PID } } }, { new: true }),
+                const [coordInfo, professorInfo] = await Promise.all([
+                    CoordSchedule.findOneAndUpdate({ _id: SCID }, { $inc: { numberOfAttending: - 1 }, $pull: { attending2: { _id: PID } } }, { new: true }),
                     Professors.findOneAndUpdate({ _id: PID }, { $pull: { appointments: SCID } }, { new: true })
                 ]);
+
+                const coordinator = await Coordinator.findOne({ _id: coordInfo.coordinatorID }).select('coordinatorFName coordinatorLName')
+                const email = await UserInfo.findOne({ userId: coordInfo.coordinatorID })
+                const firstname = professorInfo.professorFName.charAt(0).toUpperCase() + professorInfo.professorFName.slice(1);
+                const lastname = professorInfo.professorLName.charAt(0).toUpperCase() + professorInfo.professorLName.slice(1);
+
+                const converTime = new Date(coordInfo.time)
+
+                // <td>${estDate.toDateString()}</td>
+                //                         <td>${estDate.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                //                         <td>${schedule.room}
+
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Professor Cancelation",
+                    html: `<h1>Professor Cancelation - ${firstname} ${lastname} </h1>
+                        <p>
+                            Room: ${coordinatorInfo.room}
+                            Time: ${convertTime.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}
+                        </p>
+                    `,
+                })
+
                 return true;
             } catch (e) {
                 throw new ApolloError("Appointment cannot be Deleted");
@@ -1511,8 +1545,6 @@ const resolvers = {
             }
         },
         restPasswordPreLogin: async (_, { email, password, confirmPassword }) => {
-
-            console.log(password, confirmPassword);
 
             const capitalRegex = /[A-Za-z]/;
             const numberRegex = /[0-9]/;
