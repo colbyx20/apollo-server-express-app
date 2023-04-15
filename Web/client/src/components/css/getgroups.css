@@ -129,11 +129,26 @@
 }
 
 .user-styleBox {
-    margin-top: 35px;
+    margin: auto;
+    margin-top: 15px;
     background-color: #231F20;
-    height: 18%;
+    border-radius: 150px;
     width: 350px;
-    border-radius: 10px;
+    height: 90%;
+    overflow-y: auto;
+}
+
+.myUserData{
+    margin: auto;
+    overflow: none;
+    height: 95%;
+}
+
+.user-dataTitle{
+    margin-top: 25px;
+    font-size: 1.5em;
+    font-weight: 300;
+    margin-bottom: 2px;
 }
 
 .getappInfo {

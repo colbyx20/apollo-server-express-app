@@ -6,7 +6,6 @@ import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { Button, Switch, Grid, FormControlLabel } from "@mui/material";
 import '../components/css/account.css'
-import ImgUpload from '../components/ImgUpload';
 import EditEmailPopup from '../components/EditEmail';
 import EditPassword from '../components/EditPassword';
 import { gql, useMutation } from '@apollo/client';
@@ -104,13 +103,6 @@ function Account(props) {
                                         }} variant="contained">Password</Button>
                                     <span className='passwordUpdate'>{profileUpdate}</span>
                                 </div>
-
-                                {/* <div className='accountImporter'>
-                                    <ImgUpload />
-                                </div> */}
-                            </div>
-
-                            <div className='otherContainer'>
                                 <div className='toggleTheme'>
                                     <h2 className='themeTitle'>Toggle Theme</h2>
                                     <Grid className='button' component="label" container alignItems="center">
@@ -127,7 +119,9 @@ function Account(props) {
                                         <Grid item>Lightmode</Grid>
                                     </Grid>
                                 </div>
+                            </div>
 
+                            <div className='otherContainer'>
                                 <div className='userData'>
                                     <h2 className='themeTitle'>Information</h2>
                                     <div className='userData-container'>
