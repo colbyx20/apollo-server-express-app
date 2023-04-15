@@ -132,7 +132,16 @@ function Calendar(props) {
                                         color="primary"
                                         disabled={selectedDates.length <= 0}
                                         onClick={() => handleAddAvailability(selectedDates)}> Update Schedule</SubmitButton>
+                                
+                                    <div className='currentSchedule'>
+                                        <h2 className='timeListTitle'>Current Schedule</h2>
+                                        <div className='scheduleContainer'>
+                                            <GetProfessorSchedule/>
+                                        </div>
+                                    </div>
+                                
                                 </div>
+                                
                             </div>
                         </div>
                     </>

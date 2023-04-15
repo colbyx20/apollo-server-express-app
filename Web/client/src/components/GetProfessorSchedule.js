@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
+import '../components/css/calendar2.css'
 
 const GET_PROFESSOR = gql`
 query GetProfessor($id: ID!) {
@@ -20,16 +21,21 @@ export const GetProfessorSchedule = () => {
         variables: { id: user.id }
     });
 
-    console.log(data);
-
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`;
 
+    function returnPrettyDateTime(date1) {
+        let date = new Date(date1);
+
+        date.setHours(date.getHours() - 4);
+        const edtTime = date.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" });
+        return edtTime;
+    }
 
 
     return (
-        <div>{data.getProfessor.availSchedule.map((time) => {
-            return <tr>{time}</tr>
+        <div className='viewItem'>{data.getProfessor.availSchedule.map((time, index) => {
+            return <div className='itemValue' key={index}>{time}</div>
         })}</div>
     )
 
