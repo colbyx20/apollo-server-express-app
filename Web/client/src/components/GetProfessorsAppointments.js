@@ -48,53 +48,53 @@ export const GetProfessorsAppointments = () => {
    * @param {*} time 
    * @returns 
    */
-  function returnNiceTime(time){
+  function returnNiceTime(time) {
     const [dateString, timeString] = time.split(' ');
     const date = new Date(dateString);
-    date.setHours(parseInt(timeString)-4)
+    date.setHours(parseInt(timeString) - 4)
     const options = { month: 'long', day: 'numeric', ordinal: 'numeric' };
-    const displayDateTime = date.toLocaleDateString('en-us', options)+", "+ date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    const displayDateTime = date.toLocaleDateString('en-us', options) + ", " + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     return displayDateTime;
   }
 
   return (
     <>
-    {schedule.length === 0 ?
-    <span className='noAppointmentMessage'>Appointment has not been Set</span>
-    :
-    <table style={{ color: 'white' }} className="profAppTable">
-      <tbody className='profBodyTable'>
-      {schedule.map((s) => (
-          <tr style={{ color: 'black' }} key={s._id} className="appointTr">
-            <td>
-              <div className='Appointment'>
-                <div>
-                  {"Appointment: "}<br/>
-                  {returnNiceTime(s.time)}
-                </div>
-                <div className='profData'>
-                  {"Location: "}<br/>
-                  {s.room}
-                </div>
-                <div className='profData'>
-                  {"Group: "+s.groupNumber}<br/>
-                  {s.groupName+" "}
-                  
-                </div>
-                
-                
-                <div className='profDel'>
-                  <Button variant="contained" color="secondary" style={{ backgroundColor: "red"}} onClick={() => handleCancelAppointment(PID, s._id)}>
-                    Cancel Meeting
-                  </Button>
-                </div>
-              </div>
-            </td>
-          </tr>
-      ))}
-      </tbody>
-    </table>
-    }
+      {schedule.length === 0 ?
+        <span className='noAppointmentMessage'>Appointment has not been Set</span>
+        :
+        <table style={{ color: 'white' }} className="profAppTable">
+          <tbody className='profBodyTable'>
+            {schedule.map((s) => (
+              <tr style={{ color: 'black' }} key={s._id} className="appointTr">
+                <td>
+                  <div className='Appointment'>
+                    <div>
+                      {"Appointment: "}<br />
+                      {returnNiceTime(s.time)}
+                    </div>
+                    <div className='profData'>
+                      {"Location: "}<br />
+                      {s.room}
+                    </div>
+                    <div className='profData'>
+                      {"Group: " + s.groupNumber}<br />
+                      {s.groupName + " "}
+
+                    </div>
+
+
+                    <div className='profDel'>
+                      <Button variant="contained" color="secondary" style={{ backgroundColor: "red" }} onClick={() => handleCancelAppointment(PID, s._id)}>
+                        Cancel Meeting
+                      </Button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      }
     </>
   );
 };
