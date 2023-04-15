@@ -79,23 +79,12 @@ function Semester(props) {
                                         marginLeft: 'auto',
                                         marginBottom: '5px',
                                         width: '50%',
+                                        height: '100px',
                                         ':hover': {
                                             bgcolor: '#8B0000', // On hover
                                             color: 'white',
                                         }
                                     }} variant="contained" onClick={() => deleteGroups}>Delete Projects</Button>
-                                    <Button sx={{
-                                        display: 'block',
-                                        backgroundColor: 'red',
-                                        marginRight: 'auto',
-                                        marginLeft: 'auto',
-                                        marginBottom: '5px',
-                                        width: '50%',
-                                        ':hover': {
-                                            bgcolor: '#8B0000', // On hover
-                                            color: 'white',
-                                        }
-                                    }} variant="contained" >Delete All</Button>
                                 </div>
 
                             </div>
