@@ -112,12 +112,9 @@
 .userData-container {
     margin: auto;
     margin-top: 5px;
-    padding-top: 100px;
     width: 85%;
     height: 85%;
     background-color: bisque;
     overflow-x: auto;
     border-radius: 10px;
-    display: flex;
-    justify-content: center;
 }

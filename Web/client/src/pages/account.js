@@ -119,10 +119,6 @@ function Account(props) {
                                         <Grid item>Lightmode</Grid>
                                     </Grid>
                                 </div>
-
-                                {/* <div className='accountImporter'>
-                                    <ImgUpload />
-                                </div> */}
                             </div>
 
                             <div className='otherContainer'>

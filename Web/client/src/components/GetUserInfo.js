@@ -24,19 +24,17 @@ export const GetUserInfo = (props) => {
 
 
     return (
-        <div>
+        <div className='myUserData'>
             <div className='user-styleBox'>
-                <p className='user-data'>Name:</p>
+                <p className='user-dataTitle'>Name:</p>
                 <p className='user-data'>{user.firstname} {user.lastname}</p>
-            </div>
 
-            <div className='user-styleBox'>
-                <p className='user-data'>Account Email:</p>
+            
+                <p className='user-dataTitle'>Account Email:</p>
                 <p className='user-data'>{data.getUserInfo.email}</p>
-            </div>
-
-            <div className='user-styleBox'>
-                <p className='user-data'>Notification Email:</p>
+          
+            
+                <p className='user-dataTitle'>Notification Email:</p>
                 <p className='user-data'>{data.getUserInfo.notificationEmail}</p>
             </div>
 
