@@ -1477,6 +1477,37 @@ const resolvers = {
                 }
             }
             return true;
+        },
+        forgotPassword: async (_, { email }) => {
+
+            const isUser = await UserInfo.findOne({ email: email.toLowerCase() });
+
+            let transport = nodemailer.createTransport({
+                service: "Gmail",
+                host: process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+            });
+
+            if (isUser) {
+
+                transport.sendMail({
+                    from: "group13confirmation@gmail.com",
+                    to: email,
+                    subject: "mySDSchedule - Reset password",
+                    html: `<h1>Reset Password </h1>
+                        <p>Please click this Link to reset your Password</p>
+                        <a href=http:localhost/recovery> Click here</a>
+                    `,
+                })
+
+                return true;
+            } else {
+                return false;
+            }
         }
 
     }
@@ -1484,34 +1515,3 @@ const resolvers = {
 
 
 module.exports = resolvers;
-
-
-
-// Delete users and authUsers.
-// db.users.aggregate([
-//     {
-//       $lookup: {
-//         from: "information",
-//         localField: "_id",
-//         foreignField: "user_id",
-//         as: "user_info"
-//       }
-//     },
-//     {
-//       $match: {
-//         _id: { $exists: true }
-//       }
-//     },
-//     {
-//       $unwind: "$user_info"
-//     },
-//     {
-//       $project: {
-//         user_id: "$_id",
-//         info_id: "$user_info._id"
-//       }
-//     }
-//   ]).forEach(function(doc) {
-//     db.information.deleteOne({ _id: doc.info_id });
-//     db.users.deleteOne({ _id: doc.user_id });
-//   });

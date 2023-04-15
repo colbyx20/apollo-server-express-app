@@ -29,11 +29,11 @@ function Semester(props) {
     function deleteGroups() {
         deleteAllG();
     }
+
     const [deleteAllG] = useMutation(DELETE_ALL_GROUP, {
         variables: { cid: user.id },
         refetchQueries: [{ query: GetGroups }]
     })
-
 
     const handleChange = (e) => {
         e.preventDefault();
