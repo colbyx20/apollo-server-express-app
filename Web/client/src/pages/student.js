@@ -37,7 +37,7 @@ function Student(props) {
 
     function sendEmail() {
         sendEventEmail({
-            variables: { studentId: user.id, email: emailInput.toLowerCase(), privilege: user.privilege }
+            variables: { id: user.id, email: emailInput.toLowerCase(), privilege: user.privilege }
         })
     }
 
@@ -75,7 +75,7 @@ function Student(props) {
                                     <Button
                                         variant='contained'
                                         sx={{ marginTop: '5px', width: '50%' }}
-                                        onclick={() => sendEmail()}
+                                        onClick={() => sendEmail()}
                                     >Submit</Button>
                                 </div>
                             </div>
