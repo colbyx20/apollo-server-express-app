@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
 import '../components/css/calendar2.css'
 
-const GET_PROFESSOR = gql`
+export const GET_PROFESSOR = gql`
 query GetProfessor($id: ID!) {
     getProfessor(ID: $id) {
         _id
@@ -14,7 +14,7 @@ query GetProfessor($id: ID!) {
 `
 
 
-export const GetProfessorSchedule = ({onUpdate}) => {
+export const GetProfessorSchedule = ({ onUpdate }) => {
 
     const { user } = useContext(AuthContext);
     const { loading, error, data, refetch } = useQuery(GET_PROFESSOR, {
@@ -49,7 +49,7 @@ export const GetProfessorSchedule = ({onUpdate}) => {
                 {new Date(time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                 {new Date(time).getDate() % 10 === 1 ? 'st' : new Date(time).getDate() % 10 === 2 ? 'nd' : new Date(time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                 {returnPrettyDateTime(time)}
-                </div>
+            </div>
         })}</div>
     )
 
