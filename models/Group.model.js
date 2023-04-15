@@ -7,7 +7,7 @@ const groupSchema = new Schema({
     projectField: { type: String, require: true }, // maybe turn this into an ENUM??
     groupNumber: { type: Number, require: true, unique: true, min: 1 },
     appointment: Array,
-    isSponsor: Boolean
+    isSponsor: { type: Boolean }
 })
 
 module.exports = model("Group", groupSchema);

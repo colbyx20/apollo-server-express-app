@@ -7,20 +7,22 @@ import { Button } from "@mui/material";
 import { AuthContext } from '../context/authContext';
 
 const GET_GROUPS = gql`
-query Query($coordinatorId: String) {
-    getGroupsByCoordinator(coordinatorId: $coordinatorId) {
-        _id
-        coordinatorId
-        groupName
-        groupNumber
-        projectField
+    query Query($coordinatorId: String) {
+        getGroupsByCoordinator(coordinatorId: $coordinatorId) {
+            _id
+            coordinatorId
+            groupName
+            groupNumber
+            projectField
+            isSponsor
+        }
     }
-}
 `
+
 const DELETE_GROUP = gql`
-    mutation DeleteGroup($groupid:ID){
-        deleteGroup(groupId:$groupid)
-}
+    mutation Mutation($groupId: ID) {
+        deleteGroup(groupId: $groupId)
+    }
 `
 const getFilteredData = (query, items) => {
     if (!query) {
@@ -31,24 +33,30 @@ const getFilteredData = (query, items) => {
 
 export const GetGroups = (props) => {
     const { user } = useContext(AuthContext);
-    const ID = user.id;
     const [deleteGroup] = useMutation(DELETE_GROUP)
-    const { loading, error, data } = useQuery(GET_GROUPS, {
-        variables: { coordinatorId: ID }
-    });
-    function handleDeletion(GID) {
-        deleteGroup({
-            variables: { groupid: GID },
-            refetchQuery: [{ query: GET_GROUPS, variables: { coordinatorId: ID } }]
-        })
+    const ID = user.id;
+    console.log(user);
 
-    }
+    const { loading, error, data, refetch } = useQuery(GET_GROUPS, {
+        variables: { coordinatorId: user.id }
+    });
+
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`
 
     const search = props.data;
     const { getGroupsByCoordinator } = data;
     const filterItems = getFilteredData(search, getGroupsByCoordinator);
+
+
+    function handleDeletion(GID) {
+
+        deleteGroup({
+            variables: { groupId: GID },
+            refetchQueries: [{ query: GET_GROUPS, variables: { coordinatorId: user.id } }]
+        })
+    }
+    console.log(data);
 
 
     return (

@@ -116,13 +116,13 @@ function Login(props) {
                             onChange={onChange}
                         />
                     </Stack>
-                    {errors.map(function (error) {
-                        return (
-                            <Alert severity="error">
-                                {error.message}
-                            </Alert>
-                        )
-                    })}
+                    {errors.length ? (
+                        <>
+                            {errors.map((error) => (
+                                <Alert severity="error">{error.message}</Alert>
+                            ))}
+                        </>
+                    ) : ""}
                     <Button sx={{
                         display: 'block',
                         marginRight: 'auto',

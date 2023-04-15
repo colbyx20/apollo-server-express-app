@@ -42,11 +42,18 @@ const CANCEL_APPOINTMENT = gql`
     }
 `
 
+const GENERATE_GROUP_APPOINTMENTS = gql`
+    mutation Mutation($cid: ID) {
+        generateGroupAppointment(CID: $cid)
+    }
+`
+
 export const GetCoordinatorSchedule = ({ ID }) => {
     const { user } = useContext(AuthContext);
 
     const [schedule, setSchedule] = useState([]);
     const [randomlySelectProfessorsToAGroup] = useMutation(GENERATE_APPOINTMENT);
+    const [generateGroupAppointment] = useMutation(GENERATE_GROUP_APPOINTMENTS)
     const [isHeld, setIsHeld] = useState(false);
     const [holdTimeout, setHoldTimeout] = useState(null);
     const [cancel, setCancel] = useState("HOLD TO CANCEL");
@@ -55,7 +62,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
     const { loading, error, data, networkStatus } = useQuery(GET_SCHEDULE, {
         variables: { cid: ID },
-        notifyOnNetworkStatusChange: true
     });
 
     useEffect(() => {
@@ -104,6 +110,13 @@ export const GetCoordinatorSchedule = ({ ID }) => {
         })
     }
 
+    function handleAssignGroups(e, ID) {
+        generateGroupAppointment({
+            variables: { cid: ID },
+            refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
+        })
+    }
+
     function returnCurrentDateTime(date1) {
         let date = new Date(date1);
 
@@ -114,59 +127,60 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
     return (
         <>
-        <div className='StickyHeader'>
-                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate</Button>
-        </div>
-        <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '95%', overflow: 'none' }}>
-            <Table>
-                <TableBody>
-                    {schedule.map((coordinator) => {
-                        return (<TableRow
-                            key={coordinator._id}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
-                        >
-                            <TableCell sx={{ color: 'white' }} align='center'>
-                                {'Time:'}
-                                <br />
-                                {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
-                                {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
-                                {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
-                                {/* {new Date(coordinator.time).toLocaleTimeString('en-US', {  timeZone: 'America/New_York',hour: 'numeric', minute: 'numeric', hour12: true })} */}
-                                {returnCurrentDateTime(coordinator.time)}
-                            </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br />{coordinator.room} </TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Project:'}<br />{coordinator.groupId?.groupName}</TableCell>
-                            <TableCell sx={{ color: 'white' }} align='left'>{'Attending:'}<br />{coordinator.attending2?.map((e) => {
-                                return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}<br /></span>
-                            })}</TableCell>
-                            <TableCell>
-                                <Button
-                                    sx={{
-                                        backgroundColor: 'red',
-                                        ':hover': {
-                                            bgcolor: '#8B0000', // On hover
-                                            color: 'white',
-                                        },
-                                        ':active':{
-                                            background:'black',
-                                            transitionDuration:'3s'
+            <div className='StickyHeader'>
+                <Button sx={{ float: 'left', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate Committee</Button>
+                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleAssignGroups(e, ID)}>Generate Group Appointments</Button>
+            </div>
+            <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '95%', overflow: 'none' }}>
+                <Table>
+                    <TableBody>
+                        {schedule.map((coordinator) => {
+                            return (<TableRow
+                                key={coordinator._id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 }, color: 'white' }}
+                            >
+                                <TableCell sx={{ color: 'white' }} align='center'>
+                                    {'Time:'}
+                                    <br />
+                                    {new Date(coordinator.time).toLocaleDateString('en-US', { month: 'long' })}{' '}
+                                    {new Date(coordinator.time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
+                                    {new Date(coordinator.time).getDate() % 10 === 1 ? 'st' : new Date(coordinator.time).getDate() % 10 === 2 ? 'nd' : new Date(coordinator.time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                                    {/* {new Date(coordinator.time).toLocaleTimeString('en-US', {  timeZone: 'America/New_York',hour: 'numeric', minute: 'numeric', hour12: true })} */}
+                                    {returnCurrentDateTime(coordinator.time)}
+                                </TableCell>
+                                <TableCell sx={{ color: 'white' }} align='left'>{'Room:'}<br />{coordinator.room} </TableCell>
+                                <TableCell sx={{ color: 'white' }} align='left'>{'Project:'}<br />{coordinator.groupId?.groupName}</TableCell>
+                                <TableCell sx={{ color: 'white' }} align='left'>{'Attending:'}<br />{coordinator.attending2?.map((e) => {
+                                    return <span sx={{ color: 'white' }} align='right' key={e._id}>{e?.fullName}<br /></span>
+                                })}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        sx={{
+                                            backgroundColor: 'red',
+                                            ':hover': {
+                                                bgcolor: '#8B0000', // On hover
+                                                color: 'white',
+                                            },
+                                            ':active': {
+                                                background: 'black',
+                                                transitionDuration: '3s'
 
-                                        }
-                                    }}
-                                    onMouseDown={() => handleMouseDown(coordinator._id)}
-                                    onMouseUp={handleMouseUp}
-                                    onTouchStart={() => handleMouseDown(coordinator._id)}
-                                    onTouchEnd={handleMouseUp}
-                                    variant="contained">
-                                    {cancel}
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                        )
-                    })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                                            }
+                                        }}
+                                        onMouseDown={() => handleMouseDown(coordinator._id)}
+                                        onMouseUp={handleMouseUp}
+                                        onTouchStart={() => handleMouseDown(coordinator._id)}
+                                        onTouchEnd={handleMouseUp}
+                                        variant="contained">
+                                        {cancel}
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                            )
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     )
 }

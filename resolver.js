@@ -1064,7 +1064,7 @@ const resolvers = {
                 }
             }
             //coordinator
-            else if (canceler.privilege == 'coordinator') 
+            else if (canceler.privilege == 'coordinator')
                 if (reason == "Group")// cancel on groups behalf
                 {
                     if (appointment.attending2.length > 0)//Group had professors
@@ -1131,7 +1131,7 @@ const resolvers = {
                     } console.log("here")
                     await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
                 }
-        
+
             return true
         },
         setRole: async (_, { CID, role }) => {
@@ -1433,7 +1433,9 @@ const resolvers = {
             }
         },
         deleteGroup: async (_, { groupId }) => {
-            const findGroup = await Users.find({ groupId: groupId })
+            const ID = Mongoose.Types.ObjectId(groupId);
+            const findGroup = await Users.find({ groupId: ID })
+
             for (member of findGroup) {
                 await Promise.all([
                     Auth.deleteOne({ userId: member._id }),
@@ -1443,11 +1445,12 @@ const resolvers = {
                 // const wasDeletedUserInfo = (await UserInfo.deleteOne({ userId: member._id }))
             }
             await Promise.all([
-                Users.deleteMany({ groupId: groupId }),
-                Group.deleteOne({ _id: groupId })
+                Users.deleteMany({ groupId: ID }),
+                Group.deleteOne({ _id: ID })
             ])
             // const deleteMebers = await Users.deleteMany({ groupId: groupId })
             // const deleteGroup = await Group.deleteOne({ _id: groupId })
+
             return true
         },
         deleteAllGroups: async (_, { CID }) => {

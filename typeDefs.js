@@ -96,6 +96,7 @@ scalar DateTime
         projectField: String
         groupNumber: Int
         appointment: [ID]
+        isSponsor: Boolean
     } 
     
     input UserInput {
