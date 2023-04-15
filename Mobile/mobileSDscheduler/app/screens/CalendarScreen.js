@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import AuthContext from "../auth/context";
-import CalendarStudentScreen from "./CalendarProfessorScreen";
+import CalendarStudentScreen from "./CalendarStudentScreen";
 import CalendarProfessorScreen from "./CalendarProfessorScreen";
 
 function CalendarScreen(props) {

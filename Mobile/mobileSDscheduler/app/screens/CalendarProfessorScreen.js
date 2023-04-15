@@ -56,7 +56,7 @@ function CalendarProfessorScreen(props) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
-        title={dateABCstr}
+        title={"Availabilities"}
         // leftButton={
         //   <MaterialCommunityIcons
         //     name="chevron-left"
@@ -212,7 +212,7 @@ function CalendarProfessorScreen(props) {
         // Specify what should be rendered instead of ActivityIndicator
         renderEmptyData={() => {
           return (
-            <View>
+            <View style={styles.emptyDay}>
               <AppText>There are no appointents on this day</AppText>
             </View>
           );
@@ -254,7 +254,7 @@ function CalendarProfessorScreen(props) {
             reservations: { backgroundColor: "red" },
           },
           "stylesheet.agenda.list": { backgroundColor: "red" },
-          calendarBackground: "black", //agenda background
+          calendarBackground: colors.primaryDark, //"black", //agenda background
           //gendaKnobColor: "blue", // knob color
           backgroundColor: "black", // background color below agenda
           //agendaDayTextColor: "red", // day name
@@ -269,15 +269,15 @@ function CalendarProfessorScreen(props) {
           selectedDayTextColor: colors.primaryDark, //selected day color text
           dayTextColor: colors.secondaryDark, // this month's days
           dotColor: "white", // dots
-          textDisabledColor: "red",
+          textDisabledColor: colors.grayMedium, //"red",
           reservationsBackgroundColor: colors.primaryDark,
           // contentStyle: "red",
           // event: "red",
           line: "red",
           timelineContainer: "red",
-          agendaDayNumColor: "red", //left agenda day color
-          agendaDayTextColor: "green", //left agenda name color
-          agendaKnobColor: "blue",
+          //agendaDayNumColor: "red", //left agenda day color
+          //agendaDayTextColor: "green", //left agenda name color
+          //agendaKnobColor: "blue",
           agendaTodayColor: "yellow",
         }}
         // Agenda container style
@@ -377,6 +377,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17,
+  },
+  emptyDay: {
+    fontSize: 15,
+    alignSelf: "center",
+    borderRadius: 25,
+    padding: 10,
+    backgroundColor: colors.gold,
   },
   emptyDate: {
     height: 15,
