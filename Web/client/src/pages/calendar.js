@@ -10,6 +10,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { GetAllCoordinatorSchedule } from '../components/GetAllCoordinatorSchedule'
 import { GET_All_COORDINATOR_SCHEDULE } from '../components/GetAllCoordinatorSchedule'
 import { GetProfessorSchedule } from '../components/GetProfessorSchedule'
+import { GET_PROFESSOR } from '../components/GetProfessorSchedule'
+
 // import { CreateProfessorSchedule } from '../components/CreateProfessorSchedule'
 import "../components/css/calendar2.css"
 
@@ -85,11 +87,14 @@ function Calendar(props) {
 
         createProfessorSchedule({
             variables: { id: user.id, privilege: user.privilege, time: availDates },
-            refetchQueries: [{ query: GET_All_COORDINATOR_SCHEDULE, variables: { id: user.id } }]
+            refetchQueries: [
+                { query: GET_All_COORDINATOR_SCHEDULE, variables: { id: user.id } },
+                { query: GET_PROFESSOR, variables: { id: user.id } }
+            ]
         })
 
         setClear(true);
-        setUpdate(true);    
+        setUpdate(true);
 
     }
     return (
@@ -107,10 +112,10 @@ function Calendar(props) {
                                     <h2 className='timeListTitle'>Pick Schedule</h2>
                                     <div className='listContainer'>
                                         <GetAllCoordinatorSchedule
-                                        onCheckedStatesChange={handleCheckedStatesChange}
-                                        updatedCheckedStates={deleteDate}
-                                        onDelete={handleIndexRest}
-                                        onSubmit={clearSelection}/>
+                                            onCheckedStatesChange={handleCheckedStatesChange}
+                                            updatedCheckedStates={deleteDate}
+                                            onDelete={handleIndexRest}
+                                            onSubmit={clearSelection} />
                                     </div>
                                 </div>
                             </div>
@@ -141,16 +146,16 @@ function Calendar(props) {
                                         color="primary"
                                         disabled={selectedDates.length <= 0}
                                         onClick={() => handleAddAvailability(selectedDates)}> Update Schedule</SubmitButton>
-                                
+
                                     <div className='currentSchedule'>
                                         <h2 className='timeListTitle'>Current Schedule</h2>
                                         <div className='scheduleContainer'>
-                                            <GetProfessorSchedule onUpdate={udpateSchedule}/>
+                                            <GetProfessorSchedule onUpdate={udpateSchedule} />
                                         </div>
                                     </div>
-                                
+
                                 </div>
-                                
+
                             </div>
                         </div>
                     </>
