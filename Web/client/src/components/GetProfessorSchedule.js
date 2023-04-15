@@ -35,7 +35,12 @@ export const GetProfessorSchedule = () => {
 
     return (
         <div className='viewItem'>{data.getProfessor.availSchedule.map((time, index) => {
-            return <div className='itemValue' key={index}>{time}</div>
+            return <div className='itemValue' key={index}>
+                {new Date(time).toLocaleDateString('en-US', { month: 'long' })}{' '}
+                {new Date(time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
+                {new Date(time).getDate() % 10 === 1 ? 'st' : new Date(time).getDate() % 10 === 2 ? 'nd' : new Date(time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
+                {returnPrettyDateTime(time)}
+                </div>
         })}</div>
     )
 

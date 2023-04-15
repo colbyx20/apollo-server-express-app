@@ -241,7 +241,7 @@
 
 .itemValue{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding-left: 5px;
     margin-top: 1.5px;
@@ -249,4 +249,5 @@
     height: auto;
     background-color: #231F20;
     color: white;
+    text-align: center;
 }
