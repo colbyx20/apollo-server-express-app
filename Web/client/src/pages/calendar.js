@@ -27,6 +27,8 @@ function Calendar(props) {
     const [selectedDates, setDate] = useState([]);
     const [deleteDate, setDeleteDate] = useState(null);
     const [createProfessorSchedule] = useMutation(ADD_DATES);
+    const [clearSelection, setClear] = useState(false);
+    const [udpateSchedule, setUpdate] = useState(false);
 
     const onLogout = () => {
         logout();
@@ -86,6 +88,9 @@ function Calendar(props) {
             refetchQueries: [{ query: GET_All_COORDINATOR_SCHEDULE, variables: { id: user.id } }]
         })
 
+        setClear(true);
+        setUpdate(true);    
+
     }
     return (
         <>
@@ -101,7 +106,11 @@ function Calendar(props) {
                                 <div className='timeListContainer'>
                                     <h2 className='timeListTitle'>Pick Schedule</h2>
                                     <div className='listContainer'>
-                                        <GetAllCoordinatorSchedule onCheckedStatesChange={handleCheckedStatesChange} updatedCheckedStates={deleteDate} onDelete={handleIndexRest} />
+                                        <GetAllCoordinatorSchedule
+                                        onCheckedStatesChange={handleCheckedStatesChange}
+                                        updatedCheckedStates={deleteDate}
+                                        onDelete={handleIndexRest}
+                                        onSubmit={clearSelection}/>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +145,7 @@ function Calendar(props) {
                                     <div className='currentSchedule'>
                                         <h2 className='timeListTitle'>Current Schedule</h2>
                                         <div className='scheduleContainer'>
-                                            <GetProfessorSchedule/>
+                                            <GetProfessorSchedule onUpdate={udpateSchedule}/>
                                         </div>
                                     </div>
                                 

@@ -39,7 +39,7 @@ query Query($id: ID) {
 `
 
 
-export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedCheckedStates, onDelete }) => {
+export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedCheckedStates, onDelete, onSubmit}) => {
 
     const { user } = useContext(AuthContext);
 
@@ -48,7 +48,7 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
     });
 
     const [checkedStates, setCheckedStates] = React.useState([]);
-    const [dateRemove, setRemove] = React.useState(updatedCheckedStates)
+    const [dateRemove, setRemove] = React.useState(updatedCheckedStates);
 
     React.useEffect(() => {
         if (updatedCheckedStates != null) {
@@ -70,6 +70,13 @@ export const GetAllCoordinatorSchedule = ({ onCheckedStatesChange, updatedChecke
     React.useEffect(() => {
         onDelete(dateRemove);
     }, [dateRemove, onDelete]);
+
+    React.useEffect(() =>{
+        if(onSubmit === true){
+            setCheckedStates([]);
+            onSubmit = false;
+        }
+    },[onSubmit])
 
     const handleChange = (event) => {
         if (!checkedStates.includes(getAllCoordinatorSchedule[event])) {

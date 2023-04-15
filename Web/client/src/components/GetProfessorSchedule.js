@@ -14,7 +14,7 @@ query GetProfessor($id: ID!) {
 `
 
 
-export const GetProfessorSchedule = () => {
+export const GetProfessorSchedule = ({onUpdate}) => {
 
     const { user } = useContext(AuthContext);
     const { loading, error, data, refetch } = useQuery(GET_PROFESSOR, {
@@ -31,6 +31,15 @@ export const GetProfessorSchedule = () => {
         const edtTime = date.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" });
         return edtTime;
     }
+
+    // React.useEffect(()=>{
+    //     if(onUpdate === true){
+    //         // Call refetch here
+    //         console.log("help");
+    //         onUpdate = false;
+    //     }
+
+    // },[onUpdate])
 
 
     return (

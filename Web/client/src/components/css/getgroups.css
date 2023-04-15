@@ -132,6 +132,7 @@
     margin: auto;
     margin-top: 15px;
     background-color: #231F20;
+    border-radius: 150px;
     width: 350px;
     height: 90%;
     overflow-y: auto;
