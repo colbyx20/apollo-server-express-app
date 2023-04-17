@@ -1169,6 +1169,12 @@ const resolvers = {
 
             try {
 
+                // check if all of the groups have been scheduled 
+                const isComplete = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $ne: 3 } }).count()
+                if (isComplete === 0) {
+                    return;
+                }
+
                 const sponsor = await Group.find({ coordinatorId: coordinatorId, isSponsor: true });
 
                 const coordinatorInfo = [{
@@ -1177,7 +1183,15 @@ const resolvers = {
                 }]
 
                 sponsor.map(async (group) => {
-                    await CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, groupId: group._id, numberOfAttending: { $eq: 0 } }, { $inc: { numberOfAttending: 1 }, $push: { attending2: { $each: coordinatorInfo } } })
+                    await CoordSchedule.findOneAndUpdate({
+                        coordinatorID: coordinatorId,
+                        groupId: group._id,
+                        numberOfAttending: { $eq: 0 }
+                    },
+                        {
+                            $inc: { numberOfAttending: 1 },
+                            $push: { attending2: { $each: coordinatorInfo } }
+                        })
                 })
 
                 const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
@@ -1192,23 +1206,37 @@ const resolvers = {
 
                     const date = new Date(coordinatorInfo[0].time);
 
-                    const matchProfessors = await Professors.aggregate([
-                        { $match: { availSchedule: date } },
-                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } },
-                        { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
+                    // prioritize professors that match and that have not been assigned yet.
+                    const collectProfessors = await Professors.aggregate([
+                        { $match: { availSchedule: date }, appointment: { $size: 0 } },
+                        { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } }
                     ])
 
-                    if (matchProfessors) {
-                        const professorInfo = matchProfessors.map((professor) => ({
+                    if (collectProfessors) {
+
+                        const professorInfo = collectProfessors.map((professor) => ({
                             _id: professor._id,
                             fullName: professor.fullName
                         }));
 
                         await Promise.all([
+                            CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: collectProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
+                            Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
+                        ]);
+
+                    } else {
+                        const matchProfessors = await Professors.aggregate([
+                            { $match: { availSchedule: date } },
+                            { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } },
+                            { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
+                        ])
+                        await Promise.all([
                             CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
                             Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
                         ]);
                     }
+
+
                 }
             } catch (e) {
                 return false;
