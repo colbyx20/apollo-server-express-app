@@ -1214,8 +1214,6 @@ const resolvers = {
             }
 
             try {
-
-                // check if all of the groups have been scheduled 
                 const isComplete = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $ne: 3 } }).count()
                 if (isComplete === 0) {
                     return;
@@ -1285,13 +1283,12 @@ const resolvers = {
 
                         await Promise.all(sendEmailPromises);
 
-
-
                         await Promise.all([
                             CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
                             Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo[0]._id } })
                         ]);
                     }
+
                 }
             } catch (e) {
                 return false;
