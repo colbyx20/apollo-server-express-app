@@ -1167,6 +1167,51 @@ const resolvers = {
             const coordinatorId = Mongoose.Types.ObjectId(CID)
             const MAX_APPOINTMENTS = 3;
 
+            let transport = nodemailer.createTransport({
+                service: "Gmail",
+                host: process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+            });
+
+
+            async function sendCommitteeEmails(email, fullName, date, room) {
+
+                console.log(`${email} ${fullName} ${date} ${room}`)
+
+                try {
+                    await transport.sendMail({
+                        from: "group13confirmation@gmail.com",
+                        to: email,
+                        subject: "mySDSchedule - Committee Confirmation",
+                        html: `<h1>Senior Design Appointment</h1>
+                    <h1>${fullName}</h1>
+                    <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${date.toDateString()}</td>
+                            <td>${date.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                            <td>${room}</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    `,
+                    })
+                } catch (error) {
+                    throw new ApolloError(error);
+                }
+            }
+
             try {
 
                 // check if all of the groups have been scheduled 
@@ -1194,12 +1239,12 @@ const resolvers = {
                         })
                 })
 
-                const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
+                const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, groupdId: { $ne: null }, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
 
                 for (let counter = 0; counter < numAttending; counter++) {
 
                     const coordinatorInfo = await CoordSchedule.aggregate([
-                        { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } } },
+                        { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 }, groupId: { $ne: null } } },
                         { $sample: { size: 1 } },
                         { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1, groupId: 1, room: 1 } }
                     ])
@@ -1207,10 +1252,13 @@ const resolvers = {
                     const date = new Date(coordinatorInfo[0].time);
 
                     const matchProfessors = await Professors.aggregate([
-                        { $match: { availSchedule: date } },
+                        {
+                            $match: { availSchedule: date }
+                        },
                         { $sample: { size: MAX_APPOINTMENTS - coordinatorInfo[0].numberOfAttending } },
                         { $project: { _id: 1, fullName: { $concat: ['$professorFName', ' ', '$professorLName'] } } }
                     ])
+
 
                     if (matchProfessors) {
                         const professorInfo = matchProfessors.map((professor) => ({
@@ -1218,9 +1266,24 @@ const resolvers = {
                             fullName: professor.fullName
                         }));
 
+                        for (let i = 0; i < professorInfo.length; i++) {
+
+                            let email;
+                            const getEmail = await UserInfo.findOne({ userId: professorInfo[i]._id }).select('email notificationEmail');
+
+                            if (getEmail.notificationEmail === "") {
+                                email = getEmail.email;
+                            } else {
+                                email = getEmail.notificationEmail;
+                            }
+
+                            await sendCommitteeEmails(email, professorInfo[i].fullName, date, coordinatorInfo[0].room);
+
+                        }
+
                         await Promise.all([
                             CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
-                            Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo._id } })
+                            Professors.updateMany({ _id: { $in: professorInfo } }, { $pull: { availSchedule: date }, $push: { appointments: coordinatorInfo[0]._id } })
                         ]);
                     }
                 }
