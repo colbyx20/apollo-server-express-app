@@ -26,6 +26,7 @@ const LOGIN_USER = gql`
 
 function Login(props) {
     const context = useContext(AuthContext);
+    const [loginStatus, setLoginStatus] = useState(false);
     const [errors, setErrors] = useState([]);
 
 
@@ -54,10 +55,13 @@ function Login(props) {
                 console.log("User doesn't exist");
             }
         },
+        variables: { loginInput: values },
         onError({ graphQLErrors }) {
             setErrors(graphQLErrors);
         },
-        variables: { loginInput: values }
+        onCompleted() {
+            setLoginStatus(true);
+        }
     });
 
     return (
@@ -119,7 +123,7 @@ function Login(props) {
                     {errors.length ? (
                         <>
                             {errors.map((error) => (
-                                <Alert severity="error">{error.message}</Alert>
+                                <Alert className="alert-message" severity="error">{error.message}</Alert>
                             ))}
                         </>
                     ) : ""}

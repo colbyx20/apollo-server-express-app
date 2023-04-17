@@ -619,14 +619,29 @@ const resolvers = {
 
         },
         loginUser: async (_, { loginInput: { email, password } }) => {
-            const userInfo = await UserInfo.findOne({ email: email }).populate("userId");
-            const user = await Users.findOne({ _id: userInfo.userId });
 
-            if (!userInfo) {
-                throw new Error("User not found");
+            if (email === "") {
+                throw new ApolloError("Please Enter in a valid Email");
             }
 
+            if (password === "") {
+                throw new ApolloError("Please Enter in a valid Password")
+            }
+
+            const userInfo = await UserInfo.findOne({ email: email }).populate('userId');
+
+            if (!userInfo) {
+                throw new ApolloError("User not found");
+            }
+
+            const user = await Users.findOne({ _id: userInfo.userId });
+
+
             const authUser = await Auth.findOne({ userId: userInfo.userId._id }).select("userId password confirm token");
+
+            if (!(await bcrypt.compare(password, authUser.password))) {
+                throw new ApolloError("Incorrect password")
+            }
 
             if (email) {
                 switch (userInfo.privilege) {
@@ -637,75 +652,80 @@ const resolvers = {
                     case 'coordinator':
                         return await Login(userInfo, authUser, authUser.confirm);
                     default:
-                        console.log("err");
+                        throw new ApolloError("User Does not Exist")
                 }
             }
 
             async function Login(userInfo, authUser, confirmedUser) {
-                if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
 
-                    let ID = userInfo.userId._id;
+                try {
+                    if (userInfo, authUser, confirmedUser === true && (await bcrypt.compare(password, authUser.password))) {
 
-                    let firstname;
-                    let lastname;
+                        let ID = userInfo.userId._id;
 
-                    if (userInfo.privilege === 'student') {
-                        firstname = userInfo.userId.userFName;
-                        lastname = userInfo.userId.userLName;
-                    } else if (userInfo.privilege === 'coordinator') {
-                        firstname = userInfo.userId.coordinatorFName;
-                        lastname = userInfo.userId.coordinatorLName;
-                    } else if (userInfo.privilege === 'professor') {
-                        firstname = userInfo.userId.professorFName;
-                        lastname = userInfo.userId.professorLName;
-                    } else {
-                        throw new ApolloError("User Privilege Error On Login");
-                    }
+                        let firstname;
+                        let lastname;
+
+                        if (userInfo.privilege === 'student') {
+                            firstname = userInfo.userId.userFName;
+                            lastname = userInfo.userId.userLName;
+                        } else if (userInfo.privilege === 'coordinator') {
+                            firstname = userInfo.userId.coordinatorFName;
+                            lastname = userInfo.userId.coordinatorLName;
+                        } else if (userInfo.privilege === 'professor') {
+                            firstname = userInfo.userId.professorFName;
+                            lastname = userInfo.userId.professorLName;
+                        } else {
+                            throw new ApolloError("User Privilege Error On Login");
+                        }
 
 
 
-                    // create a new token ( when you login you give user a new token )
-                    const accessToken = jwt.sign(
-                        {
-                            id: ID,
-                            email,
+                        // create a new token ( when you login you give user a new token )
+                        const accessToken = jwt.sign(
+                            {
+                                id: ID,
+                                email,
+                                firstname: firstname,
+                                lastname: lastname,
+                                privilege: userInfo.privilege,
+                                notificationEmail: userInfo.notificationEmail,
+                                coordinator: user?.coordinatorId
+                            },
+                            "UNSAFE_STRING", // stored in a secret file 
+                            { expiresIn: "1m" }
+                        );
+
+                        const refreshToken = jwt.sign(
+                            {
+                                id: ID,
+                                email,
+                                firstname: firstname,
+                                lastname: lastname,
+                                privilege: userInfo.privilege,
+                                notificationEmail: userInfo.notificationEmail
+                            },
+                            "UNSAFE_STRING", // stored in a secret file 
+                            { expiresIn: "2h" }
+                        );
+
+                        // attach token to user model that we found if user exists 
+                        await Auth.findOneAndUpdate({ userId: ID }, { $set: { token: refreshToken } })
+
+                        return {
+                            _id: ID,
                             firstname: firstname,
                             lastname: lastname,
+                            email: userInfo.email,
+                            token: accessToken,
                             privilege: userInfo.privilege,
                             notificationEmail: userInfo.notificationEmail,
-                            coordinator: user?.coordinatorId
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "1m" }
-                    );
+                            image: userInfo.image
 
-                    const refreshToken = jwt.sign(
-                        {
-                            id: ID,
-                            email,
-                            firstname: firstname,
-                            lastname: lastname,
-                            privilege: userInfo.privilege,
-                            notificationEmail: userInfo.notificationEmail
-                        },
-                        "UNSAFE_STRING", // stored in a secret file 
-                        { expiresIn: "2h" }
-                    );
-
-                    // attach token to user model that we found if user exists 
-                    await Auth.findOneAndUpdate({ userId: ID }, { $set: { token: refreshToken } })
-
-                    return {
-                        _id: ID,
-                        firstname: firstname,
-                        lastname: lastname,
-                        email: userInfo.email,
-                        token: accessToken,
-                        privilege: userInfo.privilege,
-                        notificationEmail: userInfo.notificationEmail,
-                        image: userInfo.image
-
+                        }
                     }
+                } catch (error) {
+                    throw new ApolloError("User Does not Exist")
                 }
             }
         },
@@ -759,7 +779,7 @@ const resolvers = {
         updatePassword: async (_, { ID, oldPassword, newPassword, confirmedPassword }) => {
             const userId = Mongoose.Types.ObjectId(ID);
 
-            const capitalRegex = /[A-Z]/;
+            const capitalRegex = /[A-Za-z]/;
             const numberRegex = /[0-9]/;
             const specialRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
@@ -771,7 +791,7 @@ const resolvers = {
                 throw new ApolloError("New Password is too short");
             }
 
-            if (!capitalRegex.test(password) || !numberRegex.test(password) || !specialRegex.test(password)) {
+            if (!capitalRegex.test(newPassword) || !numberRegex.test(newPassword) || !specialRegex.test(newPassword)) {
                 throw new ApolloError("Password doesn't contain all requiremements")
             }
 

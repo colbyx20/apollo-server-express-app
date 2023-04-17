@@ -128,8 +128,8 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     return (
         <>
             <div className='StickyHeader'>
-                <Button sx={{ float: 'left', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate Committee</Button>
-                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleAssignGroups(e, ID)}>Generate Group Appointments</Button>
+                <Button sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}>Generate Committee</Button>
+                <Button sx={{ float: 'left', color: 'white', bgcolor: '#1976d2' }} variant='Contained' onClick={(e) => handleAssignGroups(e, ID)}>Generate Group</Button>
             </div>
             <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '95%', overflow: 'none' }}>
                 <Table>

@@ -55,8 +55,12 @@
 
 .passwordUpdate {
     /* padding-left: 250px; */
-    padding-left: 31%;
+    /* padding-left: 31%; */
     color: black;
+    justify-content: center;
+    width: 50%;
+    margin: auto;
+
 }
 
 .accountImporter {

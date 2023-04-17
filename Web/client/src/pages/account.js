@@ -4,7 +4,7 @@ import { ThemeContext } from '../context/themeContext'
 import { GetUserInfo } from '../components/GetUserInfo';
 import CustomSidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
-import { Button, Switch, Grid, FormControlLabel } from "@mui/material";
+import { Button, Switch, Grid, Alert } from "@mui/material";
 import '../components/css/account.css'
 import EditEmailPopup from '../components/EditEmail';
 import EditPassword from '../components/EditPassword';
@@ -26,7 +26,8 @@ function Account(props) {
 
     const [isEditingEmail, setIsEditingEmail] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [profileUpdate, setProfileUpdate] = useState('');
+    const [profileUpdate, setProfileUpdate] = useState(false);
+    const [errors, setErrors] = useState([])
 
     const handleEditEmailClick = () => {
         setIsEditingEmail(true);
@@ -47,21 +48,21 @@ function Account(props) {
     const [updatePassword] = useMutation(UPDATE_USER_PASSWORD);
     const handlePasswordChangeSubmit = async (oldPassword, newPassword) => {
 
-        try {
-            await updatePassword({
-                variables: {
-                    id: user.id,
-                    oldPassword: oldPassword,
-                    newPassword: newPassword,
-                    confirmedPassword: newPassword
-                }
-            })
-
-            setProfileUpdate("Password Has Been Updated");
-        } catch (error) {
-            setProfileUpdate(error.message);
-        }
-    };
+        await updatePassword({
+            variables: {
+                id: user.id,
+                oldPassword: oldPassword,
+                newPassword: newPassword,
+                confirmedPassword: newPassword
+            },
+            onError({ graphQLErrors }) {
+                setErrors(graphQLErrors);
+            },
+            onCompleted() {
+                setProfileUpdate(true);
+            }
+        })
+    }
 
     const onLogout = () => {
         logout();
@@ -101,7 +102,16 @@ function Account(props) {
                                             marginBottom: '5px',
                                             width: '55%',
                                         }} variant="contained">Password</Button>
-                                    <span className='passwordUpdate'>{profileUpdate}</span>
+                                    {/* <Alert severity="success" className='passwordUpdate'>{profileUpdate}</Alert> */}
+                                    {errors.length ? (
+                                        <>
+                                            {errors.map((error) => (
+                                                <Alert className='passwordUpdate' severity="error">{error.message}</Alert>
+                                            ))}
+                                        </>
+                                    ) : profileUpdate ? (
+                                        <Alert className='passwordUpdate' severity="success">Password Successfully Change</Alert>
+                                    ) : null}
                                 </div>
                                 <div className='toggleTheme'>
                                     <h2 className='themeTitle'>Toggle Theme</h2>

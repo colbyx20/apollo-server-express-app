@@ -1,27 +1,31 @@
-*{
+* {
     margin: 0;
     padding: 0;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-body{
+body {
     background-color: #231F20;
 }
 
-h3{
+h3 {
     text-align: center;
     padding-top: 5%;
     padding-bottom: 15px;
     color: white;
 }
 
-.webPage{
+.alert-message {
+    margin-bottom: 10px;
+}
+
+.webPage {
     width: 100%;
     min-height: 100vh;
     display: flex;
 }
 
-.loginContainer{
+.loginContainer {
     justify-content: center;
     align-items: center;
     background-color: #231F20;
@@ -30,14 +34,14 @@ h3{
     display: inline-flexbox;
 }
 
-.imageContainer{
+.imageContainer {
     background-color: #ffffff;
     width: 70%;
     height: 100vh;
     display: inline-flexbox;
 }
 
-img{
+img {
     justify-content: center;
     align-items: center;
     justify-content: center;
@@ -49,22 +53,22 @@ img{
     display: block;
 }
 
-.mylabel{
+.mylabel {
     color: aliceblue !important;
 }
 
-span{
+span {
     margin-left: 1%;
     color: white;
 }
 
-a{
+a {
     text-decoration: none;
     margin-top: 5%;
     color: rgb(83, 177, 236);
 }
 
-a:hover{
+a:hover {
     text-decoration: none;
     color: rgb(39, 158, 232);
 }
