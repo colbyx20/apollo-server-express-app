@@ -73,7 +73,7 @@ function AccountStudentScreen(props) {
       console.log("Submit Email! " + notifEmail);
       notificationEmail({
         variables: {
-          id: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id,
+          id: user.loginUser._id,
           email: notifEmail,
         },
       });

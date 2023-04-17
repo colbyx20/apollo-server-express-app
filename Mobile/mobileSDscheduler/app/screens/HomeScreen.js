@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import AuthContext from "../auth/context";
-import HomeStudentScreen from "./HomeProfessorScreen";
+import HomeStudentScreen from "./HomeStudentScreen";
 import HomeProfessorScreen from "./HomeProfessorScreen";
 
 function HomeScreen(props) {

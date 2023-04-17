@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, setState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { Image, StyleSheet, Dimensions, View } from "react-native";
+import { Image, StyleSheet, Dimensions, View, Switch } from "react-native";
 import Constants from "expo-constants";
 
 import { useMutation, useQuery } from "@apollo/client";
@@ -132,8 +132,22 @@ function AccountProfessorScreen(props) {
     });
   };
 
+  // state = { switchValue: false };
+
+  // toggleSwitch = (value) => {
+  //   //onValueChange of the switch this function will be called
+  //   setState({ switchValue: value });
+  //   //state changes according to switch
+  //   //which will result in re-render the text
+  // };
+
   return (
     <Screen style={styles.background}>
+      {/* <Switch
+        style={{ marginTop: 30 }}
+        onValueChange={toggleSwitch}
+        value={state.switchValue}
+      /> */}
       <Image style={styles.pfp} source={require("../assets/knightro.png")} />
       <AppText style={styles.text}>
         Hello {fname} {lname}!

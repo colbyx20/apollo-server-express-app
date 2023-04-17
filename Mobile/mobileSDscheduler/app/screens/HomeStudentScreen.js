@@ -20,7 +20,7 @@ function HomeScreen(props) {
     APPOINTMENT,
     {
       variables: {
-        studentId: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id
+        studentId: user.loginUser._id,
       },
     },
     {
