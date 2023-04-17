@@ -1491,18 +1491,32 @@ const resolvers = {
         generateGroupAppointment: async (_, { CID }) => {
             const ID = Mongoose.Types.ObjectId(CID);
 
-            const [scheduleCount, groupCount] = await Promise.all([
+            const [fullSchedule, scheduleCount, groupCount, groupsAssigned] = await Promise.all([
+                CoordSchedule.find({ coordinatorID: ID }).count(),
                 CoordSchedule.find({ coordinatorID: ID, groupId: null }).count(),
-                Group.find({ coordinatorId: ID, appointment: { $size: 0 } }).count()
+                Group.find({ coordinatorId: ID, appointment: { $size: 0 } }).count(),
+                CoordSchedule.find({ coordinatorID: ID, groupId: { $ne: null } }).count(),
             ])
 
-            if (groupCount === 0 || scheduleCount === 0) {
-                throw new ApolloError("Please create your Groups or Add Appointment Times")
+            if (groupsAssigned === 0 && groupCount === 0) {
+                throw new ApolloError("Please Generate your groups")
+            }
+
+            if (groupsAssigned === scheduleCount) {
+                throw new ApolloError("All Groups have been Assigned")
+            }
+
+            if (fullSchedule === 0) {
+                throw new ApolloError(`Please create your schedule, you need ${groupCount} appointments `)
+            }
+
+            if (fullSchedule < (groupCount + groupsAssigned)) {
+                throw new ApolloError(`Please Create ${groupCount - scheduleCount} appointments `)
             }
 
             const remainder = groupCount - scheduleCount;
 
-            if (scheduleCount < groupCount) {
+            if (fullSchedule < groupCount) {
                 throw new ApolloError(`Please create ${remainder} more appointments to Generate your group Appointments`)
             } else {
                 for (let count = 0; count < groupCount; count++) {
