@@ -1201,7 +1201,7 @@ const resolvers = {
                     const coordinatorInfo = await CoordSchedule.aggregate([
                         { $match: { coordinatorID: coordinatorId, numberOfAttending: { $lt: 3 } } },
                         { $sample: { size: 1 } },
-                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1, groupId: 1 } }
+                        { $project: { coordinatorID: 1, attending2: 1, time: 1, numberOfAttending: 1, groupId: 1, room: 1 } }
                     ])
 
                     const date = new Date(coordinatorInfo[0].time);
