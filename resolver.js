@@ -1179,37 +1179,38 @@ const resolvers = {
 
 
             async function sendCommitteeEmails(email, fullName, date, room) {
-
-                console.log(`${email} ${fullName} ${date} ${room}`)
-
-                try {
-                    await transport.sendMail({
+                return new Promise((resolve, reject) => {
+                    transport.sendMail({
                         from: "group13confirmation@gmail.com",
                         to: email,
                         subject: "mySDSchedule - Committee Confirmation",
                         html: `<h1>Senior Design Appointment</h1>
-                    <h1>${fullName}</h1>
-                    <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${date.toDateString()}</td>
-                            <td>${date.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
-                            <td>${room}</td>
-                        </tr>
-                    </tbody>
-                    </table>
-                    `,
-                    })
-                } catch (error) {
-                    throw new ApolloError(error);
-                }
+                        <h1>${fullName}</h1>
+                        <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${date.toDateString()}</td>
+                                <td>${date.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}</td>
+                                <td>${room}</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        `,
+                    }, (error, info) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(info);
+                        }
+                    });
+                });
             }
 
             try {
@@ -1227,7 +1228,7 @@ const resolvers = {
                     fullName: fullName
                 }]
 
-                sponsor.map(async (group) => {
+                await Promise.all(sponsor.map(async (group) => {
                     await CoordSchedule.findOneAndUpdate({
                         coordinatorID: coordinatorId,
                         groupId: group._id,
@@ -1237,7 +1238,7 @@ const resolvers = {
                             $inc: { numberOfAttending: 1 },
                             $push: { attending2: { $each: coordinatorInfo } }
                         })
-                })
+                }));
 
                 const numAttending = await CoordSchedule.find({ coordinatorID: coordinatorId, groupdId: { $ne: null }, numberOfAttending: { $lt: MAX_APPOINTMENTS } }).count();
 
@@ -1266,10 +1267,11 @@ const resolvers = {
                             fullName: professor.fullName
                         }));
 
-                        for (let i = 0; i < professorInfo.length; i++) {
+
+                        const sendEmailPromises = professorInfo.map(async (professor) => {
 
                             let email;
-                            const getEmail = await UserInfo.findOne({ userId: professorInfo[i]._id }).select('email notificationEmail');
+                            const getEmail = await UserInfo.findOne({ userId: professor._id }).select('email notificationEmail');
 
                             if (getEmail.notificationEmail === "") {
                                 email = getEmail.email;
@@ -1277,9 +1279,13 @@ const resolvers = {
                                 email = getEmail.notificationEmail;
                             }
 
-                            await sendCommitteeEmails(email, professorInfo[i].fullName, date, coordinatorInfo[0].room);
+                            return sendCommitteeEmails(email, professor.fullName, date, coordinatorInfo[0].room);
 
-                        }
+                        });
+
+                        await Promise.all(sendEmailPromises);
+
+
 
                         await Promise.all([
                             CoordSchedule.findOneAndUpdate({ coordinatorID: coordinatorId, time: date }, { $inc: { numberOfAttending: matchProfessors.length }, $push: { attending2: { $each: professorInfo } } }),
