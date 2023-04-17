@@ -150,12 +150,13 @@ export const GetCoordinatorSchedule = ({ ID }) => {
                         sx={{ float: 'right', color: 'white', bgcolor: '#1976d2' }}
                         variant='Contained'
                         onClick={(e) => handleCreateGenerateViewers(e, ID, user.firstname, user.lastname)}
-                        disable={generateCommitteeLoading}>Generate Committee</Button>
+                    >Generate Committee</Button>
                     <Button
                         sx={{ float: 'left', color: 'white', bgcolor: '#1976d2' }}
                         variant='Contained'
                         onClick={(e) => handleAssignGroups(e, ID)}
-                        disable={generateGroupLoading}>Generate Group</Button>
+                    >Generate Group
+                    </Button>
                 </div>
                 <TableContainer component={Paper} sx={{ bgcolor: '#231F20', height: '95%', overflow: 'none' }}>
                     <Table>
