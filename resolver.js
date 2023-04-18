@@ -1500,11 +1500,10 @@ const resolvers = {
 
 
             async function sendNotificationEmail(email, firstname, lastname, room, convertTime) {
-                console.log(`${email}, ${firstname} ${lastname} ${room} ${convertTime}`)
                 return new Promise((resolve, reject) => {
                     transport.sendMail({
                         from: "group13confirmation@gmail.com",
-                        to: email,
+                        to: 'colbyx20@gmail.com',
                         subject: "mySDSchedule - Professor Cancelation",
                         html: `<h1>Professor Cancelation - ${firstname} ${lastname} </h1>
                             <p>
@@ -1536,8 +1535,6 @@ const resolvers = {
                 const firstname = professorInfo.professorFName.charAt(0).toUpperCase() + professorInfo.professorFName.slice(1);
                 const lastname = professorInfo.professorLName.charAt(0).toUpperCase() + professorInfo.professorLName.slice(1);
 
-                console.log(firstname);
-                console.log(lastname);
                 const convertTime = new Date(coordInfo.time)
 
                 let sendTo = '';
