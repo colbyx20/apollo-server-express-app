@@ -1035,17 +1035,6 @@ const resolvers = {
             })).modifiedCount
             return
         },
-        cancelAppointment2: async (_, { cancelation: { CID, ApId, reason } }) => {
-            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-
-            async function sendAppointmentDeletionEmail() {
-
-            }
-
-            // grab all professors in that 
-        },
-
-        // passes the ID of the person canceling and the appointment being canceled
         cancelAppointment: async (_, { cancelation: { CancelerID, ApID, room, time } }) => {
 
             let transport = nodemailer.createTransport({

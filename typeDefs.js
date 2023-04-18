@@ -347,7 +347,6 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):Boolean
-        cancelAppointment2(cancelation:cancelation):Boolean
         cancelAppointment(cancelation:cancelation):Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
