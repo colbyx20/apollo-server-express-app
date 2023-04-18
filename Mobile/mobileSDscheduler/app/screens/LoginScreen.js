@@ -60,7 +60,9 @@ function LoginScreen(props) {
       return <AppText>Fetching data...</AppText>; //while loading return this
     }
 
-    if (data != null) authContext.setUser(data);
+    if (data.loginUser != null && data.loginUser.privilege != "coordinator") {
+      authContext.setUser(data);
+    }
     console.log("Data: ", data);
   };
 
