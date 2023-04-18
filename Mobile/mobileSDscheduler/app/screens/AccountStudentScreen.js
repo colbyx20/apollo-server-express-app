@@ -106,107 +106,114 @@ function AccountStudentScreen(props) {
   };
 
   return (
-    <Screen style={styles.background}>
-      <Image style={styles.pfp} source={require("../assets/knightro.png")} />
-      <AppText style={styles.text}>
-        Hello {fname} {lname}!
-      </AppText>
-      {role ? (
-        <AppText style={styles.subtext}>{"< " + role + " >"}</AppText>
-      ) : (
-        <AppText style={styles.subtext}></AppText>
-      )}
-      <Formik
-        initialValues={{
-          notifEmail: "",
-          oldPassword: "",
-          password: "",
-          confirmPassword: "",
-        }} // email: curEmail,
-        onSubmit={handleSubmit}
-        validationSchema={validationSchema}
-      >
-        {({ handleChange, errors, setFieldTouched, touched, values }) => (
-          <>
-            {curNotifEmail == "" ? (
-              <AppText style={styles.subtitle}>Add Notification email:</AppText>
-            ) : (
-              <AppText style={styles.subtitle}>
-                Change Notification email:
-              </AppText>
-            )}
-            <AppTextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="email"
-              keyboardType="email-address"
-              onBlur={() => setFieldTouched("notifEmail")}
-              onChangeText={handleChange("notifEmail")}
-              placeholder={curNotifEmail}
-              textContextType="emailAddress" //might need to remove
-            />
-            <ErrorMessage
-              error={errors.notifEmail}
-              visible={touched.notifEmail}
-            />
-            <AppText style={styles.subtitle}>Change password:</AppText>
-            <AppTextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="lock"
-              onBlur={() => setFieldTouched("oldPassword")}
-              onChangeText={handleChange("oldPassword")}
-              placeholder="Current Password"
-              secureTextEntry
-              textContextType="password" //might need to remove
-            />
-            <ErrorMessage
-              error={errors.oldPassword}
-              visible={touched.oldPassword}
-            />
-            <AppTextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="lock"
-              onBlur={() => setFieldTouched("password")}
-              onChangeText={handleChange("password")}
-              placeholder="New Password"
-              secureTextEntry
-              textContextType="password" //might need to remove
-            />
-            <ErrorMessage error={errors.password} visible={touched.password} />
-            <AppTextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="lock"
-              onBlur={() => setFieldTouched("confirmPassword")}
-              onChangeText={handleChange("confirmPassword")}
-              placeholder="Confirm Password"
-              secureTextEntry
-              textContextType="password" //might need to remove
-            />
-            <ErrorMessage
-              error={errors.confirmPassword}
-              visible={touched.confirmPassword}
-            />
-            <AppFormButton
-              title="Save"
-              color="gold"
-              onPress={handleSubmit}
-            ></AppFormButton>
-          </>
+    <Screen style={styles.notifBar}>
+      <View style={styles.screen}>
+        <Image style={styles.pfp} source={require("../assets/knightro.png")} />
+        <AppText style={styles.text}>
+          Hello {fname} {lname}!
+        </AppText>
+        {role ? (
+          <AppText style={styles.subtext}>{"< " + role + " >"}</AppText>
+        ) : (
+          <AppText style={styles.subtext}></AppText>
         )}
-      </Formik>
-      <View style={styles.container}>
-        <AppButton
-          title="Logout"
-          color="gold"
-          onPress={() => {
-            console.log("logout");
-            setUser(null);
-          }}
-          style={styles.button}
-        ></AppButton>
+        <Formik
+          initialValues={{
+            notifEmail: "",
+            oldPassword: "",
+            password: "",
+            confirmPassword: "",
+          }} // email: curEmail,
+          onSubmit={handleSubmit}
+          validationSchema={validationSchema}
+        >
+          {({ handleChange, errors, setFieldTouched, touched, values }) => (
+            <>
+              {curNotifEmail == "" ? (
+                <AppText style={styles.subtitle}>
+                  Add Notification email:
+                </AppText>
+              ) : (
+                <AppText style={styles.subtitle}>
+                  Change Notification email:
+                </AppText>
+              )}
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="email"
+                keyboardType="email-address"
+                onBlur={() => setFieldTouched("notifEmail")}
+                onChangeText={handleChange("notifEmail")}
+                placeholder={curNotifEmail}
+                textContextType="emailAddress" //might need to remove
+              />
+              <ErrorMessage
+                error={errors.notifEmail}
+                visible={touched.notifEmail}
+              />
+              <AppText style={styles.subtitle}>Change password:</AppText>
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="lock"
+                onBlur={() => setFieldTouched("oldPassword")}
+                onChangeText={handleChange("oldPassword")}
+                placeholder="Current Password"
+                secureTextEntry
+                textContextType="password" //might need to remove
+              />
+              <ErrorMessage
+                error={errors.oldPassword}
+                visible={touched.oldPassword}
+              />
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="lock"
+                onBlur={() => setFieldTouched("password")}
+                onChangeText={handleChange("password")}
+                placeholder="New Password"
+                secureTextEntry
+                textContextType="password" //might need to remove
+              />
+              <ErrorMessage
+                error={errors.password}
+                visible={touched.password}
+              />
+              <AppTextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="lock"
+                onBlur={() => setFieldTouched("confirmPassword")}
+                onChangeText={handleChange("confirmPassword")}
+                placeholder="Confirm Password"
+                secureTextEntry
+                textContextType="password" //might need to remove
+              />
+              <ErrorMessage
+                error={errors.confirmPassword}
+                visible={touched.confirmPassword}
+              />
+              <AppFormButton
+                title="Save"
+                color="gold"
+                onPress={handleSubmit}
+              ></AppFormButton>
+            </>
+          )}
+        </Formik>
+        <View style={styles.container}>
+          <AppButton
+            title="Logout"
+            color="gold"
+            onPress={() => {
+              console.log("logout");
+              setUser(null);
+            }}
+            style={styles.button}
+          ></AppButton>
+        </View>
       </View>
     </Screen>
   );
@@ -221,15 +228,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     flex: 1,
   },
-  background: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 5,
-    backgroundColor: colors.primaryDark,
-    flex: 1,
-  },
   button: {
     justifyContent: "flex-end",
+  },
+  notifBar: {
+    backgroundColor: colors.gold, //colors.primaryDark,
+    height: "100%",
   },
   pfp: {
     width: 150,
@@ -241,12 +245,12 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: colors.secondaryDark,
   },
-  text: {
-    color: colors.secondaryDark,
-    fontSize: 18,
-    fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
-    alignSelf: "center",
-    fontWeight: "bold",
+  screen: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 5,
+    backgroundColor: colors.primaryDark,
+    flex: 1,
   },
   subtext: {
     color: colors.secondaryDark,
@@ -262,6 +266,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 15,
     fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
+    fontWeight: "bold",
+  },
+  text: {
+    color: colors.secondaryDark,
+    fontSize: 18,
+    fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
+    alignSelf: "center",
     fontWeight: "bold",
   },
 });

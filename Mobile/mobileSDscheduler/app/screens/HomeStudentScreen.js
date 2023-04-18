@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useQuery, useLazyQuery } from "@apollo/client";
 //import { GROUPS } from "../gql/queries/getAllGroups";
 import { APPOINTMENT } from "../gql/queries/getGroupAppointment";
@@ -46,17 +46,19 @@ function HomeScreen(props) {
   console.log(data);
 
   return (
-    <Screen style={styles.screen}>
-      <AppText style={styles.title}>Upcoming Events</AppText>
-      <GroupAppointment
-        image={require("../assets/knightro.png")}
-        title={dateToTimeString(data.getGroupAppointment.time)}
-        profs={data.getGroupAppointment.attending2}
-        room={data.getGroupAppointment.room}
-        id={data.getGroupAppointment._id}
-        onPress={() => console.log("Group selected", item)}
-        style={styles.item}
-      />
+    <Screen style={styles.notifBar}>
+      <View style={styles.screen}>
+        <AppText style={styles.title}>Upcoming Events</AppText>
+        <GroupAppointment
+          image={require("../assets/knightro.png")}
+          title={dateToTimeString(data.getGroupAppointment.time)}
+          profs={data.getGroupAppointment.attending2}
+          room={data.getGroupAppointment.room}
+          id={data.getGroupAppointment._id}
+          onPress={() => console.log("Group selected", item)}
+          style={styles.item}
+        />
+      </View>
     </Screen>
   );
 }
@@ -78,8 +80,12 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 5,
   },
+  norifBar: {
+    backgroundColor: colors.gold, //colors.primaryDark,
+  },
   screen: {
     padding: 10,
+    height: "100%",
     backgroundColor: colors.primaryDark,
   },
   title: {

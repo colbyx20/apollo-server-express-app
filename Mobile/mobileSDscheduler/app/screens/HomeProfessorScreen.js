@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useQuery, useLazyQuery } from "@apollo/client";
 //import { GROUPS } from "../gql/queries/getAllGroups";
 import { GROUPS } from "../gql/queries/getProfessorsAppointments";
@@ -44,39 +44,41 @@ function HomeScreen(props) {
   console.log(data);
 
   return (
-    <Screen style={styles.screen}>
-      <AppText style={styles.title}>Upcoming Events</AppText>
-      <FlatList
-        data={data.getProfessorsAppointments}
-        keyExtractor={(data) => data._id.toString()}
-        renderItem={({ item }) => (
-          <GroupItem
-            image={require("../assets/knightro.png")}
-            title={item.groupName}
-            subTitle={dateToTimeString(item.time)}
-            room={item.room}
-            number={item.groupNumber}
-            id={item._id}
-            onPress={() => console.log("Group selected", item)}
-            renderRightActions={(itemObject) => (
-              <GroupItemDeleteAction
-                onPress={(itemOBject) => console.log("deleted", item)}
-              />
-            )}
-            renderLeftActions={(itemObject) => (
-              <GroupItemDeleteAction
-                onPress={(itemOBject) => console.log("deleted", item)}
-              />
-            )}
-            // renderLeftActions={(itemObject) => (
-            //   <GroupItemEditAction
-            //     onPress={(itemObject) => console.log("edited", item)}
-            //   />
-            // )}
-            style={styles.item}
-          />
-        )}
-      />
+    <Screen style={styles.norifBar}>
+      <View style={styles.screen}>
+        <AppText style={styles.title}>Upcoming Events</AppText>
+        <FlatList
+          data={data.getProfessorsAppointments}
+          keyExtractor={(data) => data._id.toString()}
+          renderItem={({ item }) => (
+            <GroupItem
+              image={require("../assets/knightro.png")}
+              title={item.groupName}
+              subTitle={dateToTimeString(item.time)}
+              room={item.room}
+              number={item.groupNumber}
+              id={item._id}
+              onPress={() => console.log("Group selected", item)}
+              renderRightActions={(itemObject) => (
+                <GroupItemDeleteAction
+                  onPress={(itemOBject) => console.log("deleted", item)}
+                />
+              )}
+              renderLeftActions={(itemObject) => (
+                <GroupItemDeleteAction
+                  onPress={(itemOBject) => console.log("deleted", item)}
+                />
+              )}
+              // renderLeftActions={(itemObject) => (
+              //   <GroupItemEditAction
+              //     onPress={(itemObject) => console.log("edited", item)}
+              //   />
+              // )}
+              style={styles.item}
+            />
+          )}
+        />
+      </View>
     </Screen>
   );
 }
@@ -103,8 +105,12 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 5,
   },
+  norifBar: {
+    backgroundColor: colors.gold, //colors.primaryDark,
+  },
   screen: {
     padding: 10,
+    height: "100%",
     backgroundColor: colors.primaryDark,
   },
   title: {
