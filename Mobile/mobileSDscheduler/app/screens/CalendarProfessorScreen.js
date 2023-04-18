@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Constants from "expo-constants";
 import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorScheduleFancy";
+import { AVAILABILITY } from "../gql/mutations/createProfessorSchedule";
 import {
   CalendarList,
   Calendar,
@@ -21,11 +22,14 @@ import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import TitleBar from "../components/TitleBar";
-// import NavBar from "../components/NavBar";
+import AuthContext from "../auth/context";
+// import NavBar from "../components/NavBar"
 
 function CalendarProfessorScreen(props) {
+  const { user } = useContext(AuthContext);
   //APOLLO CLIENT
   const { data, loading, error, refetch } = useQuery(APPOINTMENTS);
+  const [addAvailability] = useMutation(AVAILABILITY);
   const [modalVisible, setModalVisible] = useState(false);
   const [currDay, setCurrDay] = useState(0);
   const [currDate, setCurrDate] = useState("");
@@ -41,6 +45,24 @@ function CalendarProfessorScreen(props) {
 
   if (loading) {
     return <AppText>Fetching data...</AppText>; //while loading return this
+  }
+
+  var arr = [];
+
+  function handlePress(time) {
+    var newTime = new Date(time);
+    arr.push(newTime.toISOString());
+    console.log("TIME: ", time);
+    console.log(arr);
+    console.log("END TIME: ", time);
+    addAvailability({
+      variables: {
+        id: user.loginUser._id,
+        privilege: user.loginUser.privilege,
+        time: arr,
+      },
+    });
+    arr = [];
   }
 
   //console.log(mapAppmntList(data.getAllCoordinatorScheduleFancy));
@@ -117,16 +139,12 @@ function CalendarProfessorScreen(props) {
                 onPress={() => console.log("Group selected", item)}
                 renderRightActions={(itemObject) => (
                   <AppointmentItemAddAction
-                    onPress={(itemObject) =>
-                      console.log("ADD TO MY AVAILABILITY", item)
-                    }
+                    onPress={() => handlePress(item.datetime)}
                   />
                 )}
                 renderLeftActions={(itemObject) => (
                   <AppointmentItemAddAction
-                    onPress={(itemObject) =>
-                      console.log("ADD TO MY AVAILABILITY", item)
-                    }
+                    onPress={() => handlePress(item.datetime)}
                   />
                 )}
                 style={styles.item}

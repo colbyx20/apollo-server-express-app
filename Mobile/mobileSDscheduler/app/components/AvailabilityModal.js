@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { StyleSheet, Modal, TouchableOpacity, View } from "react-native";
 
 import AppButton from "./AppButton";
@@ -8,6 +8,10 @@ import Screen from "./Screen";
 import ErrorMessage from "./ErrorMessage";
 import colors from "../config/colors";
 
+import { useMutation } from "@apollo/client";
+import { AVAILABILITY } from "../gql/mutations/createProfessorSchedule";
+import AuthContext from "../auth/context";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DayWeekSelect from "./DayWeekSelect";
 
@@ -15,6 +19,9 @@ import defaultStyles from "../config/styles";
 import TimePickerButton from "./TimePickerButton";
 
 function AvailabilityModal({ modalVisible, onPress, dayIndex, dateString }) {
+  const { user } = useContext(AuthContext);
+  const [addAvailability] = useMutation(AVAILABILITY);
+
   const [startTimeVisible, setStartTimeVisible] = useState(false);
   const [endTimeVisible, setEndTimeVisible] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
@@ -34,11 +41,7 @@ function AvailabilityModal({ modalVisible, onPress, dayIndex, dateString }) {
 
   var daysOfWeek = [];
   getDaysOfWeek(dateString, dayIndex);
-  console.log(daysOfWeek);
-
-  console.log(
-    getAvailability(days, daysOfWeek, startTime.getHours(), endTime.getHours())
-  );
+  //console.log(daysOfWeek);
 
   const onStartChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -66,7 +69,25 @@ function AvailabilityModal({ modalVisible, onPress, dayIndex, dateString }) {
       " ",
       roundMinutes(endTime).getHours()
     );
+    var times = getAvailability(
+      days,
+      daysOfWeek,
+      startTime.getHours(),
+      endTime.getHours()
+    );
+    handleSave(times);
+    console.log(times);
   };
+
+  function handleSave(times) {
+    addAvailability({
+      variables: {
+        id: user.loginUser._id,
+        privilege: user.loginUser.privilege,
+        time: times,
+      },
+    });
+  }
 
   return (
     <Modal visible={modalVisible} animationType="slide">

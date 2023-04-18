@@ -119,19 +119,6 @@ function AccountProfessorScreen(props) {
     }
   };
 
-  const handleSubmitPassword = ({ oldPassword, password, confirmPassword }) => {
-    //email,
-    console.log("Submit Pasword! " + password);
-    updatePassWord({
-      variables: {
-        id: user.loginUser._id,
-        oldPassword: oldPassword,
-        newPassword: password,
-        confirmedPassword: confirmPassword,
-      },
-    });
-  };
-
   // state = { switchValue: false };
 
   // toggleSwitch = (value) => {

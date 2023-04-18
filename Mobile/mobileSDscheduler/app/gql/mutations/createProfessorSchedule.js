@@ -8,16 +8,8 @@ import { gql } from "@apollo/client";
 //     "time": null
 //   }
 // }
-export const GROUPS = gql`
-  mutation Mutation(
-    $id: ID!
-    $privilege: String!
-    $professorScheduleInput: ProfessorScheduleInput
-  ) {
-    createProfessorSchedule(
-      ID: $id
-      privilege: $privilege
-      professorScheduleInput: $professorScheduleInput
-    )
+export const AVAILABILITY = gql`
+  mutation Mutation($id: ID!, $privilege: String!, $time: [String]) {
+    createProfessorSchedule(ID: $id, privilege: $privilege, time: $time)
   }
 `;
