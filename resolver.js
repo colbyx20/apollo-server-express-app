@@ -1087,6 +1087,7 @@ const resolvers = {
             }
 
             try {
+
                 const appointment = await CoordSchedule.findOne({ _id: ApID });
 
                 const date = new Date(time);
@@ -1119,12 +1120,10 @@ const resolvers = {
                 await Promise.all(sendEmailPromises);
 
 
-                console.log(appointment.attending2);
-
-
-                await Promise.all(appointment.attending2.map(async (prof) => {
-                    await Professors.findOneAndUpdate({ _id: prof._id }, { $push: { availSchedule: date }, $pull: { appointments: ApID } })//return there  availability
-                }))
+                for (prof of appointment.attending2) {
+                    // const profe = await UserInfo.findOne({ userId: prof._id });
+                    await Professors.updateOne({ _id: prof }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
+                }
 
                 await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
 
