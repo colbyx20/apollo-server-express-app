@@ -894,7 +894,7 @@ const resolvers = {
                     try {
                         const CoordinatorSchedule = new CoordSchedule({
                             coordinatorID: ID,
-                            room: Room,
+                            room: Room.toLowerCase(),
                             groupId: null,
                             time: t,
                             numberOfAttending: 0,

@@ -32,6 +32,7 @@ function Calendar(props) {
     const [selectedWeek, setSelectedWeek] = useState([]);
     const [getScheduleDate, setScheduleDate] = useState([]);
     const [getTimeRange, setTimeRange] = useState([]);
+    const [roomInput, setRoomInput] = useState('');
     const timeRangeData = GetCoordinatorTimeRange({ ID: user.id });
 
     if (timeRangeData[0]) {
@@ -105,6 +106,10 @@ function Calendar(props) {
 
     const addTimeList = (item) => {
         setTimeRange(item);
+    }
+
+    const addRoom = (item) => {
+        setRoomInput(item);
     }
     return (
         <>
@@ -202,13 +207,21 @@ function Calendar(props) {
                                 <div className='selectTimes'>
                                     <h2 className='timeTitle'>Create Schedule</h2>
                                     <div className='timeContainer'>
-                                        <DisplayDesignWeek daysList={selectedWeek}
-                                            onScheduleDate={addDateList} onTimeRange={addTimeList} />
+                                        <DisplayDesignWeek
+                                            daysList={selectedWeek}
+                                            onScheduleDate={addDateList}
+                                            onTimeRange={addTimeList}
+                                            onRoomInput={addRoom}
+                                        />
                                     </div>
                                     <h2 className='timeTitle'>View Schedule</h2>
                                     <div className='viewSchedule'>
-                                        <DisplaySchedule pickList={getScheduleDate} timeList={getTimeRange}
-                                            dateList={selectedWeek} />
+                                        <DisplaySchedule
+                                            pickList={getScheduleDate}
+                                            timeList={getTimeRange}
+                                            dateList={selectedWeek}
+                                            room={roomInput}
+                                        />
                                     </div>
                                 </div>
                             </div>

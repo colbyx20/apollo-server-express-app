@@ -15,7 +15,6 @@ query Query {
 
 function DisplayDesignWeek(props) {
     const { user } = useContext(AuthContext);
-    console.log(user);
     const [daysList, setDayList] = useState(props.daysList);
     const [selected, setSelected] = useState([]);
     const [selectedTime, setSelectedTime] = useState([]);
@@ -49,7 +48,7 @@ function DisplayDesignWeek(props) {
         } else {
             setIsEmpty(false);
         }
-    }, [selected, selectedTime]);
+    }, [selected, selectedTime, inputValue]);
 
 
 
@@ -105,6 +104,7 @@ function DisplayDesignWeek(props) {
 
         props.onScheduleDate(selected);
         props.onTimeRange(timeIndex);
+        props.onRoomInput(inputValue);
         setSelected([]);
         setSelectedTime([]);
     }
@@ -136,17 +136,17 @@ function DisplayDesignWeek(props) {
                         </ToggleButtonGroup>
                     </div>
                     <div className="designWeekRoom">
-                        <input 
-                        placeholder="Room Location"
-                        className="designInput"
-                        value={inputValue}
-                        onChange={handleInputChange}
+                        <input
+                            placeholder="Room Location"
+                            className="designInput"
+                            value={inputValue}
+                            onChange={handleInputChange}
                         />
                     </div>
                 </>
                 :
                 <>
-                    <span style={{ color: 'red' }}>HIDSLKFJS:DLKFJS:DLKJSDF</span>
+                    <span style={{ color: 'red' }}></span>
                 </>
 
             }

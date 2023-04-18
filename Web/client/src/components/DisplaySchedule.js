@@ -19,6 +19,7 @@ function DisplaySchedule(props) {
     const [pickList, setPickList] = useState(props.pickList);
     const [timeList, setTimeList] = useState(props.timeList);
     const [dateList, setDateList] = useState(props.dateList);
+    const [roomInput, setRoomInput] = useState(props.room)
     const apiDates = GetCoordinatorTimeRange({ ID: user.id });
 
     let fullApiDates;
@@ -28,8 +29,6 @@ function DisplaySchedule(props) {
         fullApiDates = [];
     }
     const [createCoordinatorSchedule] = useMutation(SEND_SCHEDULE)
-
-    console.log(fullApiDates);
 
     const staticTimeList = [
         "8",
@@ -51,13 +50,10 @@ function DisplaySchedule(props) {
         setPickList(props.pickList);
         setTimeList(props.timeList);
         setDateList(props.dateList);
+        setRoomInput(props.room);
 
-    }, [props.pickList, props.timeList, props.dateList]);
+    }, [props.pickList, props.timeList, props.dateList, props.room]);
 
-    // console.log('datelist');
-    // console.log(timeList)
-
-    // console.log(timeRangeDataObj)  
     if (pickList.length === 0 && apiDates.length === 0)
         return <div>No items Schedule Selected.</div>;
 
@@ -100,11 +96,13 @@ function DisplaySchedule(props) {
 
     function handlePickedDates() {
 
+        console.log(roomInput)
+
         createCoordinatorSchedule({
             variables: {
                 coordinatorSInput: {
                     CID: user.id,
-                    Room: 'HEC-101',
+                    Room: roomInput,
                     Times: dateObjects
                 }
             }
