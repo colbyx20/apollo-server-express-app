@@ -97,7 +97,7 @@ const resolvers = {
         },
         getGroupsByCoordinator: async (_, { coordinatorId }) => {
             const CID = Mongoose.Types.ObjectId(coordinatorId)
-            return await Group.find({ coordinatorId: CID });
+            return await Group.find({ coordinatorId: CID }).sort({ groupNumber: 1 });
         },
         getProfessorsAppointments: async (_, { profId }) => {
             const PID = Mongoose.Types.ObjectId(profId)
@@ -1590,7 +1590,8 @@ const resolvers = {
                 }
                 await Users.deleteMany({ groupId: group._id })
             }
-            await Group.deleteMany({ coordinatorId: CID })
+            await Group.deleteMany({ coordinatorId: CID });
+            await CoordSchedule.updateMany({ userId: CID }, { $set: { groupId: null } });
             return true
         },
         generateGroupAppointment: async (_, { CID }) => {

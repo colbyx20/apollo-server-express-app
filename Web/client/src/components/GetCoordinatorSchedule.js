@@ -113,7 +113,6 @@ export const GetCoordinatorSchedule = ({ ID }) => {
             refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }],
             onCompleted: setIsOpen(false)
         })
-        // setIsOpen(false);
     }
 
     function handleAssignGroups(e, ID) {
@@ -137,7 +136,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
     return (
         <>{(generateCommitteeLoading || generateGroupLoading) ?
             <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={true}
             >
                 <CircularProgress color="inherit" />

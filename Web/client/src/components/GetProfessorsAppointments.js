@@ -4,6 +4,8 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
 import '../components/css/getprofgroups.css';
 import { Button, TextField } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 
 const GET_PROFESSOR_SCHEDULE = gql`
   query GetProfessorsAppointments($profId: String) {
@@ -26,7 +28,7 @@ const DELETE_APPOINTMENT = gql`
 export const GetProfessorsAppointments = () => {
   const { user } = useContext(AuthContext);
   const PID = user.id
-  const [deleteAppointment] = useMutation(DELETE_APPOINTMENT);
+  const [deleteAppointment, { loading: deleteAppointmentLoading }] = useMutation(DELETE_APPOINTMENT);
 
   const { loading, error, data, refetch } = useQuery(GET_PROFESSOR_SCHEDULE, {
     variables: { profId: PID },
@@ -40,7 +42,8 @@ export const GetProfessorsAppointments = () => {
   function handleCancelAppointment(professorId, scheduleId) {
     deleteAppointment({
       variables: { professorId, scheduleId },
-    }).then(() => refetch());
+      refetchQueries: [{ query: GET_PROFESSOR_SCHEDULE, variables: { profId: PID } }]
+    });
   }
 
   /**
@@ -59,41 +62,48 @@ export const GetProfessorsAppointments = () => {
 
   return (
     <>
-      {schedule.length === 0 ?
-        <span className='noAppointmentMessage'>Appointment has not been Set</span>
+      {deleteAppointmentLoading ?
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
+          open={true}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+
         :
-        <table style={{ color: 'white' }} className="profAppTable">
-          <tbody className='profBodyTable'>
-            {schedule.map((s) => (
-              <tr style={{ color: 'black' }} key={s._id} className="appointTr">
-                <td>
-                  <div className='Appointment'>
-                    <div>
-                      {"Appointment: "}<br />
-                      {returnNiceTime(s.time)}
-                    </div>
-                    <div className='profData'>
-                      {"Location: "}<br />
-                      {s.room}
-                    </div>
-                    <div className='profData'>
-                      {"Group: " + s.groupNumber}<br />
-                      {s.groupName + " "}
 
+        schedule.length === 0 ?
+          <span className='noAppointmentMessage'>Appointment has not been Set</span>
+          :
+          <table style={{ color: 'white' }} className="profAppTable">
+            <tbody className='profBodyTable'>
+              {schedule.map((s) => (
+                <tr style={{ color: 'black' }} key={s._id} className="appointTr">
+                  <td>
+                    <div className='Appointment'>
+                      <div>
+                        {"Appointment: "}<br />
+                        {returnNiceTime(s.time)}
+                      </div>
+                      <div className='profData'>
+                        {"Location: "}<br />
+                        {s.room}
+                      </div>
+                      <div className='profData'>
+                        {"Group: " + s.groupNumber}<br />
+                        {s.groupName + " "}
+                      </div>
+                      <div className='profDel'>
+                        <Button variant="contained" color="secondary" style={{ backgroundColor: "red" }} onClick={() => handleCancelAppointment(PID, s._id)}>
+                          Cancel Meeting
+                        </Button>
+                      </div>
                     </div>
-
-
-                    <div className='profDel'>
-                      <Button variant="contained" color="secondary" style={{ backgroundColor: "red" }} onClick={() => handleCancelAppointment(PID, s._id)}>
-                        Cancel Meeting
-                      </Button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
       }
     </>
   );

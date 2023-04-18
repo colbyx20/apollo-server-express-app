@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Button } from "@mui/material";
 import { AuthContext } from '../context/authContext';
 
-const GET_GROUPS = gql`
+export const GET_GROUPS = gql`
     query Query($coordinatorId: String) {
         getGroupsByCoordinator(coordinatorId: $coordinatorId) {
             _id
@@ -34,8 +34,6 @@ const getFilteredData = (query, items) => {
 export const GetGroups = (props) => {
     const { user } = useContext(AuthContext);
     const [deleteGroup] = useMutation(DELETE_GROUP)
-    const ID = user.id;
-    console.log(user);
 
     const { loading, error, data, refetch } = useQuery(GET_GROUPS, {
         variables: { coordinatorId: user.id }
@@ -48,7 +46,6 @@ export const GetGroups = (props) => {
     const { getGroupsByCoordinator } = data;
     const filterItems = getFilteredData(search, getGroupsByCoordinator);
 
-
     function handleDeletion(GID) {
 
         deleteGroup({
@@ -56,8 +53,6 @@ export const GetGroups = (props) => {
             refetchQueries: [{ query: GET_GROUPS, variables: { coordinatorId: user.id } }]
         })
     }
-    console.log(data);
-
 
     return (
         <>

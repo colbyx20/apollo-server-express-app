@@ -8,6 +8,10 @@ import { useMutation } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
 import '../components/css/coordinator.css';
 import FileUpload from '../components/FileUpload';
+import { GET_GROUPS } from '../components/GetGroups';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
+import { DeleteProjects } from '../components/DeleteProjects'
 
 const DELETE_ALL_GROUP = gql`
     mutation DeleteAllGroups($cid: ID) {
@@ -18,7 +22,9 @@ function Semester(props) {
     const [searchInput, setSearchInput] = useState("");
     const { user, logout } = useContext(AuthContext);
     let navigate = useNavigate();
+    const [open, setIsOpen] = useState(false);
     var year = new Date().getFullYear()
+    const [deleteAllG, { loading: deleteAllGLoading }] = useMutation(DELETE_ALL_GROUP)
 
 
     const onLogout = () => {
@@ -27,13 +33,13 @@ function Semester(props) {
     }
 
     function deleteGroups() {
-        deleteAllG();
+        setIsOpen(true);
+        deleteAllG({
+            variables: { cid: user.id },
+            refetchQueries: [{ query: GET_GROUPS, variables: { coordiantorId: user.id } }],
+            onCompleted: setIsOpen(false)
+        });
     }
-
-    const [deleteAllG] = useMutation(DELETE_ALL_GROUP, {
-        variables: { cid: user.id },
-        refetchQueries: [{ query: GetGroups }]
-    })
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -44,52 +50,48 @@ function Semester(props) {
         <>
             <div className='coordPage'>
                 {user !== null ?
-                    <>
-                        <CustomSidebar />
-                        <div className='coordWrapper'>
-                            <div className='userInfo'>
-                                <p className='semesterHeader'>Semester Page</p>
-                            </div>
-                            <div className='searchWrapper'>
-                                <div className='searchBar'>
+                    deleteAllGLoading ?
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={true}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                        :
+                        <>
+                            <CustomSidebar />
+                            <div className='coordWrapper'>
+                                <div className='userInfo'>
+                                    <p className='semesterHeader'>Semester Page</p>
+                                </div>
+                                <div className='searchWrapper'>
+                                    <div className='searchBar'>
 
-                                    <input className='searchInput'
-                                        type="text"
-                                        placeholder="Search Projects"
-                                        onChange={handleChange}
-                                        value={searchInput}
-                                    />
+                                        <input className='searchInput'
+                                            type="text"
+                                            placeholder="Search Projects"
+                                            onChange={handleChange}
+                                            value={searchInput}
+                                        />
+
+                                    </div>
+                                    <div className='searchResults'>
+                                        <GetGroups
+                                            data={searchInput} />
+                                    </div>
+                                </div>
+                                <div className='importerWrapper'>
+                                    <div className='importer'>
+                                        <FileUpload />
+                                    </div>
+                                    <div className='dangerZone'>
+                                        <h2 className='dangerTitle'>Danger Zone</h2>
+                                        <DeleteProjects />
+                                    </div>
 
                                 </div>
-                                <div className='searchResults'>
-                                    <GetGroups
-                                        data={searchInput} />
-                                </div>
                             </div>
-                            <div className='importerWrapper'>
-                                <div className='importer'>
-                                    <FileUpload />
-                                </div>
-                                <div className='dangerZone'>
-                                    <h2 className='dangerTitle'>Danger Zone</h2>
-                                    <Button sx={{
-                                        display: 'block',
-                                        backgroundColor: 'red',
-                                        marginRight: 'auto',
-                                        marginLeft: 'auto',
-                                        marginBottom: '5px',
-                                        width: '50%',
-                                        height: '100px',
-                                        ':hover': {
-                                            bgcolor: '#8B0000', // On hover
-                                            color: 'white',
-                                        }
-                                    }} variant="contained" onClick={() => deleteGroups}>Delete Projects</Button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </>
+                        </>
                     :
                     <>
                         <div className='noUser'>
