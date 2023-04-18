@@ -1316,7 +1316,7 @@ const resolvers = {
                 if (privilege === 'coordinator') {
                     const [getCoordinator, getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
                         Coordinator.findOne({ _id: ID }),
-                        CoordSchedule.find({ coordinatorID: ID }),
+                        CoordSchedule.find({ coordinatorID: ID }).sort({ time: 1 }),
                         UserInfo.findOne({ userId: CID }),
                     ])
 
@@ -1363,7 +1363,6 @@ const resolvers = {
                             </tbody>
                         </table>
                             `,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
 
                     }
@@ -1374,7 +1373,7 @@ const resolvers = {
                     const lastname = getProfessor.professorLName.charAt(0).toUpperCase() + getProfessor.professorLName.slice(1);
 
                     const [getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
-                        CoordSchedule.find({ "attending2._id": ID }).select('room time'),
+                        CoordSchedule.find({ "attending2._id": ID }).select('room time').sort({ time: 1 }),
                         UserInfo.findOne({ userId: CID }),
                     ])
 
@@ -1418,7 +1417,6 @@ const resolvers = {
                                 </tbody>
                             </table>
                             `,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
 
                     }
@@ -1429,7 +1427,7 @@ const resolvers = {
                     const lastname = getUser.userLName.charAt(0).toUpperCase() + getUser.userLName.slice(1);
 
                     const [getCoordinatorSchedule, getNotificationEmail] = await Promise.all([
-                        CoordSchedule.find({ groupId: getUser.groupId }).select('room time'),
+                        CoordSchedule.find({ groupId: getUser.groupId }).select('room time').sort({ time: 1 }),
                         UserInfo.findOne({ userId: CID }),
                     ])
 
@@ -1473,7 +1471,6 @@ const resolvers = {
                                 </tbody>
                             </table>
                             `,
-                            //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                         })
 
                     }
@@ -1501,31 +1498,62 @@ const resolvers = {
                 },
             });
 
+
+            async function sendNotificationEmail(email, firstname, lastname, room, convertTime) {
+                console.log(`${email}, ${firstname} ${lastname} ${room} ${convertTime}`)
+                return new Promise((resolve, reject) => {
+                    transport.sendMail({
+                        from: "group13confirmation@gmail.com",
+                        to: email,
+                        subject: "mySDSchedule - Professor Cancelation",
+                        html: `<h1>Professor Cancelation - ${firstname} ${lastname} </h1>
+                            <p>
+                                Room: ${room}
+                                Time: ${convertTime.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}
+                            </p>
+                        `,
+                    }, (error, info) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(info);
+                        }
+                    })
+                })
+            }
+
             try {
-                const [coordInfo, professorInfo] = await Promise.all([
+                const [group, coordInfo, professorInfo] = await Promise.all([
+                    CoordSchedule.findOne({ _id: SCID }).select('groupId'),
                     CoordSchedule.findOneAndUpdate({ _id: SCID }, { $inc: { numberOfAttending: - 1 }, $pull: { attending2: { _id: PID } } }, { new: true }),
                     Professors.findOneAndUpdate({ _id: PID }, { $pull: { appointments: SCID } }, { new: true })
                 ]);
 
-                const coordinator = await Coordinator.findOne({ _id: coordInfo.coordinatorID }).select('coordinatorFName coordinatorLName')
-                const email = await UserInfo.findOne({ userId: coordInfo.coordinatorID })
+                const studentsAffected = await Users.find({ groupId: group.groupId }).select('_id userFName userLName')
+                // const coordinator = await Coordinator.findOne({ _id: coordInfo.coordinatorID }).select('coordinatorFName coordinatorLName')
+
+                const email = await UserInfo.findOne({ userId: coordInfo.coordinatorID }).select('email notificationEmail');
                 const firstname = professorInfo.professorFName.charAt(0).toUpperCase() + professorInfo.professorFName.slice(1);
                 const lastname = professorInfo.professorLName.charAt(0).toUpperCase() + professorInfo.professorLName.slice(1);
 
-                const converTime = new Date(coordInfo.time)
+                console.log(firstname);
+                console.log(lastname);
+                const convertTime = new Date(coordInfo.time)
 
+                let sendTo = '';
+                if (email.notificationEmail === "") {
+                    sendTo = email.email
+                } else {
+                    sendTo = email.notificationEmail
+                }
 
-                transport.sendMail({
-                    from: "group13confirmation@gmail.com",
-                    to: email,
-                    subject: "mySDSchedule - Professor Cancelation",
-                    html: `<h1>Professor Cancelation - ${firstname} ${lastname} </h1>
-                        <p>
-                            Room: ${coordinatorInfo.room}
-                            Time: ${convertTime.toLocaleTimeString("en-US", { timeZone: "America/New_York" })}
-                        </p>
-                    `,
-                })
+                await sendNotificationEmail(sendTo, firstname, lastname, coordInfo.room, convertTime)
+
+                // send another email to all of the students affected by the committee member canceling
+                await Promise.all(studentsAffected.map(async (student) => {
+                    const getEmail = await UserInfo.findOne({ userId: student._id }).select('email')
+                    await sendNotificationEmail(getEmail.email, firstname, lastname, coordInfo.room, convertTime);
+                }));
 
                 return true;
             } catch (e) {
