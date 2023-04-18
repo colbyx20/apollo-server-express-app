@@ -2,7 +2,7 @@
 
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/authContext';
-import { GetGroups, GET_GROUPS } from '../components/GetGroups';
+import { GetGroups, GET_GROUPS } from './GetGroups';
 import { Button } from "@mui/material";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { gql } from 'graphql-tag';
@@ -16,7 +16,7 @@ const DELETE_ALL_GROUP = gql`
   }`
 
 
-export const DeleteProjects = () => {
+export const DeleteSchedule = () => {
 
     const { user } = useContext(AuthContext);
     const [open, setIsOpen] = useState(false);
@@ -25,7 +25,7 @@ export const DeleteProjects = () => {
     });
     const [deleteAllG, { loading }] = useMutation(DELETE_ALL_GROUP)
 
-    function deleteGroups() {
+    function deleteSchedule() {
         setIsOpen(true);
         deleteAllG({
             variables: { cid: user.id },
@@ -60,7 +60,7 @@ export const DeleteProjects = () => {
                             bgcolor: '#8B0000', // On hover
                             color: 'white',
                         }
-                    }} variant="contained" onClick={() => deleteGroups()}>Delete Projects</Button>
+                    }} variant="contained" onClick={() => deleteSchedule()}>Delete Schedule</Button>
             }
         </>
     )

@@ -591,20 +591,6 @@ const resolvers = {
 
             await professorInfo.save();
 
-            // transport.sendMail({
-            //     from: "group13confirmation@gmail.com",
-            //     to: email,
-            //     subject: "mySDSchedule - Please Confirm Your Account",
-            //     html: `<h1>Email Confirmation</h1>
-            //     <h2>Hello ${firstname}</h2>
-            //     <p>Thank you for Registering!</p>
-            //     <p>To activate your account please click on the link below.</p>
-
-            //     <p>Please Check you Junk/Spam folder</p>
-            //     </div>`,
-            //     //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
-            // })
-
             return {
                 id: res._id,
                 firstname: res.professorFName,
@@ -768,7 +754,6 @@ const resolvers = {
                         <p>Click Link to reset your password!</p>
                         <p>If you did not select to reset your password please ignore this email</p>
                         </div>`,
-                    //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                 })
             } catch (e) {
                 // email is not valid 
@@ -1039,7 +1024,6 @@ const resolvers = {
                         html: `<h1>Demo Notin appointment at ${appointment.time} in room ${appointment.room}</h2>
                         <p>If you need to cancel please get on the app or visit our website to do so  </p>
                         </div>`,
-                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
 
                 }
@@ -1074,7 +1058,6 @@ const resolvers = {
                         html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
                         <p>Please reschedule a new proffessor</p>
                         </div>`,
-                        //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                     })
                 }
                 return {
@@ -1100,7 +1083,6 @@ const resolvers = {
                                 html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
                                 <p>If you need to cancel please get on the app or visit our website to do so  </p>
                                 </div>`,
-                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                             await Professors.updateOne({ _id: prof._id }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
                         }
@@ -1126,7 +1108,6 @@ const resolvers = {
                                 html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
                                        <p>Please reschedule a new proffessor</p>
                                        </div>`,
-                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                         }
                     }
@@ -1143,7 +1124,6 @@ const resolvers = {
                                 html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
                                        <p>Thank you for your understanding</p>
                                        </div>`,
-                                //<a href=https://cop4331-group13.herokuapp.com/api/confirm?confirmationcode=${token}> Click here</a>
                             })
                             await Professors.updateOne({ _id: prof }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
                         }
@@ -1593,6 +1573,32 @@ const resolvers = {
             await Group.deleteMany({ coordinatorId: CID });
             await CoordSchedule.updateMany({ userId: CID }, { $set: { groupId: null } });
             return true
+        },
+        deleteCoordiantorSchedule: async (_, { CID }) => {
+            const ID = Mongoose.Types.ObjectId(CID);
+
+            try {
+
+                const getSchedule = await CoordSchedule.find({ coordiantorID: ID }).select('_id')
+
+                await Promise.all(getSchedule.map(async (appointment) => {
+                    await Professors.findOneAndUpdate({
+                        appointments: { $in: getSchedule }
+                    },
+                        {
+                            $pull: { appointments: appointment._id }
+                        },
+                        {
+                            $push: { availSchedule: appointment.time }
+                        })
+                }))
+
+
+            } catch (error) {
+                throw new ApolloError("Cannot Delete Schedule")
+            }
+
+
         },
         generateGroupAppointment: async (_, { CID }) => {
             const ID = Mongoose.Types.ObjectId(CID);

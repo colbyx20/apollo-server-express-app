@@ -354,6 +354,7 @@ scalar DateTime
         generateGroupAppointment (CID:ID): Boolean
         forgotPassword(email: String): Boolean
         restPasswordPreLogin(email: String, password: String, confirmPassword: String): Boolean
+        deleteCoordiantorSchedule(CID: ID) : Boolean
     }
 `
 

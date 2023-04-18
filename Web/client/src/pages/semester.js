@@ -12,6 +12,7 @@ import { GET_GROUPS } from '../components/GetGroups';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import { DeleteProjects } from '../components/DeleteProjects'
+import { DeleteSchedule } from '../components/DeleteSchedule'
 
 const DELETE_ALL_GROUP = gql`
     mutation DeleteAllGroups($cid: ID) {
@@ -87,6 +88,7 @@ function Semester(props) {
                                     <div className='dangerZone'>
                                         <h2 className='dangerTitle'>Danger Zone</h2>
                                         <DeleteProjects />
+                                        <DeleteSchedule />
                                     </div>
 
                                 </div>
