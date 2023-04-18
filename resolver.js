@@ -1035,102 +1035,102 @@ const resolvers = {
             })).modifiedCount
             return
         },
-        cancelAppointment: async (_, { cancelation: { CancelerID, ApID, reason } }) => {// passes the ID of the person canceling and the appointment being canceled
-            const canceler = await UserInfo.findOne({ userId: CancelerID });//find out whose canceling
-            const appointment = await CoordSchedule.findOne({ _id: ApID });//find the information on the appoinment being canceled
-            //alternative call with time and CID instead
+        cancelAppointment2: async (_, { cancelation: { CID, ApId, reason } }) => {
             let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-            //const appointment= await CoordSchedule.find({time:time,coordinatorID:CID})
-            //Professor on a side note for professors the reason flag should be false
-            if (canceler.privilege == 'professor')//note for proffs this isnt a deletion
-            {
-                time = new Date(appointment.time);
-                const who = await Professors.updateOne({ _id: canceler._id }, { $pull: { appointments: appointment._id } });
-                const group = await Group.findOne({ _id: appointment.groupId });
-                await CoordSchedule.updateOne({ _id: ApID }, { $pull: { attending: CancelerID }, $inc: { numberOfAttending: -1 } })//remove prof from attending. CAN WE USE CANCELER.USERID FOR THIS
-                const lead = await Users.find({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                for (x of lead) {
-                    const notify = await UserInfo.find({ userId: lead._id });
-                    transport.sendMail({
-                        from: "SDSNotifier@gmail.com",
-                        to: notify.notificationEmail,
-                        subject: "A Senior Design final Review has been schedule",
-                        html: `<h1>Professor ${who.lastname} cancelled your appt at ${time} in room ${appointment.room}</h2>
-                        <p>Please reschedule a new proffessor</p>
-                        </div>`,
-                    })
-                }
-                return {
-                    Group: group._id,
-                    Time: time,
-                    Room: appointment.room
-                }
-            }
-            //coordinator
-            else if (canceler.privilege == 'coordinator')
-                if (reason == "Group")// cancel on groups behalf
-                {
-                    if (appointment.attending2.length > 0)//Group had professors
-                    {
-                        for (prof of appointment.attending2)//send email and update
-                        {
-                            const effected = await UserInfo.findOne({ userId: prof._id });
-                            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-                            transport.sendMail({
-                                from: "SDSNotifier@gmail.com",
-                                to: effected.notificationEmail,
-                                subject: "A Senior Design final Review has been canceled",
-                                html: `<h1>Demo Notin appointment a ${appointment.time} in room ${appointment.room}</h2>
-                                <p>If you need to cancel please get on the app or visit our website to do so  </p>
-                                </div>`,
-                            })
-                            await Professors.updateOne({ _id: prof._id }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
-                        }
-                    }
-                    await CoordSchedule.updateOne({ _id: ApID }, {
-                        $unset: { groupId: "" },
-                        $set: { attending2: [] },
-                        $set: { numberOfAttending: 0 }
-                    })
-                }
-                else if (reason == "Personal")//cancel for personalreasons
-                {
-                    if (appointment.groupId)//Group already claimed it
-                    {
-                        const group = await Group.findOne({ _id: appointment.groupId });
-                        const members = await Users.find({ coordinatorId: appointment.coordinatorID, groupNumber: group.groupNumber });
-                        for (user of members) {
-                            const notify = await UserInfo.find({ userId: user._id });
-                            transport.sendMail({
-                                from: "SDSNotifier@gmail.com",
-                                to: notify.notificationEmail,
-                                subject: "A Senior Design final Review has been schedule",
-                                html: `<h1>your Coordinator cancelled your appt at ${time} in room ${appointment.room}</h2>
-                                       <p>Please reschedule a new proffessor</p>
-                                       </div>`,
-                            })
-                        }
-                    }
-                    if (appointment.numberOfAttending > 0)//Group had professors
-                    {
-                        for (prof of appointment.attending2)//send email and update
-                        {
-                            const profe = await UserInfo.findOne({ userId: prof._id });
-                            let transport = nodemailer.createTransport({ service: "Gmail", auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }, });
-                            transport.sendMail({
-                                from: "SDSNotifier@gmail.com",
-                                to: profe.email,
-                                subject: "A Senior Design final Review has been canceled",
-                                html: `<h1>A Demo at ${appointment.time} in room ${appointment.room} has been canceled</h2>
-                                       <p>Thank you for your understanding</p>
-                                       </div>`,
-                            })
-                            await Professors.updateOne({ _id: prof }, { $push: { availSchedule: appointment.time }, $pull: { appointments: appointment._id } })//return there  availability
-                        }
 
-                    } console.log("here")
-                    await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
-                }
+            async function sendAppointmentDeletionEmail() {
+
+            }
+
+            // grab all professors in that 
+        },
+
+        // passes the ID of the person canceling and the appointment being canceled
+        cancelAppointment: async (_, { cancelation: { CancelerID, ApID, room, time } }) => {
+
+            let transport = nodemailer.createTransport({
+                service: "Gmail",
+                host: process.env.EMAIL_USERNAME,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+            });
+
+            async function sendCommitteeEmails(email, fullName, date, room) {
+                return new Promise((resolve, reject) => {
+                    transport.sendMail({
+                        from: "group13confirmation@gmail.com",
+                        to: email,
+                        subject: "mySDSchedule - A Senior Design final Review has been canceled",
+                        html: `<h1>Senior Design Appointment</h1>
+                        <h1>${fullName}</h1>
+                        <h3>Committee Demo at</h3>
+                        <table>
+                        <tbody>
+                            <tr><td>Day: ${date}</td></tr> 
+                            <tr><td>Room: ${room} </td></tr>
+                        </tbody>
+                        </table>
+
+                        <h3>Has Been Cancelled</h3>
+                    `,
+                    }, (error, info) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(info);
+                        }
+                    });
+                });
+            }
+
+            try {
+                const appointment = await CoordSchedule.findOne({ _id: ApID });
+
+                const date = new Date(time);
+                const inputHours = date.getUTCHours();
+                const inputMinutes = date.getUTCMinutes();
+
+                const convertHours = inputHours - 8;
+
+                let newDate = date.toLocaleString("default", { month: "long", day: "numeric" }) + " " + convertHours.toString().padStart(2, "0") + ":" + inputMinutes.toString().padStart(2, "0");
+
+                // grab all of the emails for each professors being canceled. 
+                const profEmails = await UserInfo.find({ userId: { $in: appointment.attending2 } }).select('email notificationEmail')
+
+                // send an email to all of the professors that their appointments have been canceled 
+                const sendEmailPromises = profEmails.map(async (professor, index) => {
+
+                    let email;
+
+                    if (professor.notificationEmail === "") {
+                        email = professor.email;
+                    } else {
+                        email = professor.notificationEmail;
+                    }
+
+                    const mydate = date.toLocaleTimeString("en-US", { timeZone: "America/New_York" })
+                    return sendCommitteeEmails(email, appointment.attending2[index].fullName, newDate, room);
+
+                });
+
+                await Promise.all(sendEmailPromises);
+
+
+                console.log(appointment.attending2);
+
+
+                await Promise.all(appointment.attending2.map(async (prof) => {
+                    await Professors.findOneAndUpdate({ _id: prof._id }, { $push: { availSchedule: date }, $pull: { appointments: ApID } })//return there  availability
+                }))
+
+                await CoordSchedule.deleteOne({ _id: ApID })//delete Appointment
+
+            } catch (error) {
+                throw new ApolloError(error);
+            }
 
             return true
         },
@@ -1194,6 +1194,7 @@ const resolvers = {
             }
 
             try {
+
                 const isComplete = await CoordSchedule.find({ coordinatorID: coordinatorId, numberOfAttending: { $ne: 3 } }).count()
                 if (isComplete === 0) {
                     return;
