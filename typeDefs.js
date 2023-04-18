@@ -192,6 +192,11 @@ scalar DateTime
         fullName: String
     }
 
+    input profDataInput {
+        _id:ID!
+        fullName: String
+    }
+
     type coordinatorDetails {
         _id:ID
         coordinatorFName: String
@@ -252,7 +257,8 @@ scalar DateTime
     input cancelation {
         CancelerID:ID
         ApID:ID
-        reason:String
+        room: String
+        time: DateTime
     }
 
     type Cookie {
@@ -341,6 +347,7 @@ scalar DateTime
         resetPassword(resetPassword: resetPassword):Boolean
         createGroupSchedule(groupSchedule: groupSchedule): Boolean
         createCoordinatorSchedule(coordinatorSInput: coordinatorSInput):Boolean
+        cancelAppointment2(cancelation:cancelation):Boolean
         cancelAppointment(cancelation:cancelation):Boolean
         setRole(CID:String!, role:String!):Boolean
         updateProfilePic(ID:ID!, ppURL:String!):String
