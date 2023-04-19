@@ -1567,27 +1567,19 @@ const resolvers = {
             const ID = Mongoose.Types.ObjectId(CID);
 
             try {
+                const getSchedule = await CoordSchedule.find({ coordiantorID: ID }).select('_id time')
 
-                const getSchedule = await CoordSchedule.find({ coordiantorID: ID }).select('_id')
+                for (app of getSchedule) {
+                    const eh = await Professors.updateMany({ appointments: { $in: app._id } }, { $pull: { appointments: app._id }, $push: { availSchedule: app.time } })
+                    console.log(eh);
+                }
 
-                await Promise.all(getSchedule.map(async (appointment) => {
-                    await Professors.findOneAndUpdate({
-                        appointments: { $in: getSchedule }
-                    },
-                        {
-                            $pull: { appointments: appointment._id }
-                        },
-                        {
-                            $push: { availSchedule: appointment.time }
-                        })
-                }))
-
+                await Group.updateMany({ coordinatorId: ID }, { $set: { appointment: [] } })
+                await CoordSchedule.deleteMany({ coordinatorID: ID });
 
             } catch (error) {
                 throw new ApolloError("Cannot Delete Schedule")
             }
-
-
         },
         generateGroupAppointment: async (_, { CID }) => {
             const ID = Mongoose.Types.ObjectId(CID);

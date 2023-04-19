@@ -10,10 +10,11 @@ import '../components/css/coordinator.css';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 
-const DELETE_ALL_GROUP = gql`
-    mutation DeleteAllGroups($cid: ID) {
-        deleteAllGroups(CID: $cid)
-  }`
+const DELETE_COORDINATOR_SCHEDULE = gql`
+    mutation Mutation($cid: ID) {
+        deleteCoordiantorSchedule(CID: $cid)
+    }
+`
 
 
 export const DeleteSchedule = () => {
@@ -23,11 +24,11 @@ export const DeleteSchedule = () => {
     const { refetch } = useQuery(GET_GROUPS, {
         variables: { coordinatorId: user.id }
     });
-    const [deleteAllG, { loading }] = useMutation(DELETE_ALL_GROUP)
+    const [deleteCoordiantorSchedule, { loading }] = useMutation(DELETE_COORDINATOR_SCHEDULE)
 
-    function deleteSchedule() {
+    function deleteCoordinatorSchedule() {
         setIsOpen(true);
-        deleteAllG({
+        deleteCoordiantorSchedule({
             variables: { cid: user.id },
             refetchQueries: [{ query: GET_GROUPS, variables: { coordiantorId: user.id } }],
             onCompleted: () => setIsOpen(false)
@@ -60,7 +61,7 @@ export const DeleteSchedule = () => {
                             bgcolor: '#8B0000', // On hover
                             color: 'white',
                         }
-                    }} variant="contained" onClick={() => deleteSchedule()}>Delete Schedule</Button>
+                    }} variant="contained" onClick={() => deleteCoordinatorSchedule()}>Delete Schedule</Button>
             }
         </>
     )
