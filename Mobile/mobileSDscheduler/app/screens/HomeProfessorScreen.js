@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { FlatList, StyleSheet, View } from "react-native";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { GROUPS } from "../gql/queries/getProfessorsAppointments";
+import { CANCEL_APPOINTMENT } from "../gql/mutations/cancelAppointment";
 
 import Screen from "../components/Screen";
 import AppText from "../components/AppText";
@@ -23,11 +24,26 @@ function HomeScreen(props) {
       fetchPolicy: "network-only", // Doesn't check cache before making a network request
     }
   );
+  const [cancelAppointment] = useMutation(CANCEL_APPOINTMENT);
 
   useFocusEffect(() => {
-    console.log("Refetch");
     refetch();
   });
+
+  function handlePress(item) {
+    cancelAppointment({
+      variables: {
+        cancelation: {
+          ApID: item._id,
+          CancelerID: user.loginUser._id,
+          reason: null,
+          // room: item.room,
+          // time: item.time,
+        },
+      },
+    });
+    console.log("deleted", item);
+  }
 
   if (error) {
     return <AppText>Error: {error.message}</AppText>; //while loading return this
@@ -36,8 +52,6 @@ function HomeScreen(props) {
   if (loading) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
-
-  console.log(data);
 
   return (
     <Screen style={styles.norifBar}>
@@ -56,14 +70,10 @@ function HomeScreen(props) {
               id={item._id}
               onPress={() => console.log("Group selected", item)}
               renderRightActions={(itemObject) => (
-                <GroupItemDeleteAction
-                  onPress={(itemOBject) => console.log("deleted", item)}
-                />
+                <GroupItemDeleteAction onPress={() => handlePress(item)} />
               )}
               renderLeftActions={(itemObject) => (
-                <GroupItemDeleteAction
-                  onPress={(itemOBject) => console.log("deleted", item)}
-                />
+                <GroupItemDeleteAction onPress={() => handlePress(item)} />
               )}
               style={styles.item}
             />

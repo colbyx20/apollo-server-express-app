@@ -8,7 +8,7 @@ import { gql } from "@apollo/client";
 //     "reason": null
 //   }
 // }
-export const GROUPS = gql`
+export const CANCEL_APPOINTMENT = gql`
   mutation Mutation($cancelation: cancelation) {
     cancelAppointment(cancelation: $cancelation)
   }
