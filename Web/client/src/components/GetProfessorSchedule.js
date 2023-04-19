@@ -5,6 +5,7 @@ import { AuthContext } from '../context/authContext';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Button } from "@mui/material";
 import { styled } from '@mui/material/styles';
+import DeleteIcon from '@mui/icons-material/Delete';
 import '../components/css/calendar2.css'
 
 export const GET_PROFESSOR = gql`
@@ -70,7 +71,11 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
                 {new Date(time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                 {new Date(time).getDate() % 10 === 1 ? 'st' : new Date(time).getDate() % 10 === 2 ? 'nd' : new Date(time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                 {returnPrettyDateTime(time)}
-                <RedButton onClick={() => updateDates(time)}><DeleteForeverIcon /></RedButton>
+                {/* <RedButton onClick={() => updateDates(time)}><DeleteForeverIcon /></RedButton> */}
+
+                <Button variant="contained" color="secondary" size='small' style={{ backgroundColor: "red", marginLeft: '150px' }} onClick={() => updateDates(time)}>
+                    <DeleteIcon />
+                </Button>
             </div>
         })}</div>
     )

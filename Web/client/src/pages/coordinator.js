@@ -33,12 +33,12 @@ function Coordinator(props) {
     }
 
     const onRegister = () => {
-        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/register");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/register=a761aecca8680ee158790f64507fc67a4747a572f013055a130b9937c767a784");
         setRegisterProf("Copied");
     }
 
     const onRegisterCoord = () => {
-        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/registerCoordinator");
+        navigator.clipboard.writeText("https://dolphin-app-djupw.ondigitalocean.app/register=2281e84323a386094a2916cc2c32da0be14c8dba3e95a14e8d8b94e9b548d127");
         setRegisterCoord("Copied");
     }
 
