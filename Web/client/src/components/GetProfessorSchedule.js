@@ -2,6 +2,8 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button } from "@mui/material";
 import '../components/css/calendar2.css'
 
 export const GET_PROFESSOR = gql`
@@ -32,15 +34,6 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
         return edtTime;
     }
 
-    // React.useEffect(()=>{
-    //     if(onUpdate === true){
-    //         // Call refetch here
-    //         console.log("help");
-    //         onUpdate = false;
-    //     }
-
-    // },[onUpdate])
-
 
     return (
         <div className='viewItem'>{data.getProfessor.availSchedule.map((time, index) => {
@@ -49,6 +42,10 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
                 {new Date(time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                 {new Date(time).getDate() % 10 === 1 ? 'st' : new Date(time).getDate() % 10 === 2 ? 'nd' : new Date(time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                 {returnPrettyDateTime(time)}
+
+                <Button variant="contained" color="secondary" size='small' style={{backgroundColor: "red", marginLeft:'150px'}}>
+                    <DeleteIcon/>
+                </Button>
             </div>
         })}</div>
     )
