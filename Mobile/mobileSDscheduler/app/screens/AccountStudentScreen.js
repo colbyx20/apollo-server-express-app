@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { Image, StyleSheet, Dimensions, View } from "react-native";
-import Constants from "expo-constants";
+import { Image, StyleSheet, View } from "react-native";
 
 import { useMutation, useQuery } from "@apollo/client";
 import { USER } from "../gql/queries/getUser";
@@ -43,7 +42,6 @@ function AccountStudentScreen(props) {
   const [updatePassWord] = useMutation(PASSWORD);
 
   useFocusEffect(() => {
-    console.log("Refetch accnt");
     refetch();
   });
 
@@ -55,7 +53,6 @@ function AccountStudentScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  console.log(data);
   var fname = upperFirstLetter(data.getUser.userFName);
   var lname = upperFirstLetter(data.getUser.userLName);
   var role = upperFirstLetter(data.getUser.role);
@@ -70,7 +67,6 @@ function AccountStudentScreen(props) {
   }) => {
     //email,
     if (notifEmail != "") {
-      console.log("Submit Email! " + notifEmail);
       notificationEmail({
         variables: {
           id: user.loginUser._id,
@@ -80,10 +76,9 @@ function AccountStudentScreen(props) {
     }
 
     if (password != "" && oldPassword != "" && confirmPassword != "") {
-      console.log("Submit Pasword! " + password);
       updatePassWord({
         variables: {
-          id: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id,
+          id: user.loginUser._id,
           oldPassword: oldPassword,
           newPassword: password,
           confirmedPassword: confirmPassword,
@@ -93,11 +88,9 @@ function AccountStudentScreen(props) {
   };
 
   const handleSubmitPassword = ({ oldPassword, password, confirmPassword }) => {
-    //email,
-    console.log("Submit Pasword! " + password);
     updatePassWord({
       variables: {
-        id: "6427431ce1ddb2b1877c8ea2", //user.loginUser._id,
+        id: user.loginUser._id,
         oldPassword: oldPassword,
         newPassword: password,
         confirmedPassword: confirmPassword,
@@ -123,7 +116,7 @@ function AccountStudentScreen(props) {
             oldPassword: "",
             password: "",
             confirmPassword: "",
-          }} // email: curEmail,
+          }}
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
@@ -208,7 +201,6 @@ function AccountStudentScreen(props) {
             title="Logout"
             color="gold"
             onPress={() => {
-              console.log("logout");
               setUser(null);
             }}
             style={styles.button}

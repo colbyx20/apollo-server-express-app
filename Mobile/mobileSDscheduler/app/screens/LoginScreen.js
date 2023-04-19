@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Image,
-  ImageBackground,
-  Dimensions,
-  View,
-} from "react-native";
+import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -12,27 +6,16 @@ import AppFormButton from "../components/AppFormButton";
 import AppTextInput from "../components/AppTextInput";
 import AppText from "../components/AppText";
 import Constants from "expo-constants";
-import apiClient from "../api/client";
 import { useMutation } from "@apollo/client";
-import { GROUPS } from "../gql/queries/getAllGroups";
 import { LOGIN_USER } from "../gql/mutations/loginUser";
 
 import Screen from "../components/Screen";
-import colors from "../config/colors";
 import ErrorMessage from "../components/ErrorMessage";
 import { useContext, useEffect, useState } from "react";
-import GroupItem from "../components/GroupItem";
-import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
-import GroupItemEditAction from "../components/GroupItemEditAction";
 import AuthContext from "../auth/context";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().label("Email"),
-  // email: Yup.string()
-  //   .required()
-  //   .email()
-  //   .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
-  //   .label("Email"),
   password: Yup.string().required().min(4).label("Password"),
 });
 
@@ -41,8 +24,6 @@ function LoginScreen(props) {
   const [loginUser, { data, loading, error }] = useMutation(LOGIN_USER);
 
   const handleSubmit = async ({ email, password }) => {
-    console.log(email, " ", password);
-
     await loginUser({
       variables: {
         loginInput: {
@@ -63,12 +44,7 @@ function LoginScreen(props) {
     if (data.loginUser != null && data.loginUser.privilege != "coordinator") {
       authContext.setUser(data);
     }
-    console.log("Data: ", data);
   };
-
-  // useEffect(() => {
-  //   console.log("Data: ", authContext.user);
-  // });
 
   return (
     <ImageBackground

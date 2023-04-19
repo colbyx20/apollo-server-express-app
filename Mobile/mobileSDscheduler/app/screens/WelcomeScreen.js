@@ -1,14 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  StatusBar,
-  ImageBackground,
-} from "react-native";
-import AppButton from "../components/AppButton";
-// import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet } from "react-native";
 
 import colors from "../config/colors";
 

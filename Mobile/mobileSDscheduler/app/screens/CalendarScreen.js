@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import AuthContext from "../auth/context";
 import CalendarStudentScreen from "./CalendarStudentScreen";
 import CalendarProfessorScreen from "./CalendarProfessorScreen";

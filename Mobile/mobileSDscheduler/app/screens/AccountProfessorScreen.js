@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, setState } from "react";
+import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { Image, StyleSheet, Dimensions, View, Switch } from "react-native";
-import Constants from "expo-constants";
+import { Image, StyleSheet, View } from "react-native";
 
 import { useMutation, useQuery } from "@apollo/client";
 import { PROFESSOR } from "../gql/queries/getProfessor";
@@ -20,10 +19,6 @@ import colors from "../config/colors";
 import AuthContext from "../auth/context";
 
 const validationSchema = Yup.object().shape({
-  // email: Yup.string()
-  //   .email()
-  //   .matches(/\@ucf.edu$|\@knights.ucf.edu$/, "Must be UCF email")
-  //   .label("Email"),
   notifEmail: Yup.string().email().label("Email"),
   oldPassword: Yup.string().min(4).label("Password"),
   password: Yup.string().min(4).label("Password"),
@@ -47,7 +42,6 @@ function AccountProfessorScreen(props) {
   const [updatePassWord] = useMutation(PASSWORD);
 
   useFocusEffect(() => {
-    console.log("Refetch accnt");
     refetch();
   });
 
@@ -59,35 +53,10 @@ function AccountProfessorScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  // console.log(data);
-  // console.log(data.getProfessor.professorFName);
   var fname = upperFirstLetter(user.loginUser.firstname);
   var lname = upperFirstLetter(user.loginUser.lastname);
-  // var fname = upperFirstLetter(data.getProfessor.professorFName);
-  // var lname = upperFirstLetter(data.getProfessor.professorLName);
   var curEmail = data.getUserInfo.email;
   var curNotifEmail = data.getUserInfo.notificationEmail;
-
-  // const handleSubmit = ({ email, notifEmail }) => {
-  //   console.log("Submit! " + email + " " + notifEmail);
-  //   notificationEmail({
-  //     variables: { id: "6414996286c77fadcb080900", email: notifEmail },
-  //     onCompleted: () => {
-  //       refetch()
-  //     }
-  //   });
-  // };
-
-  // const handleSubmit = ({ notifEmail }) => { //FUNCA
-  //   //email,
-  //   console.log("Submit Email! " + notifEmail);
-  //   notificationEmail({
-  //     variables: {
-  //       id: "6414996286c77fadcb080900",
-  //       email: notifEmail,
-  //     },
-  //   });
-  // };
 
   const handleSubmit = ({
     notifEmail,
@@ -97,7 +66,6 @@ function AccountProfessorScreen(props) {
   }) => {
     //email,
     if (notifEmail != "") {
-      console.log("Submit Email! " + notifEmail);
       notificationEmail({
         variables: {
           id: user.loginUser._id,
@@ -107,7 +75,6 @@ function AccountProfessorScreen(props) {
     }
 
     if (password != "" && oldPassword != "" && confirmPassword != "") {
-      console.log("Submit Pasword! " + password);
       updatePassWord({
         variables: {
           id: user.loginUser._id,
@@ -119,23 +86,9 @@ function AccountProfessorScreen(props) {
     }
   };
 
-  // state = { switchValue: false };
-
-  // toggleSwitch = (value) => {
-  //   //onValueChange of the switch this function will be called
-  //   setState({ switchValue: value });
-  //   //state changes according to switch
-  //   //which will result in re-render the text
-  // };
-
   return (
     <Screen style={styles.notifBar}>
       <View style={styles.screen}>
-        {/* <Switch
-        style={{ marginTop: 30 }}
-        onValueChange={toggleSwitch}
-        value={state.switchValue}
-      /> */}
         <Image style={styles.pfp} source={require("../assets/knightro.png")} />
         <AppText style={styles.text}>
           Hello {fname} {lname}!
@@ -146,7 +99,7 @@ function AccountProfessorScreen(props) {
             oldPassword: "",
             password: "",
             confirmPassword: "",
-          }} // email: curEmail,
+          }}
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
@@ -231,7 +184,6 @@ function AccountProfessorScreen(props) {
             title="Logout"
             color="gold"
             onPress={() => {
-              console.log("logout");
               setUser(null);
             }}
             style={styles.button}

@@ -27,17 +27,8 @@ export default function App() {
   const [user, setUser] = useState();
 
   return (
-    //<WelcomeScreen></WelcomeScreen>
-    //<LoginScreen></LoginScreen>
-    //<AccountScreen></AccountScreen>
-    //<HomeScreen></HomeScreen>
-    //<CalendarScreen></CalendarScreen>
-    //<CalendarProfessorScreen></CalendarProfessorScreen>
     <AuthContext.Provider value={{ user, setUser }}>
       <ApolloProvider client={client}>
-        {/* <NavigationContainer theme={NavigationTheme}>
-          <HomeStudentScreen></HomeStudentScreen>
-        </NavigationContainer> */}
         {user ? (
           <NavigationContainer theme={NavigationTheme}>
             <AppProfessorNavigator />
@@ -45,13 +36,6 @@ export default function App() {
         ) : (
           <LoginScreen></LoginScreen>
         )}
-        {/* {user ? (
-          <NavigationContainer theme={NavigationTheme}>
-            <WelcomeScreen />
-          </NavigationContainer>
-        ) : (
-          <LoginScreen></LoginScreen>
-        )} */}
       </ApolloProvider>
     </AuthContext.Provider>
   );

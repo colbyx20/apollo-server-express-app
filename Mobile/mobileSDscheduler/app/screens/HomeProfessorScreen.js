@@ -1,15 +1,13 @@
 import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { FlatList, StyleSheet, View } from "react-native";
-import { useQuery, useLazyQuery } from "@apollo/client";
-//import { GROUPS } from "../gql/queries/getAllGroups";
+import { useQuery } from "@apollo/client";
 import { GROUPS } from "../gql/queries/getProfessorsAppointments";
 
 import Screen from "../components/Screen";
 import AppText from "../components/AppText";
 import GroupItem from "../components/GroupItem";
 import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
-import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
 import AuthContext from "../auth/context";
 
@@ -39,8 +37,6 @@ function HomeScreen(props) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
 
-  // console.log(data.getAllGroups[0].groupName);
-  //console.log(data);
   console.log(data);
 
   return (
@@ -69,11 +65,6 @@ function HomeScreen(props) {
                   onPress={(itemOBject) => console.log("deleted", item)}
                 />
               )}
-              // renderLeftActions={(itemObject) => (
-              //   <GroupItemEditAction
-              //     onPress={(itemObject) => console.log("edited", item)}
-              //   />
-              // )}
               style={styles.item}
             />
           )}

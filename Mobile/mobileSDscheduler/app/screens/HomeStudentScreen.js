@@ -1,15 +1,13 @@
 import React, { useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { FlatList, StyleSheet, View } from "react-native";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { StyleSheet, View } from "react-native";
+import { useQuery } from "@apollo/client";
 //import { GROUPS } from "../gql/queries/getAllGroups";
 import { APPOINTMENT } from "../gql/queries/getGroupAppointment";
 
 import Screen from "../components/Screen";
 import AppText from "../components/AppText";
 import GroupAppointment from "../components/GroupAppointment";
-import GroupItemDeleteAction from "../components/GroupItemDeleteAction";
-import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
 import AuthContext from "../auth/context";
 
@@ -29,7 +27,6 @@ function HomeScreen(props) {
   );
 
   useFocusEffect(() => {
-    console.log("Refetch");
     refetch();
   });
 
@@ -40,10 +37,6 @@ function HomeScreen(props) {
   if (loading) {
     return <AppText>Fetching data...</AppText>; //while loading return this
   }
-
-  // console.log(data.getAllGroups[0].groupName);
-  //console.log(data);
-  console.log(data);
 
   return (
     <Screen style={styles.notifBar}>

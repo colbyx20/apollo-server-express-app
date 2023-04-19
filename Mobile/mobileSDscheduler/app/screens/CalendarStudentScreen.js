@@ -1,39 +1,22 @@
 import React, { useState } from "react";
 import Constants from "expo-constants";
-import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { useQuery } from "@apollo/client";
 import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorScheduleFancy";
-import {
-  CalendarList,
-  Calendar,
-  Agenda,
-  AgendaSchedule,
-} from "react-native-calendars";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Agenda } from "react-native-calendars";
 
-import Screen from "../components/Screen";
 import AppText from "../components/AppText";
 import AppointmentItem from "../components/AppointmentItem";
 import AvailabilityModal from "../components/AvailabilityModal";
-import GroupItem from "../components/GroupItem";
-import AppointmentItemAddAction from "../components/AppointmentItemAddAction";
-import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
-import { useFocusEffect } from "@react-navigation/native";
 import TitleBar from "../components/TitleBar";
-// import NavBar from "../components/NavBar";
 
 function CalendarStudentScreen(props) {
   //APOLLO CLIENT
-  const { data, loading, error, refetch } = useQuery(APPOINTMENTS);
+  const { data, loading, error } = useQuery(APPOINTMENTS);
   const [modalVisible, setModalVisible] = useState(false);
   const [currDay, setCurrDay] = useState(0);
   const [currDate, setCurrDate] = useState("");
-
-  // useFocusEffect(() => {
-  //   console.log("Refetch Calendar");
-  //   refetch();
-  // });
 
   if (error) {
     return <AppText>Error: {error.message}</AppText>; //while loading return this
@@ -48,21 +31,7 @@ function CalendarStudentScreen(props) {
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
         title={"Availabilities"}
-        // leftButton={
-        //   <MaterialCommunityIcons
-        //     name="chevron-left"
-        //     size={30}
-        //     color={colors.grayLight}
-        //   />
-        // }
         onPressLeft={() => console.log("goBack")}
-        // rightButton={
-        //   <MaterialCommunityIcons
-        //     name="plus"
-        //     size={30}
-        //     color={colors.grayLight}
-        //   />
-        // }
         onPressRight={() => setModalVisible(true)}
       />
       <Agenda
@@ -115,20 +84,6 @@ function CalendarStudentScreen(props) {
                 coord={item.coordinator[0]}
                 group={item.group[0]}
                 onPress={() => console.log("Group selected", item)}
-                // renderRightActions={(itemObject) => (
-                //   <AppointmentItemAddAction
-                //     onPress={(itemObject) =>
-                //       console.log("ADD TO MY AVAILABILITY", item)
-                //     }
-                //   />
-                // )}
-                // renderLeftActions={(itemObject) => (
-                //   <AppointmentItemAddAction
-                //     onPress={(itemObject) =>
-                //       console.log("ADD TO MY AVAILABILITY", item)
-                //     }
-                //   />
-                // )}
                 style={styles.item}
               />
             </View>
@@ -158,28 +113,6 @@ function CalendarStudentScreen(props) {
         // hideKnob={true}
         // // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
         showClosingKnob={true}
-        // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-        // markedDates={{
-        //   "2012-05-16": { selected: true, marked: true },
-        //   "2012-05-17": { marked: true },
-        //   "2012-05-18": { disabled: true },
-        // }}
-        // markedDates={{
-        //   "2023-02-14": {
-        //     periods: [
-        //       { startingDay: false, endingDay: true, color: "#5f9ea0" },
-        //       { startingDay: false, endingDay: true, color: "#ffa500" },
-        //       { startingDay: true, endingDay: false, color: "#f0e68c" },
-        //     ],
-        //   },
-        //   "2023-02-15": {
-        //     periods: [
-        //       { startingDay: true, endingDay: false, color: "#ffa500" },
-        //       { color: "transparent" },
-        //       { startingDay: false, endingDay: false, color: "#f0e68c" },
-        //     ],
-        //   },
-        // }}
         // Agenda theme
         theme={{
           // "stylesheet.agenda.list": { container: { backgroundColor: "red" } },
@@ -226,16 +159,6 @@ function CalendarStudentScreen(props) {
         }
         modalVisible={modalVisible}
       ></AvailabilityModal>
-      {/* <NavBar
-        onPressLeft={() => console.log("left")}
-        onPressCenter={() => console.log("center")}
-        onPressRight={() => console.log("right")}
-      ></NavBar> */}
-      {/* <View>
-        <AppText style={styles.title}>
-          Just imagine this is a NavBar lol
-        </AppText>
-      </View> */}
     </SafeAreaView>
   );
 }
@@ -265,15 +188,6 @@ function mapAppmntDay({ _id, info }) {
     };
   return day;
 }
-
-function getTime(appointment) {
-  return appointment._id;
-}
-
-// function mapAppmntSlots(appointment) {
-//   appmt = {appointents._id : []};
-//   return;
-// }
 
 const styles = StyleSheet.create({
   agenda: {

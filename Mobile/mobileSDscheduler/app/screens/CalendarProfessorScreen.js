@@ -1,29 +1,19 @@
 import React, { useState, useContext } from "react";
 import Constants from "expo-constants";
-import { FlatList, StyleSheet, View, SafeAreaView, Image } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { APPOINTMENTS } from "../gql/queries/getAllCoordinatorScheduleFancy";
 import { AVAILABILITY } from "../gql/mutations/createProfessorSchedule";
-import {
-  CalendarList,
-  Calendar,
-  Agenda,
-  AgendaSchedule,
-} from "react-native-calendars";
+import { Agenda } from "react-native-calendars";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import Screen from "../components/Screen";
 import AppText from "../components/AppText";
 import AppointmentItem from "../components/AppointmentItem";
 import AvailabilityModal from "../components/AvailabilityModal";
-import GroupItem from "../components/GroupItem";
 import AppointmentItemAddAction from "../components/AppointmentItemAddAction";
-import GroupItemEditAction from "../components/GroupItemEditAction";
 import colors from "../config/colors";
-import { useFocusEffect } from "@react-navigation/native";
 import TitleBar from "../components/TitleBar";
 import AuthContext from "../auth/context";
-// import NavBar from "../components/NavBar"
 
 function CalendarProfessorScreen(props) {
   const { user } = useContext(AuthContext);
@@ -33,11 +23,6 @@ function CalendarProfessorScreen(props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [currDay, setCurrDay] = useState(0);
   const [currDate, setCurrDate] = useState("");
-
-  // useFocusEffect(() => {
-  //   console.log("Refetch Calendar");
-  //   refetch();
-  // });
 
   if (error) {
     return <AppText>Error: {error.message}</AppText>; //while loading return this
@@ -52,9 +37,6 @@ function CalendarProfessorScreen(props) {
   function handlePress(time) {
     var newTime = new Date(time);
     arr.push(newTime.toISOString());
-    console.log("TIME: ", time);
-    console.log(arr);
-    console.log("END TIME: ", time);
     addAvailability({
       variables: {
         id: user.loginUser._id,
@@ -65,19 +47,10 @@ function CalendarProfessorScreen(props) {
     arr = [];
   }
 
-  //console.log(mapAppmntList(data.getAllCoordinatorScheduleFancy));
   return (
     <SafeAreaView style={styles.safeArea}>
       <TitleBar
         title={"Availabilities"}
-        // leftButton={
-        //   <MaterialCommunityIcons
-        //     name="chevron-left"
-        //     size={30}
-        //     color={colors.grayLight}
-        //   />
-        // }
-        onPressLeft={() => console.log("goBack")}
         rightButton={
           <MaterialCommunityIcons
             name="plus"
@@ -104,14 +77,12 @@ function CalendarProfessorScreen(props) {
         animateScroll={false}
         // Callback that gets called on day press
         onDayPress={(day) => {
-          //console.log("day pressed", day);
           setCurrDay((new Date(day.dateString).getDay() + 1) % 7);
           setCurrDate(day.dateString);
         }}
         // Callback that gets called when day changes while scrolling agenda list
         onDayChange={(day) => {
           setCurrDay((new Date(day.dateString).getDay() + 1) % 7);
-          //console.log("day changed", day);
         }}
         // Initially selected day
         selected={new Date().toLocaleString().split("T")[0]} //"2023-02-23"
@@ -125,8 +96,6 @@ function CalendarProfessorScreen(props) {
         futureScrollRange={5}
         // Specify how each item should be rendered in agenda
         renderItem={(item, firstItemInDay) => {
-          //itemInfo = item.info;
-          //console.log("DATETIME= ", itemInfo.datetime);
           return (
             <View style={styles.titleContainer}>
               <AppointmentItem
@@ -176,28 +145,6 @@ function CalendarProfessorScreen(props) {
         // hideKnob={true}
         // // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
         showClosingKnob={true}
-        // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-        // markedDates={{
-        //   "2012-05-16": { selected: true, marked: true },
-        //   "2012-05-17": { marked: true },
-        //   "2012-05-18": { disabled: true },
-        // }}
-        // markedDates={{
-        //   "2023-02-14": {
-        //     periods: [
-        //       { startingDay: false, endingDay: true, color: "#5f9ea0" },
-        //       { startingDay: false, endingDay: true, color: "#ffa500" },
-        //       { startingDay: true, endingDay: false, color: "#f0e68c" },
-        //     ],
-        //   },
-        //   "2023-02-15": {
-        //     periods: [
-        //       { startingDay: true, endingDay: false, color: "#ffa500" },
-        //       { color: "transparent" },
-        //       { startingDay: false, endingDay: false, color: "#f0e68c" },
-        //     ],
-        //   },
-        // }}
         // Agenda theme
         theme={{
           // "stylesheet.agenda.list": { container: { backgroundColor: "red" } },
@@ -244,16 +191,6 @@ function CalendarProfessorScreen(props) {
         }
         modalVisible={modalVisible}
       ></AvailabilityModal>
-      {/* <NavBar
-        onPressLeft={() => console.log("left")}
-        onPressCenter={() => console.log("center")}
-        onPressRight={() => console.log("right")}
-      ></NavBar> */}
-      {/* <View>
-        <AppText style={styles.title}>
-          Just imagine this is a NavBar lol
-        </AppText>
-      </View> */}
     </SafeAreaView>
   );
 }
@@ -287,11 +224,6 @@ function mapAppmntDay({ _id, info }) {
 function getTime(appointment) {
   return appointment._id;
 }
-
-// function mapAppmntSlots(appointment) {
-//   appmt = {appointents._id : []};
-//   return;
-// }
 
 const styles = StyleSheet.create({
   agenda: {

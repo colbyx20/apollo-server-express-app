@@ -1,11 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import AuthContext from "../auth/context";
 import HomeStudentScreen from "./HomeStudentScreen";
 import HomeProfessorScreen from "./HomeProfessorScreen";
 
 function HomeScreen(props) {
   const { user } = useContext(AuthContext);
-  console.log("USER: ", user);
   return (
     <>
       {user.loginUser.privilege == "student" ? (
