@@ -2,6 +2,9 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import * as React from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/authContext';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { Button } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import '../components/css/calendar2.css'
 
 export const GET_PROFESSOR = gql`
@@ -13,16 +16,32 @@ query GetProfessor($id: ID!) {
 }
 `
 
+const DELETE_PROFESSOR_AVAIL_SCHEDULE = gql`
+    mutation Mutation($pid: ID, $time: String) {
+    updateProfessorAvailSchedule(PID: $pid, time: $time)
+    }
+`
+
 
 export const GetProfessorSchedule = ({ onUpdate }) => {
 
     const { user } = useContext(AuthContext);
+
     const { loading, error, data, refetch } = useQuery(GET_PROFESSOR, {
         variables: { id: user.id }
     });
 
+    const [updateProfessorAvailSchedule] = useMutation(DELETE_PROFESSOR_AVAIL_SCHEDULE)
+
     if (loading) return 'Loading...';
     if (error) return `Error! ${error.message}`;
+
+    function updateDates(time) {
+        updateProfessorAvailSchedule({
+            variables: { pid: user.id, time: time },
+            refetchQueries: [{ query: GET_PROFESSOR, variables: { id: user.id } }]
+        })
+    }
 
     function returnPrettyDateTime(date1) {
         let date = new Date(date1);
@@ -32,14 +51,16 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
         return edtTime;
     }
 
-    // React.useEffect(()=>{
-    //     if(onUpdate === true){
-    //         // Call refetch here
-    //         console.log("help");
-    //         onUpdate = false;
-    //     }
 
-    // },[onUpdate])
+    const RedButton = styled(Button)(({ theme }) => ({
+        color: 'white',
+        backgroundColor: '#f44336',
+        '&:hover': {
+            backgroundColor: '#d32f2f',
+        },
+        float: 'right',
+        marginLeft: '5px',
+    }));
 
 
     return (
@@ -49,6 +70,7 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
                 {new Date(time).getDate().toLocaleString('en-US', { minimumIntegerDigits: 2 })}
                 {new Date(time).getDate() % 10 === 1 ? 'st' : new Date(time).getDate() % 10 === 2 ? 'nd' : new Date(time).getDate() % 10 === 3 ? 'rd' : 'th'},{' '}
                 {returnPrettyDateTime(time)}
+                <RedButton onClick={() => updateDates(time)}><DeleteForeverIcon /></RedButton>
             </div>
         })}</div>
     )

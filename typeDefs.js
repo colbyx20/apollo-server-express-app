@@ -361,6 +361,7 @@ scalar DateTime
         forgotPassword(email: String): Boolean
         restPasswordPreLogin(email: String, password: String, confirmPassword: String): Boolean
         deleteCoordiantorSchedule(CID: ID) : Boolean
+        updateProfessorAvailSchedule(PID:ID, time: String): Boolean
     }
 `
 

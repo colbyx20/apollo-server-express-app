@@ -1571,7 +1571,6 @@ const resolvers = {
 
                 for (app of getSchedule) {
                     const eh = await Professors.updateMany({ appointments: { $in: app._id } }, { $pull: { appointments: app._id }, $push: { availSchedule: app.time } })
-                    console.log(eh);
                 }
 
                 await Group.updateMany({ coordinatorId: ID }, { $set: { appointment: [] } })
@@ -1702,10 +1701,22 @@ const resolvers = {
             } else {
                 return false;
             }
+        },
+        updateProfessorAvailSchedule: async (_, { PID, time }) => {
+            const ID = Mongoose.Types.ObjectId(PID);
 
+            const date = new Date(time);
+            date.setUTCHours(date.getUTCHours() - 4);
+            const utcDate = new Date(date.toISOString());
 
+            try {
+                await Professors.updateOne({ _id: ID }, { $pull: { availSchedule: utcDate } })
+            } catch (error) {
+                throw new ApolloError("Error on Deleting Professors Avail Schedule");
+            }
+
+            return true;
         }
-
     }
 }
 

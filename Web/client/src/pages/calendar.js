@@ -46,7 +46,6 @@ function Calendar(props) {
     }
 
     const updatedDates = (index) => {
-        console.log(index);
         setDeleteDate(index);
     };
 
