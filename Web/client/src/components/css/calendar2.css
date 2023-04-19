@@ -19,7 +19,7 @@
 .leftContainer {
     width: 50%;
     height: 91.5%;
-    float: left;    
+    float: left;
 }
 
 .rightContainer {
@@ -146,7 +146,7 @@
     color: white
 }
 
-.timeListContainer{
+.timeListContainer {
     margin-left: 5%;
     margin-top: 15px;
     width: 90%;
@@ -156,27 +156,27 @@
     overflow-y: auto;
 }
 
-.listContainer{
+.listContainer {
     margin: auto;
     width: 90%;
     background-color: antiquewhite;
 }
 
-.timeListTitle{
+.timeListTitle {
     text-align: center;
     padding-top: 5px;
     color: black;
     margin-bottom: 5px;
 }
 
-.designWeekRoom{
+.designWeekRoom {
     margin-top: 15px;
     margin-bottom: 10px;
     width: 82%;
     height: 50px;
 }
 
-.designInput{
+.designInput {
     width: 100%;
     height: 100%;
 }
@@ -198,7 +198,7 @@
     box-shadow: 0 0 5px rgba(0, 119, 204, 0.5);
 }
 
-.timeItemContainer{
+.timeItemContainer {
     width: 92%;
     height: 40%;
     margin: auto;
@@ -207,7 +207,7 @@
     border-radius: 10px;
 }
 
-.timeItem{
+.timeItem {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -219,16 +219,16 @@
     color: white;
 }
 
-.timeData{
+.timeData {
     margin-left: 5px;
 }
 
-.currentSchedule{
+.currentSchedule {
     margin-top: 25px;
     height: 43%;
 }
 
-.scheduleContainer{
+.scheduleContainer {
     height: 90%;
     width: 92%;
     margin-left: 4%;
@@ -239,11 +239,11 @@
 
 
 
-.itemValue{
+.itemValue {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 5px;
+    padding-left: 100px;
     margin-top: 1.5px;
     min-height: 45px;
     height: auto;

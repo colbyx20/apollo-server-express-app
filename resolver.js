@@ -1570,7 +1570,7 @@ const resolvers = {
                 const getSchedule = await CoordSchedule.find({ coordiantorID: ID }).select('_id time')
 
                 for (app of getSchedule) {
-                    const eh = await Professors.updateMany({ appointments: { $in: app._id } }, { $pull: { appointments: app._id }, $push: { availSchedule: app.time } })
+                    await Professors.updateMany({ appointments: { $in: app._id } }, { $pull: { appointments: app._id } })
                 }
 
                 await Group.updateMany({ coordinatorId: ID }, { $set: { appointment: [] } })

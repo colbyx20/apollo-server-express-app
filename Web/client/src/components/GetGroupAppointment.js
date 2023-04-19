@@ -42,8 +42,7 @@ export const GetGroupAppointment = ({ SID }) => {
                                     new Date(myData?.time).toLocaleDateString('en-us', { year: 'numeric' })
                                 }<br />
                                 {myData?.room}<br />
-                                {new Date(myData?.time).toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: 'numeric', hour12: true })}
-
+                                {new Date(myData?.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                             </div>
                             <td>Attending Professors: {myData?.attending2.map((member) => {
                                 return (<tr key={member?._id}>{member?.fullName}</tr>)

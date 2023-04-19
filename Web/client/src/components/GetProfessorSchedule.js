@@ -59,7 +59,7 @@ export const GetProfessorSchedule = ({ onUpdate }) => {
             backgroundColor: '#d32f2f',
         },
         float: 'right',
-        marginLeft: '5px',
+        marginLeft: '50px',
     }));
 
 
