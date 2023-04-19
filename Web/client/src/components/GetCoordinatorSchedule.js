@@ -27,6 +27,7 @@ const GET_SCHEDULE = gql`
                 groupNumber
             }
             attending2 {
+                _id
                 fullName
             }
         }
@@ -75,19 +76,20 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
     const [cancelAppointment] = useMutation(CANCEL_APPOINTMENT)
 
-    const handleMouseDown = (appointment) => {
+    const handleMouseDown = (appointment, room, time) => {
+
         setIsHeld(true);
         setHoldTimeout(
             setTimeout(() => {
-                onHoldComplete(appointment);
+                onHoldComplete(appointment, room, time);
                 setHoldTimeout(null);
             }, holdTime)
         );
     };
 
-    const onHoldComplete = (appointment) => {
+    const onHoldComplete = (appointment, room, time) => {
         cancelAppointment({
-            variables: { cancelation: { CancelerID: ID, ApID: appointment, reason: "Personal" } },
+            variables: { cancelation: { CancelerID: ID, ApID: appointment, room: room, time: time } },
             refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }]
         })
     };
@@ -122,7 +124,7 @@ export const GetCoordinatorSchedule = ({ ID }) => {
             refetchQueries: [{ query: GET_SCHEDULE, variables: { cid: ID } }],
             onCompleted: setIsOpen(false)
         })
-        // setIsOpen(false);
+        setIsOpen(false);
     }
 
     function returnCurrentDateTime(date1) {
@@ -193,9 +195,9 @@ export const GetCoordinatorSchedule = ({ ID }) => {
 
                                                 }
                                             }}
-                                            onMouseDown={() => handleMouseDown(coordinator._id)}
+                                            onMouseDown={() => handleMouseDown(coordinator._id, coordinator.room, coordinator.time)}
                                             onMouseUp={handleMouseUp}
-                                            onTouchStart={() => handleMouseDown(coordinator._id)}
+                                            onTouchStart={() => handleMouseDown(coordinator._id, coordinator.room, coordinator.time)}
                                             onTouchEnd={handleMouseUp}
                                             variant="contained">
                                             {cancel}
