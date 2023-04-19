@@ -5,7 +5,8 @@ import { gql } from "@apollo/client";
 //   "cancelation": {
 //     "ApID": null,
 //     "CancelerID": null,
-//     "reason": null
+//     "room": null,
+//      "time": null,
 //   }
 // }
 export const CANCEL_APPOINTMENT = gql`

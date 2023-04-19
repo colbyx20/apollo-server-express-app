@@ -1,4 +1,10 @@
-import { StyleSheet, Image, ImageBackground, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  ImageBackground,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -13,6 +19,7 @@ import Screen from "../components/Screen";
 import ErrorMessage from "../components/ErrorMessage";
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../auth/context";
+import AppointmentModal from "../components/AppointmentModal";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().label("Email"),
@@ -21,6 +28,7 @@ const validationSchema = Yup.object().shape({
 
 function LoginScreen(props) {
   const authContext = useContext(AuthContext);
+  const [modalVisible, setModalVisible] = useState(false);
   const [loginUser, { data, loading, error }] = useMutation(LOGIN_USER);
 
   const handleSubmit = async ({ email, password }) => {
@@ -53,10 +61,17 @@ function LoginScreen(props) {
       source={require("../assets/ucf_51449133.jpg")}
     >
       <Screen style={styles.container}>
-        <Image
-          style={styles.logo}
-          source={require("../assets/TheTab_KGrgb_300ppi.png")}
-        />
+        <TouchableWithoutFeedback
+          onLongPress={() => {
+            setModalVisible(true);
+          }}
+          delayLongPress={5000}
+        >
+          <Image
+            style={styles.logo}
+            source={require("../assets/TheTab_KGrgb_300ppi.png")}
+          />
+        </TouchableWithoutFeedback>
 
         <Formik
           initialValues={{ email: "", password: "" }}
@@ -100,6 +115,10 @@ function LoginScreen(props) {
             </>
           )}
         </Formik>
+        <AppointmentModal
+          onPress={() => setModalVisible(false)}
+          modalVisible={modalVisible}
+        ></AppointmentModal>
       </Screen>
     </ImageBackground>
   );

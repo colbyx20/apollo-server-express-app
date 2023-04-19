@@ -16,34 +16,20 @@ import Screen from "./Screen";
 import colors from "../config/colors";
 import AppText from "./AppText";
 
-function ProfessorItem({
-  name,
-  subTitle,
-  number,
-  image,
-  id,
-  style,
-  onPress,
-  listIDs,
-}) {
-  //const [itemSelected, setItemSelected] = useState(false);
-  var colorItem = 0 <= listIDs ? colors.gold : colors.grayLight;
-  //var colorItem = itemSelected ? colors.gold : colors.grayLight;
+function ProfessorItem({ name, version, image, role, style, onPress }) {
   return (
     <View style={style}>
       <TouchableHighlight
         style={styles.highlight}
         underlayColor={colors.grayMedium}
         onPress={onPress}
-        // onPress={() => {
-        //   setItemSelected(!itemSelected);
-        //   onPress;
-        // }}
       >
-        <View style={[styles.container, { backgroundColor: colorItem }]}>
+        <View style={styles.container}>
           <View>{image && <Image style={styles.image} source={image} />}</View>
           <View style={styles.details}>
-            <AppText style={styles.title}>{name}</AppText>
+            <AppText style={styles.title}>
+              {name} - Role: {role} - V{version}
+            </AppText>
           </View>
         </View>
       </TouchableHighlight>

@@ -16,31 +16,6 @@ import colors from "../config/colors";
 import defaultStyles from "../config/styles";
 
 function AppointmentModal({ modalVisible, onPress, canSelect }) {
-  //APOLLO CLIENT
-  const { data, loading, error } = useQuery(GROUPS);
-  //   const [professors, setProfessors] = useState([
-  //     { id: "" },
-  //     { id: "" },
-  //     { id: "" },
-  //   ]);
-
-  const [professors, setProfessors] = useState([]);
-
-  if (error) {
-    return <AppText>Error: {error.message}</AppText>; //while loading return this
-  }
-
-  if (loading) {
-    return <AppText>Fetching data...</AppText>; //while loading return this
-  }
-  const onPressSave = () => {
-    console.log("SAVED ", professors.toLocaleString());
-  };
-
-  const onPressAdd = () => {
-    console.log("ADDED TO MY AVAILABILITY ", professors.toLocaleString());
-  };
-
   function onPressItem(id) {
     if (!canSelect) {
       return;
@@ -79,36 +54,60 @@ function AppointmentModal({ modalVisible, onPress, canSelect }) {
     console.log("======================");
   }
 
+  //THE ABOVE WAS JUST MISDIRECTION, PLEASE DON'T DELETE THIS
+  //IF YOU ARE FROM A NEW VERSION, FEEL FREE TO ADD YOUR NAMES TOO
+  //                                                        Matias Libryk
+
+  var v1 = [
+    { name: "Robert Buch", role: "API", v: "1" },
+    { name: "Andy Garcia", role: "FrontEnd-Mobile", v: "1" },
+    { name: "Colby Gerber", role: "FrontEnd-Web", v: "1" },
+    { name: "Matías Libryk", role: "FrontEnd-Mobile", v: "1" },
+    { name: "David Ponce", role: "FrontEnd-Web", v: "1" },
+    { name: "Cristhian Velasquez", role: "Database", v: "1" },
+  ]; //a POOS Project //we used flutter back then, it was just a POC
+  var v2 = [
+    { name: "Andy Garcia", role: "FrontEnd-Web", v: "2" },
+    { name: "Colby Gerber", role: "Database/API", v: "2" },
+    { name: "Zacharia Johnson", role: "API", v: "2" },
+    { name: "Matías Libryk", role: "FrontEnd-Mobile", v: "2" },
+    { name: "Calvin Mancini", role: "Frontend-web", v: "2" },
+    { name: "Madison Scott", role: "Frontend-mobile", v: "2" },
+  ]; //a POOS Project //
+
   return (
     <Modal visible={modalVisible} animationType="slide">
       <Screen style={styles.background}>
-        {canSelect ? (
-          <>
-            <AppText style={styles.title}>Please select professors</AppText>
-            <AppText style={styles.text}>
-              Select professors for presentation:
-            </AppText>
-          </>
-        ) : (
-          <AppText style={styles.title}>
-            Professors available at this time
-          </AppText>
-        )}
         <View style={styles.listContainer}>
           <FlatList
-            data={data.getAllGroups}
-            keyExtractor={(data) => data._id.toString()}
+            data={v1}
+            keyExtractor={(data) => data.name}
             renderItem={({ item }) => (
               <>
                 <ProfessorItem
-                  image={require("../assets/TheTab_KGrgb_300ppi.png")}
-                  onPress={() => onPressItem(item._id)}
-                  listIDs={professors.indexOf(item._id)}
-                  name={item.groupName}
-                  subTitle={item.projectField}
-                  number={item.groupNumber}
-                  id={item._id}
-                  style={styles.item}
+                  //image={require("../assets/TheTab_KGrgb_300ppi.png")}
+                  name={item.name}
+                  version={item.v}
+                  role={item.role}
+                  // id={item._id}
+                  // style={styles.item}
+                />
+                <View style={styles.divider}></View>
+              </>
+            )}
+          />
+          <FlatList
+            data={v2}
+            keyExtractor={(data) => data.name}
+            renderItem={({ item }) => (
+              <>
+                <ProfessorItem
+                  //image={require("../assets/TheTab_KGrgb_300ppi.png")}
+                  name={item.name}
+                  version={item.v}
+                  role={item.role}
+                  // id={item._id}
+                  // style={styles.item}
                 />
                 <View style={styles.divider}></View>
               </>
@@ -116,17 +115,6 @@ function AppointmentModal({ modalVisible, onPress, canSelect }) {
           />
         </View>
         <View style={styles.buttonContainer}>
-          {canSelect ? (
-            <AppButton
-              title="Save"
-              onPress={onPressSave} //{() => setModalVisible(false)}
-            />
-          ) : (
-            <AppButton
-              title="Add time"
-              onPress={onPressAdd} //{() => setModalVisible(false)}
-            />
-          )}
           <AppButton
             title="Close"
             onPress={onPress} //{() => setModalVisible(false)}
