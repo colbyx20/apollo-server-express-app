@@ -59,16 +59,16 @@ function AppointmentModal({ modalVisible, onPress, canSelect }) {
   //                                                        Matias Libryk
 
   var v1 = [
+    { name: "Colby Berger", role: "FrontEnd-Web", v: "1" },
     { name: "Robert Buch", role: "API", v: "1" },
     { name: "Andy Garcia", role: "FrontEnd-Mobile", v: "1" },
-    { name: "Colby Gerber", role: "FrontEnd-Web", v: "1" },
     { name: "Matías Libryk", role: "FrontEnd-Mobile", v: "1" },
     { name: "David Ponce", role: "FrontEnd-Web", v: "1" },
     { name: "Cristhian Velasquez", role: "Database", v: "1" },
   ]; //a POOS Project //we used flutter back then, it was just a POC
   var v2 = [
+    { name: "Colby Berger", role: "Database/API", v: "2" },
     { name: "Andy Garcia", role: "FrontEnd-Web", v: "2" },
-    { name: "Colby Gerber", role: "Database/API", v: "2" },
     { name: "Zacharia Johnson", role: "API", v: "2" },
     { name: "Matías Libryk", role: "FrontEnd-Mobile", v: "2" },
     { name: "Calvin Mancini", role: "Frontend-web", v: "2" },

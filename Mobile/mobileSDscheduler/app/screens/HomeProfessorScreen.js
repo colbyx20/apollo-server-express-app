@@ -36,9 +36,9 @@ function HomeScreen(props) {
         cancelation: {
           ApID: item._id,
           CancelerID: user.loginUser._id,
-          reason: null,
-          // room: item.room,
-          // time: item.time,
+          //reason: null,
+          room: item.room,
+          time: item.time,
         },
       },
     });
