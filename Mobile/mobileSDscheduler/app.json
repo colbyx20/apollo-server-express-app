@@ -27,6 +27,10 @@
         "backgroundColor": "#231F20"
       }
     },
+    "androidStatusBar": {
+      "backgroundColor": "#FFC904",
+      "translucent": true
+    },
     "web": {
       "favicon": "./app/assets/logo_mysds.png"
     },
