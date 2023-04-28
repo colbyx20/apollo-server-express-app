@@ -49,6 +49,7 @@ const AppNavigator = () => (
           name={_.route}
           component={_.component}
           options={{
+            headerShown: false,
             tabBarLabel: _.route,
             tabBarIcon: ({ color, focused }) => (
               <MaterialCommunityIcons

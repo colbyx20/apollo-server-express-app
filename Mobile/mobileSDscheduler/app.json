@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobileSDscheduler",
+    "name": "SDscheduler",
     "slug": "mobileSDscheduler",
     "privacy": "unlisted",
     "version": "1.0.0",
@@ -9,15 +9,13 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./app/assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#231F20"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -26,7 +24,7 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/logo_mysds.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#231F20"
       }
     },
     "web": {
