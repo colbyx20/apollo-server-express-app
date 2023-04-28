@@ -87,6 +87,11 @@ function AccountStudentScreen(props) {
     }
   };
 
+  const handleLogOut = () => {
+    setUser(null);
+    authStorage.removeUser();
+  };
+
   const handleSubmitPassword = ({ oldPassword, password, confirmPassword }) => {
     updatePassWord({
       variables: {
@@ -200,9 +205,7 @@ function AccountStudentScreen(props) {
           <AppButton
             title="Logout"
             color="gold"
-            onPress={() => {
-              setUser(null);
-            }}
+            onPress={handleLogOut}
             style={styles.button}
           ></AppButton>
         </View>

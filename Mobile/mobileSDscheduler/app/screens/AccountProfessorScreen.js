@@ -17,6 +17,7 @@ import AppTextInput from "../components/AppTextInput";
 import Screen from "../components/Screen";
 import colors from "../config/colors";
 import AuthContext from "../auth/context";
+import authStorage from "../auth/storage";
 
 const validationSchema = Yup.object().shape({
   notifEmail: Yup.string().email().label("Email"),
@@ -40,7 +41,6 @@ function AccountProfessorScreen(props) {
 
   const [notificationEmail] = useMutation(PROFESSOR_EMAIL);
   const [updatePassWord] = useMutation(PASSWORD);
-
   useFocusEffect(() => {
     refetch();
   });
@@ -84,6 +84,11 @@ function AccountProfessorScreen(props) {
         },
       });
     }
+  };
+
+  const handleLogOut = () => {
+    setUser(null);
+    authStorage.removeUser();
   };
 
   return (
@@ -183,9 +188,7 @@ function AccountProfessorScreen(props) {
           <AppButton
             title="Logout"
             color="gold"
-            onPress={() => {
-              setUser(null);
-            }}
+            onPress={handleLogOut}
             style={styles.button}
           ></AppButton>
         </View>

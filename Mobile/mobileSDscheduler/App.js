@@ -13,9 +13,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import AppProfessorNavigator from "./navigation/AppProfessorNavigator";
 import AppStudentNavigator from "./navigation/AppStudentNavigator";
 import NavigationTheme from "./navigation/NavigationTheme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthContext from "./app/auth/context";
 import AccountStudentScreen from "./app/screens/AccountStudentScreen";
+import authStorage from "./app/auth/storage";
 
 // Initialize Apollo Client
 const client = new ApolloClient({
@@ -25,6 +26,17 @@ const client = new ApolloClient({
 
 export default function App() {
   const [user, setUser] = useState();
+
+  const restoreUser = async () => {
+    const userInfo = await authStorage.getUser();
+    if (!userInfo) return;
+    var jsonUserInfo = JSON.parse(userInfo);
+    setUser(jsonUserInfo);
+  };
+
+  useEffect(() => {
+    restoreUser();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

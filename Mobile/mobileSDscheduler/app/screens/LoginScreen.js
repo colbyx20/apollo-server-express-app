@@ -20,6 +20,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../auth/context";
 import AppointmentModal from "../components/AppointmentModal";
+import authStorage from "../auth/storage";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().label("Email"),
@@ -51,8 +52,12 @@ function LoginScreen(props) {
 
     if (data.loginUser != null && data.loginUser.privilege != "coordinator") {
       authContext.setUser(data);
+      var stringData = JSON.stringify(data);
+      authStorage.storeUser(stringData);
     }
   };
+
+  console.log(data);
 
   return (
     <ImageBackground
